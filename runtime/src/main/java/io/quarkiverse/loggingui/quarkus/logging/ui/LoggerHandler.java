@@ -1,24 +1,5 @@
 package io.quarkiverse.loggingui.quarkus.logging.ui;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.buffer.ByteBufInputStream;
-import io.vertx.core.Handler;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.web.RoutingContext;
-
 import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 import static io.vertx.core.http.HttpMethod.GET;
 import static io.vertx.core.http.HttpMethod.POST;
@@ -32,6 +13,26 @@ import static java.util.logging.Level.OFF;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Level.WARNING;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.netty.buffer.ByteBufInputStream;
+import io.vertx.core.Handler;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
+
 public class LoggerHandler implements Handler<RoutingContext> {
 
     public static final String LOGGER_NAME_PATH_PARAM = "loggerName";
@@ -43,7 +44,7 @@ public class LoggerHandler implements Handler<RoutingContext> {
     };
 
     public LoggerHandler() {
-        this.objectMapper =ObjectMapperProducer.get();
+        this.objectMapper = ObjectMapperProducer.get();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.quarkiverse.loggingui.quarkus.logging.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ArcContainer;
 
