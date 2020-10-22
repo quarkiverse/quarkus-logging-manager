@@ -3,27 +3,25 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Congratulations and thank you for creating a new Quarkus extension project in Quarkiverse!
+This is the alpha version of the Quarkus Logging UI Extension, it provides you endpoints to visualize and manage the
+log level of your loggers.
+Currently, there is no authentication/authorization mechanisms in place to protect from unauthorized access, in this 
+alpha version you have to protect this endpoint by yourself. 
 
-Feel free to replace this content with the proper description of your new project and necessary instructions how to use and contribute to it.
+| Endpoint        | Http Method           | Description  |
+| ------------- |:-------------:|:-----:|
+| `/loggers`      | `GET` | Returns the list of all loggers, with information about the configured and effective level |
+| `/loggers/{loggerName}`     | `GET`      |   Returns the logger specified by this name, with information about the configured and effective level |
+| `/loggers/{loggerName}` | `POST`      |    Changes the log level of the specified logger |
 
-You can find the basic info, Quarkiverse policies and conventions in [the Quarkiverse wiki](https://github.com/quarkiverse/quarkiverse/wiki).
+## Example:
+> TODO
 
-Need to quickly create a new Quarkus extension Maven project? Just execute the command below replacing the template values with your preferred ones:
-```
-mvn io.quarkus:quarkus-maven-plugin:<QUARKUS_VERSION>:create-extension -N \
-    -DgroupId=io.quarkiverse.<REPO_NAME> \ 
-    -DartifactId=<EXTENSION_ARTIFACT_ID> \  
-    -Dversion=<INITIAL_VERSION> \ 
-    -Dquarkus.nameBase="<EXTENSION_SIMPLE_NAME>"
-```
-**IMPORTANT:** make sure your project uses [io.quarkiverse:quarkiverse-parent](https://github.com/quarkiverse/quarkiverse-parent) as the parent POM. It will make sure the release and artifact publishing plugins are properly configured for your project.
-
-In case you are creating a Quarkus extension project for the first time, please follow [Building My First Extension](https://quarkus.io/guides/building-my-first-extension) guide.
-
-Other useful articles related to Quarkus extension development can be found under the [Writing Extensions](https://quarkus.io/guides/#writing-extensions) guide category on the [Quarkus.io](http://quarkus.io) website.
-
-Thanks again, good luck and have fun!
+## Roadmap
+ * Make endpoint configurable
+ * Enable customizable security on the endpoint
+ * Graphical UI to read logger level 
+ * OpenApiSpec for the endpoints
 
 ## Contributors ✨
 
