@@ -1,7 +1,6 @@
 # Logging UI Extension 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+[![Maven Central](https://img.shields.io/maven-central/v/io.quarkiverse.loggingui/quarkus-logging-ui?color=cool-green&style=flat-square)](https://mvnrepository.com/artifact/io.quarkiverse.loggingui/quarkus-logging-ui)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?color=cool-green&style=flat-square)](#contributors-)
 
 This is the alpha version of the Quarkus Logging UI Extension, it provides you endpoints to visualize and manage the
 log level of your loggers.
