@@ -1,13 +1,13 @@
 package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
 
+import static io.quarkiverse.loggingui.quarkus.logging.ui.LoggerHandler.LOGGER_NAME_PATH_PARAM;
+
 import io.quarkiverse.loggingui.quarkus.logging.ui.LoggerHandler;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import io.quarkus.vertx.http.runtime.HandlerType;
-
-import static io.quarkiverse.loggingui.quarkus.logging.ui.LoggerHandler.LOGGER_NAME_PATH_PARAM;
 
 class QuarkusLoggingUiProcessor {
     private static final String FEATURE = "quarkus-logging-ui";
