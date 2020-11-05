@@ -27,6 +27,22 @@ class CustomEndpointTest {
             .overrideConfigKey("quarkus.logging-ui.base-path", EXTENSION_ENDPOINT);
 
     @Test
+    public void getEndpointWithoutTrailingSlashListsLoggersAndLevels() {
+        String endpointWithoutTrailingSlash = EXTENSION_ENDPOINT.substring(0, EXTENSION_ENDPOINT.lastIndexOf("/"));
+        Map<String, Object> response = RestAssured.when().get(endpointWithoutTrailingSlash).then().statusCode(200)
+                .body("loggers", notNullValue())
+                .body("levels", notNullValue())
+                .extract()
+                .as(Map.class);
+
+        ArrayList<String> levels = (ArrayList) response.get("levels");
+        assertThat(levels.size(), equalTo(9));
+        Map<String, Map<String, String>> descriptionByLoggerName = (Map<String, Map<String, String>>) response.get(
+                "loggers");
+        assertThat(descriptionByLoggerName.size(), greaterThan(1));
+    }
+
+    @Test
     public void getEndpointListsLoggersAndLevels() {
         Map<String, Object> response = performGetRequest("");
         ArrayList<String> levels = (ArrayList) response.get("levels");

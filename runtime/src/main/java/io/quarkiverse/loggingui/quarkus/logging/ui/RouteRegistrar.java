@@ -20,8 +20,8 @@ public class RouteRegistrar {
         String effectivePath = generateEffectivePath();
 
         router.get(effectivePath).blockingHandler(loggerHandler);
-        router.get(String.format("%s:%s", effectivePath, LOGGER_NAME_PATH_PARAM)).blockingHandler(loggerHandler);
-        router.post(String.format("%s:%s", effectivePath, LOGGER_NAME_PATH_PARAM)).blockingHandler(loggerHandler);
+        router.get(String.format("%s/:%s", effectivePath, LOGGER_NAME_PATH_PARAM)).blockingHandler(loggerHandler);
+        router.post(String.format("%s/:%s", effectivePath, LOGGER_NAME_PATH_PARAM)).blockingHandler(loggerHandler);
     }
 
     private String generateEffectivePath() {
@@ -31,8 +31,9 @@ public class RouteRegistrar {
             effectivePath += "/";
         }
         effectivePath += config.basePath;
-        if (!config.basePath.endsWith("/")) {
-            effectivePath += "/";
+
+        if (effectivePath.endsWith("/")) {
+            effectivePath = effectivePath.substring(0, effectivePath.lastIndexOf("/"));
         }
         return effectivePath;
     }
