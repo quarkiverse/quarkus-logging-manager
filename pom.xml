@@ -10,7 +10,7 @@
 
     <groupId>io.quarkiverse.loggingui</groupId>
     <artifactId>quarkus-logging-ui-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.0.4</version>
     <name>Quarkus - Logging UI - Parent</name>
 
     <packaging>pom</packaging>
@@ -51,4 +51,8 @@
             </plugins>
         </pluginManagement>
     </build>
+
+  <scm>
+    <tag>0.0.4</tag>
+  </scm>
 </project>
