@@ -18,7 +18,7 @@ import io.quarkus.test.QuarkusUnitTest;
 import io.restassured.RestAssured;
 
 @SuppressWarnings("unchecked")
-class QuarkusLoggingUiTest {
+class DefaultConfigurationTest {
 
     @RegisterExtension
     static final QuarkusUnitTest config = new QuarkusUnitTest();
