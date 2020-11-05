@@ -43,8 +43,8 @@ public class LoggerHandler implements Handler<RoutingContext> {
             FINER.getName(), FINEST.getName(), ALL.getName()
     };
 
-    public LoggerHandler() {
-        this.objectMapper = ObjectMapperProducer.get();
+    public LoggerHandler(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class LoggerHandler implements Handler<RoutingContext> {
 
     private void setLoggerLevel(String loggerName, LogLevelDescription newLogLevel) {
         if (newLogLevel.getConfiguredLevel() == null) {
-            throw new IllegalArgumentException("Log leve must not be null");
+            throw new IllegalArgumentException("Log level must not be null");
         }
         Logger logger = Logger.getLogger(loggerName);
         String upperCaseConfiguredLevel = newLogLevel.getConfiguredLevel().toUpperCase(Locale.ROOT);
