@@ -24,6 +24,21 @@ class DefaultConfigurationTest {
     static final QuarkusUnitTest config = new QuarkusUnitTest();
 
     @Test
+    public void getEndpointWithoutTrailingSlashListsLoggersAndLevels() {
+        Map<String, Object> response = RestAssured.when().get("/loggers").then().statusCode(200)
+                .body("loggers", notNullValue())
+                .body("levels", notNullValue())
+                .extract()
+                .as(Map.class);
+
+        ArrayList<String> levels = (ArrayList) response.get("levels");
+        assertThat(levels.size(), equalTo(9));
+        Map<String, Map<String, String>> descriptionByLoggerName = (Map<String, Map<String, String>>) response.get(
+                "loggers");
+        assertThat(descriptionByLoggerName.size(), greaterThan(1));
+    }
+
+    @Test
     public void getEndpointListsLoggersAndLevels() {
         Map<String, Object> response = performGetRequest("");
         ArrayList<String> levels = (ArrayList) response.get("levels");
