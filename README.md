@@ -13,14 +13,33 @@ alpha version you have to protect this endpoint by yourself.
 | `/loggers/{loggerName}`     | `GET`      |   Returns the logger specified by this name, with information about the configured and effective level |
 | `/loggers/{loggerName}` | `POST`      |    Changes the log level of the specified logger |
 
+## Security
+Security of endpoints is important and we do not want to allow unknown people to know (or worse, change!) the log levels of
+our applications.
+Fortunately we can secure our endpoints using Quarkus' default security mechanism, as described in [here][1].
+All you have to do is define your application.properties similar to this: 
+
+```properties
+quarkus.http.auth.basic=true # If you want basic auth. Multiple auth mechanism are supported
+
+quarkus.http.auth.policy.admin-access.roles-allowed=admin
+quarkus.http.auth.permission.roles1.paths=/loggers
+quarkus.http.auth.permission.roles1.policy=admin-access
+```
+And, in case you chose Basic Auth, provide a IdentityProvider (either by implementing one or adding an extension that provides
+one).
+Quarkus will take care of matching the paths (in this case `/loggers` to the policy you defined and granting or denying access).
+Then you can also secure all the endpoints in your application using this configuration.
+
+
 ## Example:
 > TODO
 
 ## Roadmap
- * Make endpoint configurable
- * Enable customizable security on the endpoint
- * Graphical UI to read logger level 
- * OpenApiSpec for the endpoints
+- [ ] Graphical UI to read logger level
+- [ ] OpenApiSpec for the endpoints
+- [x] Make endpoint configurable
+- [x] Enable customizable security on the endpoint (see readme file)
 
 ## Contributors ✨
 
@@ -40,3 +59,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+[1]: https://quarkus.io/guides/security-authorization

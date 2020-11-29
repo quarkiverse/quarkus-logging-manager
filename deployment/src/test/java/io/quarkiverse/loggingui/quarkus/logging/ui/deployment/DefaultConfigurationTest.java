@@ -127,8 +127,6 @@ class DefaultConfigurationTest {
     }
 
     // TODO:
-    // restart quarkus on every new test?
-    // force authentication
-    // Other technologied (slf4j?) compatible?
+    // Other technologies (slf4j?) compatible?
 
 }
