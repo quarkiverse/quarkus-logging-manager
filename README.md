@@ -10,8 +10,9 @@ alpha version you have to protect this endpoint by yourself.
 | Endpoint        | Http Method           | Description  |
 | ------------- |:-------------:|:-----:|
 | `/loggers`      | `GET` | Returns the list of all loggers, with information about the configured and effective level |
-| `/loggers/{loggerName}`     | `GET`      |   Returns the logger specified by this name, with information about the configured and effective level |
-| `/loggers/{loggerName}` | `POST`      |    Changes the log level of the specified logger |
+| `/loggers?loggerName={loggerName}`     | `GET`      |   Returns the logger specified by this name, with information about the configured and effective level |
+| `/loggers` | `POST`      |    Changes the log level of the specified logger |
+| `/loggers/levels` | `GET`      |    Get all the available level |
 
 ## Security
 Security of endpoints is important and we do not want to allow unknown people to know (or worse, change!) the log levels of
@@ -35,9 +36,23 @@ Then you can also secure all the endpoints in your application using this config
 ## Example:
 > TODO
 
+## OpenAPI
+
+You can include the Logger UI API in the OpenAPI document (and thus also Swagger UI). This needs to be
+enabled via config:
+
+```
+quarkus.logging-ui.openapi.included=true
+```
+
+This will then add the following to your OpenAPI:
+
+image:openapi.png[link="openapi.png"]
+
 ## Roadmap
+- [ ] Add online log viewer option
 - [ ] Graphical UI to read logger level
-- [ ] OpenApiSpec for the endpoints
+- [x] OpenApiSpec for the endpoints
 - [x] Make endpoint configurable
 - [x] Enable customizable security on the endpoint (see readme file)
 
