@@ -1,0 +1,58 @@
+package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
+
+import java.util.function.BooleanSupplier;
+
+import io.quarkiverse.loggingui.quarkus.logging.ui.LoggerUiRecorder;
+import io.quarkus.deployment.Capabilities;
+import io.quarkus.deployment.Capability;
+import io.quarkus.deployment.annotations.BuildProducer;
+import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.ExecutionTime;
+import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildItem;
+import io.quarkus.vertx.http.deployment.RouteBuildItem;
+import io.vertx.core.Handler;
+import io.vertx.ext.web.RoutingContext;
+
+class LoggingUiProcessor {
+    private static final String FEATURE = "quarkus-logging-ui";
+
+    static class OpenAPIIncluded implements BooleanSupplier {
+        LoggingUiConfig config;
+
+        public boolean getAsBoolean() {
+            return config.openapiIncluded;
+        }
+    }
+
+    @BuildStep
+    FeatureBuildItem feature() {
+        return new FeatureBuildItem(FEATURE);
+    }
+
+    @Record(ExecutionTime.STATIC_INIT)
+    @BuildStep
+    void buildExecutionService(BuildProducer<RouteBuildItem> routeProducer,
+            LoggingUiConfig loggingUiConfig,
+            LoggerUiRecorder recorder) {
+
+        Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
+        Handler<RoutingContext> levelHandler = recorder.levelHandler();
+
+        routeProducer.produce(new RouteBuildItem(loggingUiConfig.basePath, loggerHandler));
+        routeProducer.produce(new RouteBuildItem(loggingUiConfig.basePath + "/levels", levelHandler));
+    }
+
+    @BuildStep(onlyIf = OpenAPIIncluded.class)
+    public void includeInOpenAPIEndpoint(BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer,
+            Capabilities capabilities,
+            LoggingUiConfig loggingUiConfig) {
+
+        // Add to OpenAPI if OpenAPI is available
+        if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI)) {
+            LoggingUiOpenAPIFilter filter = new LoggingUiOpenAPIFilter(loggingUiConfig.basePath);
+            openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter));
+        }
+    }
+}
