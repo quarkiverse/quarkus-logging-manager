@@ -47,7 +47,7 @@ quarkus.logging-ui.openapi.included=true
 
 This will then add the following to your OpenAPI:
 
-image:openapi.png[link="openapi.png"]
+![swagger_ui screenshot](openapi.png "Swagger UI Screenshot")
 
 ## Roadmap
 - [ ] Add online log viewer option
