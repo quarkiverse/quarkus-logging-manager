@@ -3,6 +3,7 @@ package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
 import java.util.function.BooleanSupplier;
 
 import io.quarkiverse.loggingui.quarkus.logging.ui.LoggerUiRecorder;
+import io.quarkiverse.loggingui.quarkus.logging.ui.stream.LogstreamSocket;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -10,7 +11,9 @@ import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildItem;
+import io.quarkus.undertow.websockets.deployment.AnnotatedWebsocketEndpointBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
@@ -54,5 +57,20 @@ class LoggingUiProcessor {
             LoggingUiOpenAPIFilter filter = new LoggingUiOpenAPIFilter(loggingUiConfig.basePath);
             openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter));
         }
+    }
+
+    @BuildStep
+    void registerUiHandler(
+            BuildProducer<AnnotatedWebsocketEndpointBuildItem> annotatedProducer,
+            LaunchModeBuildItem launchMode,
+            LoggingUiConfig loggingUiConfig) throws Exception {
+
+        if (shouldInclude(launchMode, loggingUiConfig)) {
+            annotatedProducer.produce(new AnnotatedWebsocketEndpointBuildItem(LogstreamSocket.class.getName(), false));
+        }
+    }
+
+    private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingUiConfig loggingUiConfig) {
+        return launchMode.getLaunchMode().isDevOrTest() || loggingUiConfig.ui.alwaysInclude;
     }
 }

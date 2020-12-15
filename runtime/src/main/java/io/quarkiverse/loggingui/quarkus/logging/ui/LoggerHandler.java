@@ -4,6 +4,7 @@ import static io.vertx.core.http.HttpMethod.GET;
 import static io.vertx.core.http.HttpMethod.POST;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -93,6 +94,8 @@ public class LoggerHandler implements Handler<RoutingContext> {
                 loggerInfos.add(loggerInfo);
             }
         }
+
+        Collections.sort(loggerInfos);
         return loggerInfos;
     }
 

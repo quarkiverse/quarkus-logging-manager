@@ -1,5 +1,6 @@
 package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
 
+import io.quarkus.runtime.annotations.ConfigDocSection;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
@@ -17,4 +18,11 @@ public class LoggingUiConfig {
      */
     @ConfigItem(name = "openapi.included", defaultValue = "false")
     boolean openapiIncluded;
+
+    /**
+     * UI configuration
+     */
+    @ConfigItem
+    @ConfigDocSection
+    LoggingUiUIConfig ui;
 }

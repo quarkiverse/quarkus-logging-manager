@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Quarkus Log viewer</title>
+
+        <!-- Semantic UI -->
+        <link rel="stylesheet" type="text/css" href="semantic.min.css">
+        <!-- Our own crap -->
+        <link rel="stylesheet" type="text/css" href="style.css">
+
+    </head>
+
+    <body>
+        <!-- Menubar -->
+        <div class="ui fixed inverted icon borderless menu">
+            <div class="header item"><a href=""><img src="logo.png" height="44"></a></div>
+            <a id="menuLevels" class="active item" onclick="showLevels()">Levels</a>
+            <a id="menuLog" class="item" onclick="showLog()">Log</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <a id="menuPlayIcon" class="item" onclick="startLog();">
+                <i class="play icon"></i>
+            </a>
+            <a id="menuStopIcon" class="item" onclick="stopLog();">
+                <i class="stop icon"></i>
+            </a>                    
+            <a id="menuTrashIcon" class="item" onclick="clearScreen();">
+                <i class="trash icon"></i>
+            </a>
+            
+            <div class="right menu">
+                <div class="header item"><h3>Log Manager</h3></div>
+            </div>
+
+        </div>
+
+        <div class="ui main segment" style="padding-top: 50px;">
+            <!-- Levels -->
+            <div id="segmentLevels" class="ui main segment">
+                <table class="ui sortable celled table">
+                    <thead>
+                        <tr>
+                            <th class="sorted descending">Name</th>
+                            <th class="">Level</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyLevels">
+                    
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Log -->
+            <div id="logTerminal" class="ui inverted segment">
+                <samp id="segmentLog">
+                    
+                </samp>
+            </div>
+        </div>
+        
+        <script src="jquery.min.js"></script>
+        <script src="semantic.min.js"></script>
+        <script src="tablesort.js"></script>
+        <script src="loggingui.js"></script>
+
+    </body>
+</html>
