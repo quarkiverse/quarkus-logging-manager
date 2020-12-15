@@ -7,7 +7,7 @@ import io.quarkus.runtime.annotations.ConfigItem;
 public class LoggingUiUIConfig {
 
     /**
-     * The path where GraphQL UI is available.
+     * The path where Logging UI is available.
      * The value `/` is not allowed as it blocks the application from serving anything else.
      */
     @ConfigItem(defaultValue = "/logging-ui")
