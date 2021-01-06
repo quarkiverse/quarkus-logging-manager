@@ -50,8 +50,8 @@ This will then add the following to your OpenAPI:
 ![swagger_ui screenshot](openapi.png "Swagger UI Screenshot")
 
 ## Roadmap
-- [ ] Add online log viewer option
-- [ ] Graphical UI to read logger level
+- [x] Add online log viewer option
+- [x] Graphical UI to read logger level
 - [x] OpenApiSpec for the endpoints
 - [x] Make endpoint configurable
 - [x] Enable customizable security on the endpoint (see readme file)
@@ -66,6 +66,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://github.com/oscarfh"><img src="https://avatars3.githubusercontent.com/u/3311764?v=4" width="100px;" alt=""/><br /><sub><b>oscarfh</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkiverse-logger-ui/commits?author=oscarfh" title="Code">💻</a> <a href="#maintenance-oscarfh" title="Maintenance">🚧</a></td>
+    <td align="center"><a href="https://github.com/phillip-kruger"><img src="https://avatars1.githubusercontent.com/u/6836179?u=8d34b60fb495daf689775b2c12ded76760cdb508&v=4" width="100px;" alt=""/><br /><sub><b>phillip-kruger</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkiverse-logger-ui/commits?author=phillip-kruger" title="Code">💻</a> <a href="#maintenance-phillip-kruger" title="Maintenance">🚧</a></td>
   </tr>
 </table>
 
