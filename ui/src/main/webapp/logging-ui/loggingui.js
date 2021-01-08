@@ -1,6 +1,6 @@
 var webSocket;
 var messages = document.getElementById("messages");
-var loggersUrl = "/loggers"; // TODO: Update this url
+var loggersUrl = "/loggers";
 var tab = "&nbsp;&nbsp;&nbsp;&nbsp";
 var started = false;
 var logScrolling = false;
