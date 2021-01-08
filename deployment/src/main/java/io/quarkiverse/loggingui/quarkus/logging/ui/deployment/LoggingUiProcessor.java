@@ -16,6 +16,7 @@ import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildIte
 import io.quarkus.undertow.websockets.deployment.AnnotatedWebsocketEndpointBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
+import io.quarkus.vertx.http.deployment.devmode.NotFoundPageDisplayableEndpointBuildItem;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
@@ -37,17 +38,25 @@ class LoggingUiProcessor {
 
     @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
-    void buildExecutionService(BuildProducer<RouteBuildItem> routeProducer,
+    void incluceRestEndpoints(BuildProducer<RouteBuildItem> routeProducer,
+            BuildProducer<NotFoundPageDisplayableEndpointBuildItem> displayableEndpoints,
+            NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             LoggingUiConfig loggingUiConfig,
             LoggerUiRecorder recorder) {
 
         Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
         Handler<RoutingContext> levelHandler = recorder.levelHandler();
 
-        routeProducer.produce(new RouteBuildItem.Builder().nonApplicationRoute().route(loggingUiConfig.basePath)
+        String basePath = nonApplicationRootPathBuildItem.adjustPath(loggingUiConfig.basePath);
+
+        routeProducer.produce(new RouteBuildItem.Builder().route(basePath)
                 .handler(loggerHandler).build());
-        routeProducer.produce(new RouteBuildItem.Builder().nonApplicationRoute().route(loggingUiConfig.basePath + "/levels")
+        routeProducer.produce(new RouteBuildItem.Builder().route(basePath + "/levels")
                 .handler(levelHandler).build());
+
+        displayableEndpoints.produce(new NotFoundPageDisplayableEndpointBuildItem(basePath + "/", "All available loggers"));
+        displayableEndpoints
+                .produce(new NotFoundPageDisplayableEndpointBuildItem(basePath + "/levels/", "All available log levels"));
     }
 
     @BuildStep(onlyIf = OpenAPIIncluded.class)
