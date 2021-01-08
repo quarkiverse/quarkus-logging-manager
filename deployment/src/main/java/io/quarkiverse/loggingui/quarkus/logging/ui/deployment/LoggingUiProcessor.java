@@ -14,6 +14,7 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildItem;
 import io.quarkus.undertow.websockets.deployment.AnnotatedWebsocketEndpointBuildItem;
+import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
@@ -43,18 +44,22 @@ class LoggingUiProcessor {
         Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
         Handler<RoutingContext> levelHandler = recorder.levelHandler();
 
-        routeProducer.produce(new RouteBuildItem(loggingUiConfig.basePath, loggerHandler));
-        routeProducer.produce(new RouteBuildItem(loggingUiConfig.basePath + "/levels", levelHandler));
+        routeProducer.produce(new RouteBuildItem.Builder().nonApplicationRoute().route(loggingUiConfig.basePath)
+                .handler(loggerHandler).build());
+        routeProducer.produce(new RouteBuildItem.Builder().nonApplicationRoute().route(loggingUiConfig.basePath + "/levels")
+                .handler(levelHandler).build());
     }
 
     @BuildStep(onlyIf = OpenAPIIncluded.class)
     public void includeInOpenAPIEndpoint(BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer,
+            NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             Capabilities capabilities,
             LoggingUiConfig loggingUiConfig) {
 
         // Add to OpenAPI if OpenAPI is available
         if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI)) {
-            LoggingUiOpenAPIFilter filter = new LoggingUiOpenAPIFilter(loggingUiConfig.basePath);
+            LoggingUiOpenAPIFilter filter = new LoggingUiOpenAPIFilter(
+                    nonApplicationRootPathBuildItem.adjustPath(loggingUiConfig.basePath));
             openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter));
         }
     }
