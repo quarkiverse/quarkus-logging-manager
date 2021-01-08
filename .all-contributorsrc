@@ -14,10 +14,20 @@
         "code",
         "maintenance"
       ]
+    },
+    {
+      "login": "phillip-kruger",
+      "name": "Phillip Krüger",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/6836179?v=4",
+      "profile": "http://www.phillip-kruger.com",
+      "contributions": [
+        "code",
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "projectName": "quarkiverse-logger-ui",
+  "projectName": "quarkiverse-logging-manager",
   "projectOwner": "quarkiverse",
   "repoType": "github",
   "repoHost": "https://github.com",
