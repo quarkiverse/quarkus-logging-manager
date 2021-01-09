@@ -57,7 +57,7 @@ class LoggingUiProcessor {
 
     @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
-    void incluceRestEndpoints(BuildProducer<RouteBuildItem> routeProducer,
+    void includeRestEndpoints(BuildProducer<RouteBuildItem> routeProducer,
             BuildProducer<NotFoundPageDisplayableEndpointBuildItem> displayableEndpoints,
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             LoggingUiConfig loggingUiConfig,
