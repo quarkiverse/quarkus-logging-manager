@@ -2,10 +2,8 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.quarkiverse.loggingui/quarkus-logging-ui?color=cool-green&style=flat-square)](https://mvnrepository.com/artifact/io.quarkiverse.loggingui/quarkus-logging-ui)
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?color=cool-green&style=flat-square)](#contributors-)
 
-This is the alpha version of the Quarkus Logging UI Extension, it provides you endpoints to visualize and manage the
+The Quarkus Logging UI Extension provides you endpoints to visualize and manage the
 log level of your loggers.
-Currently, there is no authentication/authorization mechanisms in place to protect from unauthorized access, in this 
-alpha version you have to protect this endpoint by yourself. 
 
 | Endpoint        | Http Method           | Description  |
 | ------------- |:-------------:|:-----:|
