@@ -25,4 +25,8 @@ public class LoggingUiConfig {
     @ConfigItem
     @ConfigDocSection
     LoggingUiUIConfig ui;
+
+    public LoggingUiUIConfig getUi() {
+        return ui;
+    }
 }

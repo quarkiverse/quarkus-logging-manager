@@ -34,7 +34,7 @@ import io.smallrye.openapi.api.models.responses.APIResponsesImpl;
  * Create OpenAPI entries (if configured)
  */
 public class LoggingUiOpenAPIFilter implements OASFilter {
-    private static final List<String> LOGGING_UI_TAG = Collections.singletonList("Logging UI");
+    public static final List<String> LOGGING_UI_TAG = Collections.singletonList("Logging UI");
     private static final String CONTENT_TYPE = "application/json";
     private static final String REF_LOGGER_INFO = "#/components/schemas/LoggerInfo";
     private static final String REF_LIST_LOGGER_INFO = "#/components/schemas/ListLoggerInfo";

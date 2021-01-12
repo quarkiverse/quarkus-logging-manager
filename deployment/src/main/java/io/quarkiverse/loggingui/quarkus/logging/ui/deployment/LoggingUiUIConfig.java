@@ -19,4 +19,8 @@ public class LoggingUiUIConfig {
      */
     @ConfigItem(defaultValue = "false")
     boolean alwaysInclude;
+
+    public String getRootPath() {
+        return rootPath;
+    }
 }

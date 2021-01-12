@@ -9,7 +9,8 @@
     </parent>
 
     <artifactId>quarkus-logging-ui</artifactId>
-    <name>Quarkus - Logging UI - Runtime</name>
+    <name>Quarkus - Logging UI</name>
+    <description>Provides you endpoints to visualize and manage the log level of your loggers</description>
 
     <properties>
         <fomantic-ui.version>2.8.7</fomantic-ui.version>
