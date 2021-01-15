@@ -87,7 +87,7 @@ class LoggingUiProcessor {
         // Add to OpenAPI if OpenAPI is available
         if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI)) {
             LoggingUiOpenAPIFilter filter = new LoggingUiOpenAPIFilter(
-                    nonApplicationRootPathBuildItem.adjustPath(loggingUiConfig.basePath));
+                    nonApplicationRootPathBuildItem.adjustPath(loggingUiConfig.basePath), loggingUiConfig.openapiTag);
             openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter));
         }
     }

@@ -2,7 +2,6 @@ package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.microprofile.openapi.OASFilter;
@@ -34,16 +33,17 @@ import io.smallrye.openapi.api.models.responses.APIResponsesImpl;
  * Create OpenAPI entries (if configured)
  */
 public class LoggingUiOpenAPIFilter implements OASFilter {
-    private static final List<String> LOGGING_UI_TAG = Collections.singletonList("Loggers");
     private static final String CONTENT_TYPE = "application/json";
     private static final String REF_LOGGER_INFO = "#/components/schemas/LoggerInfo";
     private static final String REF_LIST_LOGGER_INFO = "#/components/schemas/ListLoggerInfo";
     private static final String REF_LIST_STRING = "#/components/schemas/ListString";
 
     private final String basePath;
+    private final String tag;
 
-    public LoggingUiOpenAPIFilter(String basePath) {
+    public LoggingUiOpenAPIFilter(String basePath, String tag) {
         this.basePath = basePath;
+        this.tag = tag;
     }
 
     @Override
@@ -79,8 +79,8 @@ public class LoggingUiOpenAPIFilter implements OASFilter {
     private Operation createLevelsOperation() {
         Operation operation = new OperationImpl();
         operation.setDescription("This returns all possible log levels");
-        operation.setOperationId("loggerui_base_levels");
-        operation.setTags(LOGGING_UI_TAG);
+        operation.setOperationId("logging_manager_levels");
+        operation.setTags(Collections.singletonList(tag));
         operation.setSummary("Get all available levels");
         operation.setResponses(createLevelsAPIResponses());
         return operation;
@@ -123,8 +123,8 @@ public class LoggingUiOpenAPIFilter implements OASFilter {
     private Operation createLoggerPostOperation() {
         Operation operation = new OperationImpl();
         operation.setDescription("Update a log level for a certain logger");
-        operation.setOperationId("loggerui_update");
-        operation.setTags(LOGGING_UI_TAG);
+        operation.setOperationId("logging_manager_update");
+        operation.setTags(Collections.singletonList(tag));
         operation.setSummary("Update log level");
         operation.setResponses(createLoggerPostAPIResponses());
         operation.setRequestBody(createLoggersPostRequestBody());
@@ -164,8 +164,8 @@ public class LoggingUiOpenAPIFilter implements OASFilter {
     private Operation createLoggersOperation() {
         Operation operation = new OperationImpl();
         operation.setDescription("Get information on all loggers or a specific logger.");
-        operation.setOperationId("loggerui_base");
-        operation.setTags(LOGGING_UI_TAG);
+        operation.setOperationId("logging_manager_get_all");
+        operation.setTags(Collections.singletonList(tag));
         operation.setSummary("Information on Logger(s)");
         operation.setResponses(createLoggersAPIResponses());
         operation.addParameter(createLoggersParameter());

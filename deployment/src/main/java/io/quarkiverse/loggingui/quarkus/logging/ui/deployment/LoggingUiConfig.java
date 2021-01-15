@@ -20,6 +20,12 @@ public class LoggingUiConfig {
     boolean openapiIncluded;
 
     /**
+     * The tag to use if OpenAPI is included
+     */
+    @ConfigItem(defaultValue = "Loggers")
+    String openapiTag;
+
+    /**
      * UI configuration
      */
     @ConfigItem
