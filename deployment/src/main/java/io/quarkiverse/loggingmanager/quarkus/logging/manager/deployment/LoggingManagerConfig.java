@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
+package io.quarkiverse.loggingmanager.quarkus.logging.manager.deployment;
 
 import io.quarkus.runtime.annotations.ConfigDocSection;
 import io.quarkus.runtime.annotations.ConfigItem;

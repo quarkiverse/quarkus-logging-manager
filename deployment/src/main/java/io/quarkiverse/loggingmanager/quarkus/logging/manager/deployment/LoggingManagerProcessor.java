@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
+package io.quarkiverse.loggingmanager.quarkus.logging.manager.deployment;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -7,10 +7,9 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-import io.quarkiverse.loggingui.quarkus.logging.ui.LoggerUiRecorder;
-import io.quarkiverse.loggingui.quarkus.logging.ui.LoggingUiRuntimeConfig;
 import io.quarkiverse.loggingui.quarkus.logging.ui.stream.LogstreamSocket;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkiverse.loggingmanager.quarkus.logging.manager.LoggerUiRecorder;
 import io.quarkus.bootstrap.model.AppArtifact;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
@@ -160,7 +159,7 @@ class LoggingUiProcessor {
     void registerLoggingUiHandler(
             BuildProducer<RouteBuildItem> routeProducer,
             LoggerUiRecorder recorder,
-            LoggingUiRuntimeConfig runtimeConfig,
+            LoggingManagerRuntimeConfig runtimeConfig,
             LoggingUiBuildItem loggingUiBuildItem,
             LaunchModeBuildItem launchMode,
             LoggingUiConfig loggingConfig) throws Exception {

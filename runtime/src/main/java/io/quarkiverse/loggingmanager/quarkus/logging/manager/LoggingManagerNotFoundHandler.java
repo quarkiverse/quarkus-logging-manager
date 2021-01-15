@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui;
+package io.quarkiverse.loggingmanager.quarkus.logging.manager;
 
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;

@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui;
+package io.quarkiverse.loggingmanager.quarkus.logging.manager;
 
 import io.quarkus.runtime.annotations.Recorder;
 import io.vertx.core.Handler;
@@ -15,13 +15,13 @@ public class LoggerUiRecorder {
         return new LevelHandler();
     }
 
-    public Handler<RoutingContext> uiHandler(String loggingUiFinalDestination, String loggingUiPath,
-            LoggingUiRuntimeConfig runtimeConfig) {
+    public Handler<RoutingContext> uiHandler(String loggingManagerFinalDestination, String loggingManagerPath,
+            LoggingManagerRuntimeConfig runtimeConfig) {
 
         if (runtimeConfig.enable) {
-            return new LoggingUiStaticHandler(loggingUiFinalDestination, loggingUiPath);
+            return new LoggingManagerStaticHandler(loggingManagerFinalDestination, loggingManagerPath);
         } else {
-            return new LoggingUiNotFoundHandler();
+            return new LoggingManagerNotFoundHandler();
         }
     }
 
