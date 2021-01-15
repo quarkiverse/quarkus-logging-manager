@@ -34,7 +34,29 @@ Then you can also secure all the endpoints in your application using this config
 
 
 ## Example:
-> TODO
+
+To use this in your application, simply add this in your pom.xml:
+
+```xml
+    <dependency>
+        <groupId>io.quarkiverse.loggingui</groupId>
+        <artifactId>quarkus-logging-ui</artifactId>
+        <version>${logger-ui.version}</version>
+        <scope>runtime</scope>
+    </dependency>
+```
+
+Note: Replace `${logger-ui.version}` with the latest version
+
+Then browse to [http://localhost:8080/q/logging-ui/](http://localhost:8080/q/logging-ui/)
+
+View and change log levels:
+
+![logger_ui_levels_screenshot](loglevel.png "Log level Screenshot")
+
+View the log file:
+
+![logger_ui_log_screenshot](logstream.gif "Log stream Screenshot")
 
 ## OpenAPI
 

@@ -21,13 +21,14 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <quarkus.version>1.10.3.Final</quarkus.version>
+        <quarkus.version>1.11.0.Final</quarkus.version>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>
     </properties>
 
     <modules>
         <module>deployment</module>
         <module>runtime</module>
+        <module>ui</module>
     </modules>
     
     <dependencyManagement>

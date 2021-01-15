@@ -15,4 +15,14 @@ public class LoggerUiRecorder {
         return new LevelHandler();
     }
 
+    public Handler<RoutingContext> uiHandler(String loggingUiFinalDestination, String loggingUiPath,
+            LoggingUiRuntimeConfig runtimeConfig) {
+
+        if (runtimeConfig.enable) {
+            return new LoggingUiStaticHandler(loggingUiFinalDestination, loggingUiPath);
+        } else {
+            return new LoggingUiNotFoundHandler();
+        }
+    }
+
 }

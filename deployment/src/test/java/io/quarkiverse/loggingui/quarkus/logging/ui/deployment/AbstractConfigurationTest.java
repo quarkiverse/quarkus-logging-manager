@@ -15,6 +15,7 @@ import io.restassured.RestAssured;
 class AbstractConfigurationTest {
 
     void getEndpointLoggers(String path) {
+        path = toNonApplicationPath(path);
         // Without trailing /
         List<Map<String, String>> response = RestAssured.when().get(path).then().statusCode(200)
                 .body(notNullValue())
@@ -33,6 +34,7 @@ class AbstractConfigurationTest {
     }
 
     void getEndpointLevels(String path) {
+        path = toNonApplicationPath(path);
         // Without trailing /
         List<String> levels = RestAssured.when().get(path + "/levels").then().statusCode(200)
                 .body(notNullValue())
@@ -51,18 +53,21 @@ class AbstractConfigurationTest {
     }
 
     void getEndpointListSpecificLogger(String path) {
+        path = toNonApplicationPath(path);
         String loggerName = "io.quarkus";
         Map<String, Object> response = performGetRequest(path, loggerName);
         checkGetResponse(response, loggerName);
     }
 
     void getEndpointListROOTLogger(String path) {
+        path = toNonApplicationPath(path);
         String loggerName = "ROOT";
         Map<String, Object> response = performGetRequest(path, loggerName);
         checkGetResponse(response, loggerName);
     }
 
     void postEndpointSetsLogLevel(String path) {
+        path = toNonApplicationPath(path);
         String loggerName = "ROOT";
         String newLogLevel = "TRACE";
         Map<String, Object> response = performGetRequest(path, loggerName);
@@ -76,6 +81,7 @@ class AbstractConfigurationTest {
     }
 
     void postEndpointSetsLogLevelAlsoInLowerCase(String path) {
+        path = toNonApplicationPath(path);
         String loggerName = "io.quarkus.loggers";
         String newLogLevel = "trace";
         Map<String, Object> response = performGetRequest(path, loggerName);
@@ -89,6 +95,7 @@ class AbstractConfigurationTest {
     }
 
     void postEndpointFailsOnUnknownLogLevel(String path) {
+        path = toNonApplicationPath(path);
         String loggerName = "ROOT";
         String newLogLevel = "non-existing";
         performPostRequest(path, loggerName, newLogLevel, 400);
@@ -122,6 +129,10 @@ class AbstractConfigurationTest {
                 .when()
                 .post(path)
                 .then().statusCode(expectedStatusCode);
+    }
+
+    private String toNonApplicationPath(String path) {
+        return "/q" + path;
     }
 
     // TODO:
