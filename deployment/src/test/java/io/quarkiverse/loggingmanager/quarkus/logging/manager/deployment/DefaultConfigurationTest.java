@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
+package io.quarkiverse.loggingmanager.quarkus.logging.manager.deployment;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;

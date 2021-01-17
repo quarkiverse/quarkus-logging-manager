@@ -8,10 +8,10 @@
         <version>5</version>
     </parent>
 
-    <groupId>io.quarkiverse.loggingui</groupId>
-    <artifactId>quarkus-logging-ui-parent</artifactId>
+    <groupId>io.quarkiverse.loggingmanager</groupId>
+    <artifactId>quarkus-logging-manager-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Quarkus - Logging UI - Parent</name>
+    <name>Quarkus - Logging Manager - Parent</name>
 
     <packaging>pom</packaging>
 

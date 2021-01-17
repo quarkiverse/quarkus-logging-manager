@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui.stream;
+package io.quarkiverse.loggingmanager.stream;
 
 import java.io.IOException;
 import java.io.PrintWriter;

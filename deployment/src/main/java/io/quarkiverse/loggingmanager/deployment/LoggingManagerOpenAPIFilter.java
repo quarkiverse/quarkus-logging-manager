@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingmanager.quarkus.logging.manager.deployment;
+package io.quarkiverse.loggingmanager.deployment;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +32,7 @@ import io.smallrye.openapi.api.models.responses.APIResponsesImpl;
 /**
  * Create OpenAPI entries (if configured)
  */
-public class LoggingUiOpenAPIFilter implements OASFilter {
+public class LoggingManagerOpenAPIFilter implements OASFilter {
     private static final String CONTENT_TYPE = "application/json";
     private static final String REF_LOGGER_INFO = "#/components/schemas/LoggerInfo";
     private static final String REF_LIST_LOGGER_INFO = "#/components/schemas/ListLoggerInfo";
@@ -41,7 +41,7 @@ public class LoggingUiOpenAPIFilter implements OASFilter {
     private final String basePath;
     private final String tag;
 
-    public LoggingUiOpenAPIFilter(String basePath, String tag) {
+    public LoggingManagerOpenAPIFilter(String basePath, String tag) {
         this.basePath = basePath;
         this.tag = tag;
     }
@@ -112,7 +112,7 @@ public class LoggingUiOpenAPIFilter implements OASFilter {
 
     private PathItem createLoggersPathItem() {
         PathItem pathItem = new PathItemImpl();
-        pathItem.setDescription("Logging UI Loggers");
+        pathItem.setDescription("Logging Manager Loggers");
         pathItem.setSummary(
                 "Return info on all loggers, or a specific logger");
         pathItem.setGET(createLoggersOperation());

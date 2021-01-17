@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui.stream;
+package io.quarkiverse.loggingmanager.stream;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
@@ -6,7 +6,7 @@ import java.util.logging.LogRecord;
 import io.vertx.core.http.ServerWebSocket;
 
 /**
- * Log handler for Logger UI
+ * Log handler for Logger Manager
  */
 public class JsonHandler extends Handler {
 

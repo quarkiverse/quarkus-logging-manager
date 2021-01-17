@@ -15,7 +15,7 @@ env:
   # Repo specific setting #
   #########################
 
-  ECOSYSTEM_CI_REPO_PATH: quarkiverse-logging-ui
+  ECOSYSTEM_CI_REPO_PATH: quarkiverse-logging-manager
 jobs:
   build:
     name: "Build against latest Quarkus snapshot"

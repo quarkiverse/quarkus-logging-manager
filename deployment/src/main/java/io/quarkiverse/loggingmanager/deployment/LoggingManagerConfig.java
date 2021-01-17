@@ -1,11 +1,11 @@
-package io.quarkiverse.loggingmanager.quarkus.logging.manager.deployment;
+package io.quarkiverse.loggingmanager.deployment;
 
 import io.quarkus.runtime.annotations.ConfigDocSection;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
 @ConfigRoot
-public class LoggingUiConfig {
+public class LoggingManagerConfig {
 
     /**
      * The base path, defaults to /loggers
@@ -14,7 +14,7 @@ public class LoggingUiConfig {
     String basePath;
 
     /**
-     * Whether or not to include the Logger UI endpoints in the generated OpenAPI document
+     * Whether or not to include the Logger Manager endpoints in the generated OpenAPI document
      */
     @ConfigItem(name = "openapi.included", defaultValue = "false")
     boolean openapiIncluded;
@@ -30,5 +30,5 @@ public class LoggingUiConfig {
      */
     @ConfigItem
     @ConfigDocSection
-    LoggingUiUIConfig ui;
+    LoggingManagerUIConfig ui;
 }

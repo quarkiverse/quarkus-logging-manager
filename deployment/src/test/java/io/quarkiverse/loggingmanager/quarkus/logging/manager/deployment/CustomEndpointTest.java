@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
+package io.quarkiverse.loggingmanager.quarkus.logging.manager.deployment;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -11,7 +11,7 @@ class CustomEndpointTest extends AbstractConfigurationTest {
 
     @RegisterExtension
     static final QuarkusUnitTest config = new QuarkusUnitTest()
-            .overrideConfigKey("quarkus.logging-ui.base-path", PATH);
+            .overrideConfigKey("quarkus.logging-manager.base-path", PATH);
 
     @Test
     public void getEndpointLoggers() {

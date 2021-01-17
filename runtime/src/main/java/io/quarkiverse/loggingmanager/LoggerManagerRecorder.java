@@ -1,11 +1,11 @@
-package io.quarkiverse.loggingmanager.quarkus.logging.manager;
+package io.quarkiverse.loggingmanager;
 
 import io.quarkus.runtime.annotations.Recorder;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
 @Recorder
-public class LoggerUiRecorder {
+public class LoggerManagerRecorder {
 
     public Handler<RoutingContext> loggerHandler() {
         return new LoggerHandler();

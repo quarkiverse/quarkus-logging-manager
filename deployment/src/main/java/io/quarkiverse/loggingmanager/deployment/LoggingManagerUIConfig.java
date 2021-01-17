@@ -1,16 +1,16 @@
-package io.quarkiverse.loggingmanager.quarkus.logging.manager.deployment;
+package io.quarkiverse.loggingmanager.deployment;
 
 import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigItem;
 
 @ConfigGroup
-public class LoggingUiUIConfig {
+public class LoggingManagerUIConfig {
 
     /**
-     * The path where Logging UI is available.
+     * The path where Logging Manager is available.
      * The value `/` is not allowed as it blocks the application from serving anything else.
      */
-    @ConfigItem(defaultValue = "/logging-ui")
+    @ConfigItem(defaultValue = "/logging-manager")
     String rootPath;
 
     /**
