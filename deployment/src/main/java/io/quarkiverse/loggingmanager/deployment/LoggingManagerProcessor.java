@@ -33,7 +33,7 @@ import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
 class LoggingManagerProcessor {
-    private static final String FEATURE = "quarkus-logging-manager";
+    private static final String FEATURE = "logging-manager";
 
     // For the UI
     private static final String UI_WEBJAR_GROUP_ID = "io.quarkiverse.loggingmanager";
