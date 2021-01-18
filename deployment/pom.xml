@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.quarkiverse.loggingmanager</groupId>
-        <artifactId>quarkiverse-logging-manager-parent</artifactId>
+        <artifactId>quarkus-logging-manager-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>quarkiverse-logging-manager-deployment</artifactId>
+    <artifactId>quarkus-logging-manager-deployment</artifactId>
     <name>Quarkus - Logging Manager - Deployment</name>
 
     <properties>
@@ -23,13 +23,13 @@
         
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>quarkiverse-logging-manager</artifactId>
+            <artifactId>quarkus-logging-manager</artifactId>
             <version>${project.version}</version>
         </dependency>
         
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>quarkiverse-logging-manager-ui</artifactId>
+            <artifactId>quarkus-logging-manager-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
         

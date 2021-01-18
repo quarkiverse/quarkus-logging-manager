@@ -1,5 +1,5 @@
 # Logging Manager Extension 
-[![Maven Central](https://img.shields.io/maven-central/v/io.quarkiverse.loggingmanager/quarkiverse-logging-manager?color=cool-green&style=flat-square)](https://mvnrepository.com/artifact/io.quarkiverse.loggingmanager/quarkiverse-logging-manager)
+[![Maven Central](https://img.shields.io/maven-central/v/io.quarkiverse.loggingmanager/quarkus-logging-manager?color=cool-green&style=flat-square)](https://mvnrepository.com/artifact/io.quarkiverse.loggingmanager/quarkus-logging-manager)
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?color=cool-green&style=flat-square)](#contributors-)
 
 The **Quarkus Logging Manager** Extension provides you endpoints to visualize and manage the
@@ -38,7 +38,7 @@ To use this in your application, simply add this in your pom.xml:
 ```xml
     <dependency>
         <groupId>io.quarkiverse.loggingmanager</groupId>
-        <artifactId>quarkiverse-logging-manager</artifactId>
+        <artifactId>quarkus-logging-manager</artifactId>
         <version>${logger-manager.version}</version>
         <scope>runtime</scope>
     </dependency>

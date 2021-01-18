@@ -4,13 +4,13 @@
     
     <parent>
         <groupId>io.quarkiverse.loggingmanager</groupId>
-        <artifactId>quarkiverse-logging-manager-parent</artifactId>
+        <artifactId>quarkus-logging-manager-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
     
-    <artifactId>quarkiverse-logging-manager-ui</artifactId>
+    <artifactId>quarkus-logging-manager-ui</artifactId>
     <name>Quarkus - Logging Manager - UI</name>
     
     <properties>
