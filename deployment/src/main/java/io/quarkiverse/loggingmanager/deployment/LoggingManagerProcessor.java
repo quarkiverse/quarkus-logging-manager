@@ -37,7 +37,7 @@ class LoggingManagerProcessor {
 
     // For the UI
     private static final String UI_WEBJAR_GROUP_ID = "io.quarkiverse.loggingmanager";
-    private static final String UI_WEBJAR_ARTIFACT_ID = "quarkus-logging-manager-ui";
+    private static final String UI_WEBJAR_ARTIFACT_ID = "quarkiverse-logging-manager-ui";
     private static final String UI_WEBJAR_PREFIX = "META-INF/resources/logging-manager/";
     private static final String UI_FINAL_DESTINATION = "META-INF/logging-manager-files";
     private static final String FILE_TO_UPDATE = "loggingmanager.js";
