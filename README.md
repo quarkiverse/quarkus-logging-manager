@@ -1,5 +1,5 @@
-# Logging UI Extension 
-[![Maven Central](https://img.shields.io/maven-central/v/io.quarkiverse.loggingui/quarkus-logging-ui?color=cool-green&style=flat-square)](https://mvnrepository.com/artifact/io.quarkiverse.loggingui/quarkus-logging-ui)
+# Logging Manager Extension 
+[![Maven Central](https://img.shields.io/maven-central/v/io.quarkiverse.loggingmanager/quarkus-logging-manager?color=cool-green&style=flat-square)](https://mvnrepository.com/artifact/io.quarkiverse.loggingmanager/quarkus-logging-manager)
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?color=cool-green&style=flat-square)](#contributors-)
 
 The **Quarkus Logging Manager** Extension provides you endpoints to visualize and manage the
@@ -37,37 +37,37 @@ To use this in your application, simply add this in your pom.xml:
 
 ```xml
     <dependency>
-        <groupId>io.quarkiverse.loggingui</groupId>
-        <artifactId>quarkus-logging-ui</artifactId>
-        <version>${logger-ui.version}</version>
+        <groupId>io.quarkiverse.loggingmanager</groupId>
+        <artifactId>quarkus-logging-manager</artifactId>
+        <version>${logger-manager.version}</version>
         <scope>runtime</scope>
     </dependency>
 ```
 
-Note: Replace `${logger-ui.version}` with the latest version
+Note: Replace `${logger-manager.version}` with the latest version
 
-Then browse to [http://localhost:8080/q/logging-ui/](http://localhost:8080/q/logging-ui/)
+Then browse to [http://localhost:8080/q/logging-manager/](http://localhost:8080/q/logging-manager/)
 
 View and change log levels:
 
-![logger_ui_levels_screenshot](loglevel.png "Log level Screenshot")
+![logger_manager_levels_screenshot](loglevel.png "Log level Screenshot")
 
 View the log file:
 
-![logger_ui_log_screenshot](logstream.gif "Log stream Screenshot")
+![logger_manager_log_screenshot](logstream.gif "Log stream Screenshot")
 
 ## OpenAPI
 
-You can include the Logger UI API in the OpenAPI document (and thus also Swagger UI). This needs to be
+You can include the Logger Manager API in the OpenAPI document (and thus also Swagger UI). This needs to be
 enabled via config:
 
 ```
-quarkus.logging-ui.openapi.included=true
+quarkus.logging-manager.openapi.included=true
 ```
 
 This will then add the following to your OpenAPI:
 
-![swagger_ui screenshot](openapi.png "Swagger UI Screenshot")
+![swagger_manager screenshot](openapi.png "Swagger UI Screenshot")
 
 ## Roadmap
 - [x] Add online log viewer option

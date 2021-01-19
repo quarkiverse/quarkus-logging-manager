@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui;
+package io.quarkiverse.loggingmanager;
 
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
@@ -6,7 +6,7 @@ import io.vertx.ext.web.RoutingContext;
 /**
  * Handling static when disabled
  */
-public class LoggingUiNotFoundHandler implements Handler<RoutingContext> {
+public class LoggingManagerNotFoundHandler implements Handler<RoutingContext> {
 
     @Override
     public void handle(RoutingContext event) {

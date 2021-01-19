@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui.stream;
+package io.quarkiverse.loggingmanager.stream;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;

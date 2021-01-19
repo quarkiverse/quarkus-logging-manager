@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui;
+package io.quarkiverse.loggingmanager;
 
 import static io.vertx.core.http.HttpMethod.GET;
 import static io.vertx.core.http.HttpMethod.POST;

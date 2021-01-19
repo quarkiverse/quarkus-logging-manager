@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
+package io.quarkiverse.loggingmanager.deployment;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;

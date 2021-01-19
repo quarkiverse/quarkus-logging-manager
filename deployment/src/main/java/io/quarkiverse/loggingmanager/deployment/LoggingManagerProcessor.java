@@ -1,4 +1,4 @@
-package io.quarkiverse.loggingui.quarkus.logging.ui.deployment;
+package io.quarkiverse.loggingmanager.deployment;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -7,9 +7,9 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-import io.quarkiverse.loggingui.quarkus.logging.ui.LoggerUiRecorder;
-import io.quarkiverse.loggingui.quarkus.logging.ui.LoggingUiRuntimeConfig;
-import io.quarkiverse.loggingui.quarkus.logging.ui.stream.LogstreamSocket;
+import io.quarkiverse.loggingmanager.LoggerManagerRecorder;
+import io.quarkiverse.loggingmanager.LoggingManagerRuntimeConfig;
+import io.quarkiverse.loggingmanager.stream.LogstreamSocket;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.bootstrap.model.AppArtifact;
 import io.quarkus.deployment.Capabilities;
@@ -32,18 +32,18 @@ import io.quarkus.vertx.http.deployment.devmode.NotFoundPageDisplayableEndpointB
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
-class LoggingUiProcessor {
-    private static final String FEATURE = "quarkus-logging-ui";
+class LoggingManagerProcessor {
+    private static final String FEATURE = "logging-manager";
 
     // For the UI
-    private static final String UI_WEBJAR_GROUP_ID = "io.quarkiverse.loggingui";
-    private static final String UI_WEBJAR_ARTIFACT_ID = "quarkus-logging-ui-ui";
-    private static final String UI_WEBJAR_PREFIX = "META-INF/resources/logging-ui/";
-    private static final String UI_FINAL_DESTINATION = "META-INF/logging-ui-files";
-    private static final String FILE_TO_UPDATE = "loggingui.js";
+    private static final String UI_WEBJAR_GROUP_ID = "io.quarkiverse.loggingmanager";
+    private static final String UI_WEBJAR_ARTIFACT_ID = "quarkus-logging-manager-ui";
+    private static final String UI_WEBJAR_PREFIX = "META-INF/resources/logging-manager/";
+    private static final String UI_FINAL_DESTINATION = "META-INF/logging-manager-files";
+    private static final String FILE_TO_UPDATE = "loggingmanager.js";
 
     static class OpenAPIIncluded implements BooleanSupplier {
-        LoggingUiConfig config;
+        LoggingManagerConfig config;
 
         public boolean getAsBoolean() {
             return config.openapiIncluded;
@@ -60,13 +60,13 @@ class LoggingUiProcessor {
     void includeRestEndpoints(BuildProducer<RouteBuildItem> routeProducer,
             BuildProducer<NotFoundPageDisplayableEndpointBuildItem> displayableEndpoints,
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
-            LoggingUiConfig loggingUiConfig,
-            LoggerUiRecorder recorder) {
+            LoggingManagerConfig loggingManagerConfig,
+            LoggerManagerRecorder recorder) {
 
         Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
         Handler<RoutingContext> levelHandler = recorder.levelHandler();
 
-        String basePath = nonApplicationRootPathBuildItem.adjustPath(loggingUiConfig.basePath);
+        String basePath = nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.basePath);
 
         routeProducer.produce(new RouteBuildItem.Builder().route(basePath)
                 .handler(loggerHandler).build());
@@ -82,39 +82,39 @@ class LoggingUiProcessor {
     public void includeInOpenAPIEndpoint(BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer,
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             Capabilities capabilities,
-            LoggingUiConfig loggingUiConfig) {
+            LoggingManagerConfig loggingManagerConfig) {
 
         // Add to OpenAPI if OpenAPI is available
         if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI)) {
-            LoggingUiOpenAPIFilter filter = new LoggingUiOpenAPIFilter(
-                    nonApplicationRootPathBuildItem.adjustPath(loggingUiConfig.basePath), loggingUiConfig.openapiTag);
+            LoggingManagerOpenAPIFilter filter = new LoggingManagerOpenAPIFilter(
+                    nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.basePath), loggingManagerConfig.openapiTag);
             openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter));
         }
     }
 
     @BuildStep
-    void registerUiExtension(
+    void registerManagerExtension(
             BuildProducer<AdditionalBeanBuildItem> annotatedProducer,
             BuildProducer<NotFoundPageDisplayableEndpointBuildItem> notFoundPageDisplayableEndpointProducer,
             BuildProducer<GeneratedResourceBuildItem> generatedResourceProducer,
             BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer,
-            BuildProducer<LoggingUiBuildItem> loggingUiBuildProducer,
+            BuildProducer<LoggingManagerBuildItem> loggingManagerBuildProducer,
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             CurateOutcomeBuildItem curateOutcomeBuildItem,
             LaunchModeBuildItem launchMode,
-            LoggingUiConfig loggingUiConfig) throws Exception {
+            LoggingManagerConfig loggingManagerConfig) throws Exception {
 
-        if (shouldInclude(launchMode, loggingUiConfig)) {
+        if (shouldInclude(launchMode, loggingManagerConfig)) {
             // Make sure the WebSocket gets included.
             annotatedProducer.produce(AdditionalBeanBuildItem.unremovableOf(LogstreamSocket.class));
 
             // Add the UI
-            if ("/".equals(loggingUiConfig.ui.rootPath)) {
+            if ("/".equals(loggingManagerConfig.ui.rootPath)) {
                 throw new ConfigurationError(
-                        "quarkus.logging-ui.ui.root-path was set to \"/\", this is not allowed as it blocks the application from serving anything else.");
+                        "quarkus.logging-manager.ui.root-path was set to \"/\", this is not allowed as it blocks the application from serving anything else.");
             }
 
-            String loggersPath = nonApplicationRootPathBuildItem.adjustPath(loggingUiConfig.basePath);
+            String loggersPath = nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.basePath);
 
             AppArtifact artifact = WebJarUtil.getAppArtifact(curateOutcomeBuildItem, UI_WEBJAR_GROUP_ID,
                     UI_WEBJAR_ARTIFACT_ID);
@@ -124,13 +124,14 @@ class LoggingUiProcessor {
                         UI_WEBJAR_PREFIX);
                 updateApiUrl(tempPath.resolve(FILE_TO_UPDATE), loggersPath);
 
-                loggingUiBuildProducer
-                        .produce(new LoggingUiBuildItem(tempPath.toAbsolutePath().toString(), loggingUiConfig.ui.rootPath));
+                loggingManagerBuildProducer
+                        .produce(new LoggingManagerBuildItem(tempPath.toAbsolutePath().toString(),
+                                loggingManagerConfig.ui.rootPath));
 
                 notFoundPageDisplayableEndpointProducer
                         .produce(new NotFoundPageDisplayableEndpointBuildItem(
                                 nonApplicationRootPathBuildItem
-                                        .adjustPath(loggingUiConfig.ui.rootPath + "/"),
+                                        .adjustPath(loggingManagerConfig.ui.rootPath + "/"),
                                 "Quarkus Log viewer"));
             } else {
                 Map<String, byte[]> files = WebJarUtil.copyResourcesForProduction(curateOutcomeBuildItem, artifact,
@@ -150,24 +151,25 @@ class LoggingUiProcessor {
                     nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(fileName));
                 }
 
-                loggingUiBuildProducer.produce(new LoggingUiBuildItem(UI_FINAL_DESTINATION, loggingUiConfig.ui.rootPath));
+                loggingManagerBuildProducer
+                        .produce(new LoggingManagerBuildItem(UI_FINAL_DESTINATION, loggingManagerConfig.ui.rootPath));
             }
         }
     }
 
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
-    void registerLoggingUiHandler(
+    void registerLoggingManagerHandler(
             BuildProducer<RouteBuildItem> routeProducer,
-            LoggerUiRecorder recorder,
-            LoggingUiRuntimeConfig runtimeConfig,
-            LoggingUiBuildItem loggingUiBuildItem,
+            LoggerManagerRecorder recorder,
+            LoggingManagerRuntimeConfig runtimeConfig,
+            LoggingManagerBuildItem loggingManagerBuildItem,
             LaunchModeBuildItem launchMode,
-            LoggingUiConfig loggingConfig) throws Exception {
+            LoggingManagerConfig loggingConfig) throws Exception {
 
         if (shouldInclude(launchMode, loggingConfig)) {
-            Handler<RoutingContext> handler = recorder.uiHandler(loggingUiBuildItem.getLoggingUiFinalDestination(),
-                    loggingUiBuildItem.getLoggingUiPath(), runtimeConfig);
+            Handler<RoutingContext> handler = recorder.uiHandler(loggingManagerBuildItem.getLoggingManagerFinalDestination(),
+                    loggingManagerBuildItem.getLoggingManagerPath(), runtimeConfig);
             routeProducer.produce(new RouteBuildItem.Builder()
                     .route(loggingConfig.ui.rootPath)
                     .handler(handler)
@@ -181,11 +183,11 @@ class LoggingUiProcessor {
         }
     }
 
-    private void updateApiUrl(Path loggingUiJs, String loggingPath) throws IOException {
-        String content = new String(Files.readAllBytes(loggingUiJs), StandardCharsets.UTF_8);
+    private void updateApiUrl(Path loggingManagerJs, String loggingPath) throws IOException {
+        String content = new String(Files.readAllBytes(loggingManagerJs), StandardCharsets.UTF_8);
         String result = updateApiUrl(content, loggingPath);
         if (result != null) {
-            Files.write(loggingUiJs, result.getBytes(StandardCharsets.UTF_8));
+            Files.write(loggingManagerJs, result.getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -193,7 +195,7 @@ class LoggingUiProcessor {
         return original.replace("loggersUrl = \"/loggers\";", "loggersUrl = \"" + healthPath + "\";");
     }
 
-    private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingUiConfig loggingUiConfig) {
-        return launchMode.getLaunchMode().isDevOrTest() || loggingUiConfig.ui.alwaysInclude;
+    private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {
+        return launchMode.getLaunchMode().isDevOrTest() || loggingManagerConfig.ui.alwaysInclude;
     }
 }
