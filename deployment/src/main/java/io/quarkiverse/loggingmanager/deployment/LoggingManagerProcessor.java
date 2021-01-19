@@ -7,10 +7,10 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
-import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkiverse.loggingmanager.LoggerManagerRecorder;
 import io.quarkiverse.loggingmanager.LoggingManagerRuntimeConfig;
 import io.quarkiverse.loggingmanager.stream.LogstreamSocket;
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.bootstrap.model.AppArtifact;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
