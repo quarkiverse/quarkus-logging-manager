@@ -1,43 +1,76 @@
 package io.quarkiverse.loggingui.quarkus.logging.ui.stream;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.MemoryHandler;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import javax.enterprise.event.Observes;
 
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.quarkus.arc.Unremovable;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.http.ServerWebSocket;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 
 /**
  * Websocket server that can distribute log messages.
  * If there is no subscribers, the logging fall back to normal file.
  */
 @Unremovable
-@ServerEndpoint("/logstream")
 @ApplicationScoped
 public class LogstreamSocket {
 
-    @OnOpen
-    public void onOpen(Session session) {
+    private static final Logger log = Logger.getLogger(LogstreamSocket.class.getName());
 
+    void setup(@Observes Router router) {
+        router.route("/logstream").handler(new io.vertx.core.Handler<RoutingContext>() {
+            @Override
+            public void handle(RoutingContext event) {
+                if ("websocket".equalsIgnoreCase(event.request().getHeader(HttpHeaderNames.UPGRADE))) {
+                    event.request().toWebSocket(new io.vertx.core.Handler<AsyncResult<ServerWebSocket>>() {
+                        @Override
+                        public void handle(AsyncResult<ServerWebSocket> event) {
+                            if (event.succeeded()) {
+                                ServerWebSocket socket = event.result();
+                                SessionState state = new SessionState();
+                                state.handler = new MemoryHandler(new JsonHandler(socket), 1000, Level.FINEST);
+                                state.session = socket;
+                                socket.closeHandler(new io.vertx.core.Handler<Void>() {
+                                    @Override
+                                    public void handle(Void event) {
+                                        stop(state);
+                                    }
+                                });
+                                socket.textMessageHandler(new io.vertx.core.Handler<String>() {
+                                    @Override
+                                    public void handle(String event) {
+                                        onMessage(event, state);
+                                    }
+                                });
+
+                            } else {
+                                log.log(Level.SEVERE, "Failed to connect to log server", event.cause());
+                            }
+
+                        }
+                    });
+                } else {
+                    event.next();
+                }
+            }
+        });
     }
 
-    @OnClose
-    public void onClose(Session session) {
-        stop(session);
+    static class SessionState {
+        ServerWebSocket session;
+        Handler handler;
+        boolean started;
     }
 
-    @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, SessionState session) {
         if (message != null && !message.isEmpty()) {
             if (message.equalsIgnoreCase(START)) {
                 start(session);
@@ -47,70 +80,33 @@ public class LogstreamSocket {
         }
     }
 
-    private void start(Session session) {
-        String uuid = getUuid(session);
-        if (uuid == null) {
-            uuid = UUID.randomUUID().toString();
-            registerHandler(session, uuid);
-            SESSIONS.put(session.getId(), session);
+    private void start(SessionState session) {
+        if (!session.started) {
+            registerHandler(session.handler);
+            session.started = true;
         }
     }
 
-    private void stop(Session session) {
-        String name = getUuid(session);
-        if (name != null) {
-            unregisterHandler(session);
-            SESSIONS.remove(session.getId());
-        }
+    private void stop(SessionState session) {
+        unregisterHandler(session.handler);
+        session.started = false;
     }
 
-    private void registerHandler(Session session, String uuid) {
-
-        Handler handler = new MemoryHandler(new JsonHandler(session), 1000, Level.FINEST);
-
+    private void registerHandler(Handler handler) {
         Logger logger = Logger.getLogger("");
         if (logger != null) {
             logger.addHandler(handler);
-
-            session.getUserProperties().put(HANDLER, handler);
-            session.getUserProperties().put(ID, uuid);
         }
     }
 
-    private void unregisterHandler(Session session) {
-        Handler handler = getHandler(session);
+    private void unregisterHandler(Handler handler) {
         if (handler != null) {
             Logger logger = Logger.getLogger("");
             if (logger != null)
                 logger.removeHandler(handler);
         }
-
-        session.getUserProperties().remove(ID);
-        session.getUserProperties().remove(HANDLER);
     }
-
-    private Handler getHandler(Session session) {
-        Object o = session.getUserProperties().get(HANDLER);
-        if (o != null) {
-            return (Handler) o;
-        }
-        return null;
-    }
-
-    private String getUuid(Session session) {
-        Object o = session.getUserProperties().get(ID);
-        if (o == null)
-            return null;
-        return (String) o;
-    }
-
-    private static final String ID = "uuid";
-    private static final String HANDLER = "handler";
 
     private static final String START = "start";
     private static final String STOP = "stop";
-    private static final String LOGGER_NAME = "loggerName";
-
-    private static final String DOT = ".";
-    private static final Map<String, Session> SESSIONS = new ConcurrentHashMap<>();
 }

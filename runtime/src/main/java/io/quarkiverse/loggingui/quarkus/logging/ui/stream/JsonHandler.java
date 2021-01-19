@@ -1,19 +1,18 @@
 package io.quarkiverse.loggingui.quarkus.logging.ui.stream;
 
-import java.io.IOException;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import javax.websocket.Session;
+import io.vertx.core.http.ServerWebSocket;
 
 /**
  * Log handler for Logger UI
  */
 public class JsonHandler extends Handler {
 
-    private final Session session;
+    private final ServerWebSocket session;
 
-    public JsonHandler(Session session) {
+    public JsonHandler(ServerWebSocket session) {
         this.session = session;
         setFormatter(new JsonFormatter());
     }
@@ -23,12 +22,9 @@ public class JsonHandler extends Handler {
         if (session != null) {
             String message = getFormatter().format(logRecord);
             try {
-                session.getBasicRemote().sendText(message);
+                session.writeTextMessage(message);
             } catch (Throwable ex) {
-                try {
-                    session.close();
-                } catch (IOException ex1) {
-                }
+                session.close();
             }
         }
     }
