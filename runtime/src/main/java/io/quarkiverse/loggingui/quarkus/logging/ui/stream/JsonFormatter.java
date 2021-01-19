@@ -5,8 +5,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -15,13 +13,16 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
 
+import org.jboss.logmanager.ExtFormatter;
+import org.jboss.logmanager.ExtLogRecord;
+
 /**
  * Formatting log records into a json format
  */
-public class JsonFormatter extends Formatter {
+public class JsonFormatter extends ExtFormatter {
 
     @Override
-    public String format(final LogRecord logRecord) {
+    public String format(final ExtLogRecord logRecord) {
         try (StringWriter stringWriter = new StringWriter();
                 JsonWriter jsonWriter = Json.createWriter(stringWriter)) {
 
@@ -32,7 +33,7 @@ public class JsonFormatter extends Formatter {
         }
     }
 
-    private JsonObject toJsonObject(LogRecord logRecord) {
+    private JsonObject toJsonObject(ExtLogRecord logRecord) {
         String formattedMessage = formatMessage(logRecord);
         JsonObjectBuilder builder = Json.createObjectBuilder();
         if (logRecord.getLoggerName() != null) {

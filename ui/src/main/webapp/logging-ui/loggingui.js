@@ -136,7 +136,7 @@ function openSocket() {
                 + getLevelText(level) + tab 
                 + getClassName(json.sourceClassNameFull, json.sourceClassNameFullShort, json.sourceMethodName) + tab
                 + getThread(json.threadName,json.threadId) + tab
-                + json.message + "</br>");
+                + json.formattedMessage + "</br>");
                             
 
         if (json.stacktrace) {

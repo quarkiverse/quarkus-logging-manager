@@ -10,6 +10,7 @@ import java.util.function.BooleanSupplier;
 import io.quarkiverse.loggingui.quarkus.logging.ui.LoggerUiRecorder;
 import io.quarkiverse.loggingui.quarkus.logging.ui.LoggingUiRuntimeConfig;
 import io.quarkiverse.loggingui.quarkus.logging.ui.stream.LogstreamSocket;
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.bootstrap.model.AppArtifact;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
@@ -25,7 +26,6 @@ import io.quarkus.deployment.configuration.ConfigurationError;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.deployment.util.WebJarUtil;
 import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildItem;
-import io.quarkus.undertow.websockets.deployment.AnnotatedWebsocketEndpointBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import io.quarkus.vertx.http.deployment.devmode.NotFoundPageDisplayableEndpointBuildItem;
@@ -94,7 +94,7 @@ class LoggingUiProcessor {
 
     @BuildStep
     void registerUiExtension(
-            BuildProducer<AnnotatedWebsocketEndpointBuildItem> annotatedProducer,
+            BuildProducer<AdditionalBeanBuildItem> annotatedProducer,
             BuildProducer<NotFoundPageDisplayableEndpointBuildItem> notFoundPageDisplayableEndpointProducer,
             BuildProducer<GeneratedResourceBuildItem> generatedResourceProducer,
             BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer,
@@ -106,7 +106,7 @@ class LoggingUiProcessor {
 
         if (shouldInclude(launchMode, loggingUiConfig)) {
             // Make sure the WebSocket gets included.
-            annotatedProducer.produce(new AnnotatedWebsocketEndpointBuildItem(LogstreamSocket.class.getName(), false));
+            annotatedProducer.produce(AdditionalBeanBuildItem.unremovableOf(LogstreamSocket.class));
 
             // Add the UI
             if ("/".equals(loggingUiConfig.ui.rootPath)) {

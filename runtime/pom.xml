@@ -27,14 +27,8 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-undertow-websockets</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jsonb</artifactId>
         </dependency>
-        
     </dependencies>
 
     <build>
