@@ -48,12 +48,6 @@ Note: Replace `${logger-manager.version}` with the latest version
 
 Then browse to [http://localhost:8080/q/logging-manager/](http://localhost:8080/q/logging-manager/)
 
-View and change log levels:
-
-![logger_manager_levels_screenshot](loglevel.png "Log level Screenshot")
-
-View the log file:
-
 ![logger_manager_log_screenshot](logstream.gif "Log stream Screenshot")
 
 ## OpenAPI

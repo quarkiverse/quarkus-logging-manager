@@ -121,7 +121,7 @@ class LoggingManagerProcessor {
 
             if (launchMode.getLaunchMode().isDevOrTest()) {
                 Path tempPath = WebJarUtil.copyResourcesForDevOrTest(curateOutcomeBuildItem, launchMode, artifact,
-                        UI_WEBJAR_PREFIX);
+                        UI_WEBJAR_PREFIX, false);
                 updateApiUrl(tempPath.resolve(FILE_TO_UPDATE), loggersPath);
 
                 loggingManagerBuildProducer
@@ -135,7 +135,7 @@ class LoggingManagerProcessor {
                                 "Quarkus Log viewer"));
             } else {
                 Map<String, byte[]> files = WebJarUtil.copyResourcesForProduction(curateOutcomeBuildItem, artifact,
-                        UI_WEBJAR_PREFIX);
+                        UI_WEBJAR_PREFIX, false);
 
                 for (Map.Entry<String, byte[]> file : files.entrySet()) {
 
