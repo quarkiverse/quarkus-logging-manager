@@ -14,22 +14,29 @@
     <name>Quarkus - Logging Manager - UI</name>
     
     <properties>
-        <fomantic-ui.version>2.8.7</fomantic-ui.version>
+        <bootstrap.version>4.6.0</bootstrap.version>
+        <fontawesome.version>5.15.2</fontawesome.version>
         <jquery.version>3.5.1</jquery.version>
     </properties>
     
     <!-- UI (Just here for dependabot) -->
     <dependencies>
         <dependency>
-            <groupId>org.webjars.bower</groupId>
-            <artifactId>fomantic-ui</artifactId>
-            <version>${fomantic-ui.version}</version>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${bootstrap.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.webjars.bower</groupId>
             <artifactId>jquery</artifactId>
             <version>${jquery.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+            <version>${fontawesome.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -69,56 +76,97 @@
                 <artifactId>download-maven-plugin</artifactId>
                 <version>1.6.1</version>
                 <executions>
+                    
                     <execution>
-                        <id>install-fomantic-ui-css</id>
+                        <id>install-fontawesome-css-1</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://unpkg.com/fomantic-ui@${fomantic-ui.version}/dist/semantic.min.css</url>
+                            <url>https://unpkg.com/@fortawesome/fontawesome-free@${fontawesome.version}/css/solid.min.css</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/classes/META-INF/resources/logging-manager/fontawesome/css</outputDirectory>
+                            <md5>7cad03119b81543b3f3afe4a19c4e2c5</md5>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-fontawesome-css-2</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://unpkg.com/@fortawesome/fontawesome-free@${fontawesome.version}/css/fontawesome.min.css</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/classes/META-INF/resources/logging-manager/fontawesome/css</outputDirectory>
+                            <md5>437e0fafbd3c880ef8b612d6ca41ed75</md5>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-fontawesome-fonts-1</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://unpkg.com/@fortawesome/fontawesome-free@${fontawesome.version}/webfonts/fa-solid-900.woff2</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/classes/META-INF/resources/logging-manager/fontawesome/webfonts</outputDirectory>
+                            <md5>9ae050d1876ac1763eb6afe4264e6d5a</md5>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-fontawesome-fonts-2</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://unpkg.com/@fortawesome/fontawesome-free@${fontawesome.version}/webfonts/fa-solid-900.woff</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/classes/META-INF/resources/logging-manager/fontawesome/webfonts</outputDirectory>
+                            <md5>4bfbf7eb4b19d9ff9293eb177b6d0070</md5>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-fontawesome-fonts-3</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://unpkg.com/@fortawesome/fontawesome-free@${fontawesome.version}/webfonts/fa-solid-900.ttf</url>
+                            <unpack>false</unpack>
+                            <outputDirectory>${project.build.directory}/classes/META-INF/resources/logging-manager/fontawesome/webfonts</outputDirectory>
+                            <md5>260d033f79f75d670fd09d8cf7c8bf8d</md5>
+                        </configuration>
+                    </execution>
+                    
+                    <execution>
+                        <id>install-bootstrap-css</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://unpkg.com/bootstrap@${bootstrap.version}/dist/css/bootstrap.min.css</url>
                             <unpack>false</unpack>
                             <outputDirectory>${project.build.directory}/classes/META-INF/resources/logging-manager</outputDirectory>
-                            <md5>d921bdf0aa472c8895b14c1cdb96eba1</md5>
+                            <md5>d432e4222814b62dd30c9513dcc29440</md5>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>install-fomantic-ui-js</id>
+                        <id>install-bootstrap-js</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://unpkg.com/fomantic-ui@${fomantic-ui.version}/dist/semantic.min.js</url>
+                            <url>https://unpkg.com/bootstrap@${bootstrap.version}/dist/js/bootstrap.bundle.min.js</url>
                             <unpack>false</unpack>
                             <outputDirectory>${project.build.directory}/classes/META-INF/resources/logging-manager</outputDirectory>
-                            <md5>557ca1f9728f4b73ba6089e0c09b548b</md5>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install-fomantic-ui-fonts1</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>https://unpkg.com/fomantic-ui@${fomantic-ui.version}/dist/themes/default/assets/fonts/icons.woff2</url>
-                            <unpack>false</unpack>
-                            <outputDirectory>${project.build.directory}/classes/META-INF/resources/logging-manager/themes/default/assets/fonts/</outputDirectory>
-                            <md5>b15db15f746f29ffa02638cb455b8ec0</md5>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>install-fomantic-ui-tablesort</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>https://semantic-ui.com/javascript/library/tablesort.js</url>
-                            <unpack>false</unpack>
-                            <outputDirectory>${project.build.directory}/classes/META-INF/resources/logging-manager/</outputDirectory>
-                            <md5>5df85b5fc2601b1c61b082533764c788</md5>
+                            <md5>f81d0a1705048649befc8b595e455a94</md5>
                         </configuration>
                     </execution>
                     

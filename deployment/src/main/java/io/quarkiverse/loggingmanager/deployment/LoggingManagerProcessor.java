@@ -191,8 +191,8 @@ class LoggingManagerProcessor {
         }
     }
 
-    public String updateApiUrl(String original, String healthPath) {
-        return original.replace("loggersUrl = \"/loggers\";", "loggersUrl = \"" + healthPath + "\";");
+    public String updateApiUrl(String original, String loggingPath) {
+        return original.replace("loggersUrl = \"/loggers\";", "loggersUrl = \"" + loggingPath + "\";");
     }
 
     private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {

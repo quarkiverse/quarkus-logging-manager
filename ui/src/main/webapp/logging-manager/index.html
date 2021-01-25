@@ -3,68 +3,89 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <title>Quarkus Log viewer</title>
+        <title>Quarkus | Logging Manager</title>
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
 
-        <!-- Semantic UI -->
-        <link rel="stylesheet" type="text/css" href="semantic.min.css">
+        <!-- Bootstrap -->
+        <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+        <!-- Font awesome -->
+        <link rel="stylesheet" href="fontawesome/css/fontawesome.min.css">
+        <link rel="stylesheet" href="fontawesome/css/solid.min.css">
         <!-- Our own crap -->
         <link rel="stylesheet" type="text/css" href="style.css">
 
     </head>
 
     <body>
-        <!-- Menubar -->
-        <div class="ui fixed inverted icon borderless menu">
-            <div class="header item"><a href=""><img src="logo.png" height="44"></a></div>
-            <a id="menuLevels" class="active item" onclick="showLevels()">Levels</a>
-            <a id="menuLog" class="item" onclick="showLog()">Log</a>
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <a id="menuPlayIcon" class="item" onclick="startLog();">
-                <i class="play icon"></i>
+        <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
+            <a class="navbar-brand" href="">
+                <img src="logo.png" height="30" class="d-inline-block align-middle" alt="Quarkus"/>
+                <span id="navbar_title" class="align-middle">Logging Manager</span>
             </a>
-            <a id="menuStopIcon" class="item" onclick="stopLog();">
-                <i class="stop icon"></i>
-            </a>                    
-            <a id="menuTrashIcon" class="item" onclick="clearScreen();">
-                <i class="trash icon"></i>
-            </a>
-            
-            <div class="right menu">
-                <div class="header item"><h3>Log Manager</h3></div>
-            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a id="stopStartButton" class="nav-link" data-toggle="tooltip" data-placement="bottom" title="Stop log stream"><i class="fas fa-stop"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="clearLogButton" class="nav-link" data-toggle="tooltip" data-placement="bottom" title="Clear log"><i class="fas fa-trash-alt"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="zoomOutButton" class="nav-link" data-toggle="tooltip" data-placement="bottom" title="Zoom out"><i class="fas fa-search-minus"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="zoomInButton" class="nav-link" data-toggle="tooltip" data-placement="bottom" title="Zoom in"><i class="fas fa-search-plus"></i></a>
+                    </li>
+<!--                    <li class="nav-item">
+                        <a id="filterButton" class="nav-link" data-toggle="tooltip" data-placement="bottom" title="Filter"><i class="fas fa-filter"></i></a>
+                    </li>-->
+                    <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Log levels">
+                        <a id="logLevelsButton" class="nav-link" data-toggle="modal" data-target="#logLevelsModal"><i class="fas fa-layer-group"></i></a>
+                    </li> 
+                </ul>
+                <span id="applicationInfo" class="navbar-text">
 
+                </span>
+            </div>
+        </nav>
+
+        <!-- Log -->
+        <a id="followLogButton" class="nav-link" data-toggle="tooltip" data-placement="bottom" title="Follow log (auto scroll)"><i id="followLogIcon" class="text-success fas fa-circle-notch fa-spin"></i></a>
+        <div id="logTerminal" class="bg-dark text-light ">
+            <samp id="segmentLog" class="text-wrap">
+
+            </samp>
         </div>
 
-        <div class="ui main segment" style="padding-top: 50px;">
-            <!-- Levels -->
-            <div id="segmentLevels" class="ui main segment">
-                <table class="ui sortable celled table">
-                    <thead>
-                        <tr>
-                            <th class="sorted descending">Name</th>
-                            <th class="">Level</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyLevels">
-                    
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Log -->
-            <div id="logTerminal" class="ui inverted segment">
-                <samp id="segmentLog">
-                    
-                </samp>
+        <!-- Levels -->
+        <div class="modal fade" id="logLevelsModal" tabindex="-1" aria-labelledby="logLevelsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="logLevelsModalLabel">Log Levels</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-hover">
+                            <tbody id="logLevelsTableBody">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        
+
         <script src="jquery.min.js"></script>
-        <script src="semantic.min.js"></script>
-        <script src="tablesort.js"></script>
+        <script src="bootstrap.bundle.min.js"></script>
         <script src="loggingmanager.js"></script>
-
     </body>
 </html>
