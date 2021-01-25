@@ -10,6 +10,8 @@ var logScrolling = true;
 
 var loggersUrl = "/loggers";
 
+var filter = "";
+
 $('document').ready(function () {
     openSocket();
     // Make sure we stop the connection when the browser close
@@ -21,8 +23,8 @@ $('document').ready(function () {
     clearLogButton.addEventListener("click", clearScreenEvent);
     zoomOutButton.addEventListener("click", zoomOutEvent);
     zoomInButton.addEventListener("click", zoomInEvent);
-//    filterButton.addEventListener("click", filterEvent);
     followLogButton.addEventListener("click", followLogEvent);
+    currentFilterInputButton.addEventListener("click", applyFilter);
     
     populateLoggerLevelModal();
     
@@ -45,6 +47,17 @@ $('document').ready(function () {
     });
     
     $('[data-toggle="tooltip"]').tooltip();
+    
+    currentFilterInput.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            currentFilterInputButton.click();
+        }
+    });
+    
+    $('#filterModal').on('shown.bs.modal', function () {
+        $('#currentFilterInput').trigger('focus');
+    });
 });
 
 function stopStartEvent() {
@@ -57,7 +70,7 @@ function stopStartEvent() {
 
 function stopLog() {
     webSocket.send("stop");
-    writeResponse("^C</br>");
+    writeResponse("<hr/>");
 
     stopStartButton.innerHTML = "<i class='fas fa-play'></i>";
     $("#followLogIcon").hide();
@@ -86,10 +99,6 @@ function zoomInEvent() {
     $('#segmentLog').css("font-size", zoom + "em");
 }
 
-//function filterEvent() {
-//    console.log("Popup filter modal");
-//}
-
 function followLogEvent() {
     if (logScrolling) {
         logScrolling = false;
@@ -108,6 +117,62 @@ function scrollToTop() {
 
 function scrollToBottom() {
     logScrolling = true;
+}
+
+function applyFilter(){
+    filter = $("#currentFilterInput").val();
+    if(filter===""){
+        clearFilter();
+    }else{
+        currentFilter.innerHTML = "<span style='border-bottom: 1px dotted;'>" + filter + " <i class='fas fa-times-circle' onclick='clearFilter();'></i></span>";
+        
+        var currentlines = $("#segmentLog").html().split('<!-- logline -->');
+        
+        var filteredHtml = "";
+        var i;
+        for (i = 0; i < currentlines.length; i++) {
+            var htmlline = currentlines[i];
+            filteredHtml = filteredHtml + getLogLine(htmlline) + "<!-- logline -->";
+        } 
+        
+        segmentLog.innerHTML = "";
+        writeResponse(filteredHtml);
+    }
+    $('#filterModal').modal('hide');
+}
+
+function getLogLine(htmlline){
+    
+    if(filter===""){
+        return htmlline;
+    }else{
+        
+        var textline = $(htmlline).text();
+        if(textline.includes(filter)){
+            return htmlline;
+        }else{
+            return htmlline.replace('<span>', '<span class="filtered">');
+        }
+    }
+}
+
+function clearFilter(){
+    $("#currentFilterInput").val("");
+    filter === "";
+    currentFilter.innerHTML = "";
+    
+    var currentlines = $("#segmentLog").html().split('<!-- logline -->');
+        
+    var filteredHtml = "";
+    var i;
+    for (i = 0; i < currentlines.length; i++) {
+        var htmlline = currentlines[i].replace('<span class="filtered">', '<span>');
+        filteredHtml = filteredHtml + htmlline + "<!-- logline -->";
+    } 
+
+    segmentLog.innerHTML = "";
+    writeResponse(filteredHtml);
+    
 }
 
 function writeResponse(text) {
@@ -158,26 +223,35 @@ function openSocket() {
     };
 
     function messageLog(json) {
+        
         var timestamp = new Date(json.timestamp);
         var timestring = timestamp.toLocaleTimeString();
         var datestring = timestamp.toLocaleDateString();
         var level = json.level;
 
-        writeResponse(getLevelIcon(level) + tab
+        var htmlLine = "<span>" + 
+            getLevelIcon(level) + tab
                 + datestring + tab
                 + timestring + tab
                 + getLevelText(level) + tab
                 + getClassName(json.sourceClassNameFull, json.sourceClassNameFullShort, json.sourceMethodName) + tab
                 + getThread(json.threadName, json.threadId) + tab
-                + json.formattedMessage + "</br>");
-
-
+                + json.formattedMessage + "<br/>";
+        
         if (json.stacktrace) {
             for (var i in json.stacktrace) {
                 var stacktrace = enhanceStacktrace(json.loggerName, json.stacktrace[i]);
-                writeResponse(stacktrace);
+                htmlLine = htmlLine + stacktrace;
             }
         }
+        
+        htmlLine = htmlLine + "</span><!-- logline -->";
+        
+        if(filter!=""){
+            writeResponse(getLogLine(htmlLine));
+        }else{
+            writeResponse(htmlLine);
+        }   
     }
 }
 
