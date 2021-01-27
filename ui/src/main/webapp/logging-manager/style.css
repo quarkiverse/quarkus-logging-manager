@@ -1,25 +1,51 @@
-
-.ui.menu .item img.logo {
-    margin-right: 1.5em;
-}
-.log {
-    margin-top: 5em;
-}
-.wireframe {
-    margin-top: 2em;
-}
-.ui.footer.segment {
-    margin: 5em 0em 0em;
-    padding: 5em 0em;
-}
-.disabled {
-    pointer-events: none;
-    cursor: default;
-}
-.text.red {
-    color: #D95C5C;
-}
-
-.ui.inverted.menu {
+body{
     background: #343a40;
+}
+
+.levelicon{
+    padding-left: 10px;
+}
+
+.navbar {
+    border-bottom: 1px solid #414850;
+}
+
+.navbar-brand img {
+    border-right: 1px solid darkgrey;
+    padding-right: 10px;
+    margin-right: 5px;
+}
+
+.navbar-text {
+    font-size: 0.9em;
+}
+
+.nav-link:hover {
+    color: #3366ac !important;        
+}
+
+.filtered {
+    display: none;
+}
+
+#applicationInfo::after{
+    content: "{applicationName} {applicationVersion} (powered by Quarkus {quarkusVersion})";
+    color: #9a9da0;
+}
+
+#segmentLog {
+    font-size: 0.9em;
+}
+
+#logTerminal {
+    padding-bottom: 5px;
+}
+
+#followLogButton {
+    position: fixed;
+    right: 0px;
+}
+
+hr {
+  border-top: 1px dashed #3366ac;
 }

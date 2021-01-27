@@ -50,7 +50,7 @@ public class LogstreamSocket {
                                         onMessage(event, state);
                                     }
                                 });
-
+                                start(state);
                             } else {
                                 log.log(Level.SEVERE, "Failed to connect to log server", event.cause());
                             }

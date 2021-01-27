@@ -1,88 +1,186 @@
+var zoom = 0.9;
+var increment = 0.05;
+
 var webSocket;
 var messages = document.getElementById("messages");
-var loggersUrl = "/loggers";
 var tab = "&nbsp;&nbsp;&nbsp;&nbsp";
-var started = false;
-var logScrolling = false;
-        
-$('document').ready(function () {
-    $("#logTerminal").hide();
-    $("#menuPlayIcon").hide();
-    $("#menuStopIcon").hide();
-    $("#menuTrashIcon").hide();
-    openSocket();
 
+var isRunning = true;
+var logScrolling = true;
+
+var loggersUrl = "/loggers";
+
+var filter = "";
+
+$('document').ready(function () {
+    openSocket();
     // Make sure we stop the connection when the browser close
     window.onbeforeunload = function () {
         closeSocket();
     };
+
+    stopStartButton.addEventListener("click", stopStartEvent);
+    clearLogButton.addEventListener("click", clearScreenEvent);
+    zoomOutButton.addEventListener("click", zoomOutEvent);
+    zoomInButton.addEventListener("click", zoomInEvent);
+    followLogButton.addEventListener("click", followLogEvent);
+    currentFilterInputButton.addEventListener("click", applyFilter);
     
-    populateLoggerScreen();
-    $('table').tablesort();
-    $('.ui.dropdown').dropdown({
-        onChange: function(val, text) {
-            changeLogLevel(val,text);
-        }
-    });
+    populateLoggerLevelModal();
     
     // Add listener to stop
     var ctrlDown = false,
-        ctrlKey = 17,
-        cmdKey = 91,
-        cKey = 67;
-    
-    $(document).keydown(function(e) {
-        if (e.keyCode === ctrlKey || e.keyCode === cmdKey) ctrlDown = true;
-    }).keyup(function(e) {
-        if (e.keyCode === ctrlKey || e.keyCode === cmdKey) ctrlDown = false;
+            ctrlKey = 17,
+            cmdKey = 91,
+            cKey = 67;
+
+    $(document).keydown(function (e) {
+        if (e.keyCode === ctrlKey || e.keyCode === cmdKey)
+            ctrlDown = true;
+    }).keyup(function (e) {
+        if (e.keyCode === ctrlKey || e.keyCode === cmdKey)
+            ctrlDown = false;
+    });
+
+    $(document).keydown(function (e) {
+        if (ctrlDown && (e.keyCode === cKey))stopLog();
     });
     
-    $(document).keydown(function(e) {
-        if (ctrlDown && (e.keyCode === cKey)) stopLog();
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    currentFilterInput.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            currentFilterInputButton.click();
+        }
     });
     
-    
+    $('#filterModal').on('shown.bs.modal', function () {
+        $('#currentFilterInput').trigger('focus');
+    });
 });
 
-function populateLoggerScreen(){
-    // Get all logger names 
-    
-    var loggerNames = httpGet(loggersUrl);
-    var loggerNamesArray = JSON.parse(loggerNames);
-    
-    var levelsUrl = loggersUrl + "/levels";
-    var levelNames = httpGet(levelsUrl);
-    var levelNamesArray = JSON.parse(levelNames);
-    
-    var tbodyLevels = $('#tbodyLevels');
-    
-    // Populate the dropdown
-    for (var i = 0; i < loggerNamesArray.length; i++) {
-        var row = "<tr><td>" + loggerNamesArray[i].name + "</td><td>" + createDropdown(loggerNamesArray[i].name, loggerNamesArray[i].effectiveLevel,levelNamesArray) + "</td></tr>";
-        tbodyLevels.append(row);
+function stopStartEvent() {
+    if (isRunning) {
+        stopLog();
+    } else {
+        startLog();
     }
 }
 
-function changeLogLevel(val,text){
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", loggersUrl, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    var data = JSON.stringify({"name": val, "configuredLevel": text});
-    xhr.send(data);
+function stopLog() {
+    webSocket.send("stop");
+    writeResponse("<hr/>");
+
+    stopStartButton.innerHTML = "<i class='fas fa-play'></i>";
+    $("#followLogIcon").hide();
+    isRunning = false;
 }
 
-function createDropdown(name, level, levelNamesArray){
-    var dd = "<div class='ui dropdown'>\n\
-                <div class='text'>" + level + "</div><i class='dropdown icon'></i>\n\
-                <div class='menu'>";
-    // Populate the dropdown
-    for (var i = 0; i < levelNamesArray.length; i++) {
-        dd = dd + "<div class='item' data-value='" + name + "'>" + levelNamesArray[i] +"</div>";
+function startLog() {
+    webSocket.send("start");
+
+    stopStartButton.innerHTML = "<i class='fas fa-stop'></i>";
+    $("#followLogIcon").show();
+    isRunning = true;
+}
+
+function clearScreenEvent() {
+    segmentLog.innerHTML = "";
+}
+
+function zoomOutEvent() {
+    zoom = zoom - increment;
+    $('#segmentLog').css("font-size", zoom + "em");
+}
+
+function zoomInEvent() {
+    zoom = zoom + increment;
+    $('#segmentLog').css("font-size", zoom + "em");
+}
+
+function followLogEvent() {
+    if (logScrolling) {
+        logScrolling = false;
+        $("#followLogIcon").removeClass("text-success");
+        $("#followLogIcon").removeClass("fa-spin");
+    } else {
+        logScrolling = true;
+        $("#followLogIcon").addClass("text-success");
+        $("#followLogIcon").addClass("fa-spin");
     }
+}
+
+function scrollToTop() {
+    logScrolling = false;
+}
+
+function scrollToBottom() {
+    logScrolling = true;
+}
+
+function applyFilter(){
+    filter = $("#currentFilterInput").val();
+    if(filter===""){
+        clearFilter();
+    }else{
+        currentFilter.innerHTML = "<span style='border-bottom: 1px dotted;'>" + filter + " <i class='fas fa-times-circle' onclick='clearFilter();'></i></span>";
+        
+        var currentlines = $("#segmentLog").html().split('<!-- logline -->');
+        
+        var filteredHtml = "";
+        var i;
+        for (i = 0; i < currentlines.length; i++) {
+            var htmlline = currentlines[i];
+            filteredHtml = filteredHtml + getLogLine(htmlline) + "<!-- logline -->";
+        } 
+        
+        segmentLog.innerHTML = "";
+        writeResponse(filteredHtml);
+    }
+    $('#filterModal').modal('hide');
+}
+
+function getLogLine(htmlline){
     
-    dd = dd + "</div></div>";
+    if(filter===""){
+        return htmlline;
+    }else{
+        
+        var textline = $(htmlline).text();
+        if(textline.includes(filter)){
+            return htmlline;
+        }else{
+            return htmlline.replace('<span>', '<span class="filtered">');
+        }
+    }
+}
+
+function clearFilter(){
+    $("#currentFilterInput").val("");
+    filter === "";
+    currentFilter.innerHTML = "";
     
-    return dd;
+    var currentlines = $("#segmentLog").html().split('<!-- logline -->');
+        
+    var filteredHtml = "";
+    var i;
+    for (i = 0; i < currentlines.length; i++) {
+        var htmlline = currentlines[i].replace('<span class="filtered">', '<span>');
+        filteredHtml = filteredHtml + htmlline + "<!-- logline -->";
+    } 
+
+    segmentLog.innerHTML = "";
+    writeResponse(filteredHtml);
+    
+}
+
+function writeResponse(text) {
+    segmentLog.innerHTML += text;
+    if (logScrolling) {
+        var element = document.getElementById("logTerminal");
+        element.scrollIntoView({block: "end"});
+    }
 }
 
 function openSocket() {
@@ -118,158 +216,97 @@ function openSocket() {
     };
 
     webSocket.onclose = function () {
-        if(started){
+        if (isRunning) {
             stopLog();
+            writeResponse("Connection closed<br/>");
         }
-        writeResponse("Connection closed<br/>");
     };
 
     function messageLog(json) {
+        
         var timestamp = new Date(json.timestamp);
         var timestring = timestamp.toLocaleTimeString();
         var datestring = timestamp.toLocaleDateString();
         var level = json.level;
-        
-        writeResponse(getLevelIcon(level) + tab 
-                + datestring + tab 
-                + timestring + tab 
-                + getLevelText(level) + tab 
-                + getClassName(json.sourceClassNameFull, json.sourceClassNameFullShort, json.sourceMethodName) + tab
-                + getThread(json.threadName,json.threadId) + tab
-                + json.formattedMessage + "</br>");
-                            
 
+        var htmlLine = "<span>" + 
+            getLevelIcon(level) + tab
+                + datestring + tab
+                + timestring + tab
+                + getLevelText(level) + tab
+                + getClassName(json.sourceClassNameFull, json.sourceClassNameFullShort, json.sourceMethodName) + tab
+                + getThread(json.threadName, json.threadId) + tab
+                + json.formattedMessage + "<br/>";
+        
         if (json.stacktrace) {
             for (var i in json.stacktrace) {
                 var stacktrace = enhanceStacktrace(json.loggerName, json.stacktrace[i]);
-                writeResponse(stacktrace);
+                htmlLine = htmlLine + stacktrace;
             }
         }
-        $('.ui.dark')
-          .popup()
-        ;
+        
+        htmlLine = htmlLine + "</span><!-- logline -->";
+        
+        if(filter!=""){
+            writeResponse(getLogLine(htmlLine));
+        }else{
+            writeResponse(htmlLine);
+        }   
     }
 }
 
-function getLevelIcon(level){
+function getLevelIcon(level) {
     level = level.toUpperCase();
     if (level === "WARNING" || level === "WARN")
-        return "<i class='yellow exclamation triangle icon'></i>";
+        return "<i class='levelicon text-warning fas fa-exclamation-triangle'></i>";
     if (level === "SEVERE" || level === "ERROR")
-        return "<i class='red exclamation circle icon'></i>";
+        return "<i class='levelicon text-danger fas fa-radiation'></i>";
     if (level === "INFO")
-        return "<i class='blue info circle icon'></i>";
+        return "<i class='levelicon text-primary fas fa-info-circle'></i>";
     if (level === "DEBUG")
-        return "<i class='grey bug icon'></i>";
-    
-    return "<i class='black circle icon'></i>";    
+        return "<i class='levelicon text-secondary fas fa-bug'></i>";
+
+    return "<i class='levelicon fas fa-circle'></i>";
 }
 
-function getLevelText(level){
+function getLevelText(level) {
     level = level.toUpperCase();
     if (level === "WARNING" || level === "WARN")
-        return "<span class='ui inverted orange text'>WARN </span>";
+        return "<span class='text-warning'>WARN </span>";
     if (level === "SEVERE" || level === "ERROR")
-        return "<span class='ui inverted red text'>ERROR</span>";
+        return "<span class='text-danger'>ERROR</span>";
     if (level === "INFO")
-        return "<span class='ui inverted blue text'>INFO </span>";
+        return "<span class='text-primary'>INFO </span>";
     if (level === "DEBUG")
-        return "<span class='ui inverted dark grey text'>DEBUG</span>";
-    
-    return level;    
+        return "<span class='text-secondary'>DEBUG</span>";
+
+    return level;
 }
 
-function getClassName(sourceClassNameFull, sourceClassNameFullShort, sourceMethodName){
-    return "<span class='ui dark blue text' title='" + sourceClassNameFull + "'>[" + sourceClassNameFullShort + "]</span> " + sourceMethodName;
+function getTextClass(level){
+    level = level.toUpperCase();
+    if (level === "WARNING" || level === "WARN")
+        return "text-warning";
+    if (level === "SEVERE" || level === "ERROR")
+        return "text-danger";
+    if (level === "INFO")
+        return "text-primary";
+    if (level === "DEBUG")
+        return "text-secondary";
+
+    return "";
 }
 
-function getThread(threadName, threadId){
-    return "<span class='ui dark green text' title='Thread Id: " + threadId + "'>(" + threadName + ")</span>";
+function getClassName(sourceClassNameFull, sourceClassNameFullShort, sourceMethodName) {
+    return "<span class='text-primary' data-toggle='tooltip' data-placement='top' title='" + sourceClassNameFull + "'>[" + sourceClassNameFullShort + "]</span> " + sourceMethodName;
 }
 
-function showLevels(){
-    $("#menuLevels").addClass("active");
-    $("#menuLog").removeClass("active");
-    $("#segmentLevels").show();
-    $("#logTerminal").hide();
-    $("#menuPlayIcon").hide();
-    $("#menuStopIcon").hide();
-    $("#menuTrashIcon").hide();
-    logScrolling = false;
-    var element = document.getElementById("segmentLevels");
-    element.scrollIntoView();
-}
-
-function showLog(){
-    $("#menuLog").addClass("active");
-    $("#menuLevels").removeClass("active");
-    $("#logTerminal").show();
-    $("#menuPlayIcon").show();
-    $("#menuStopIcon").show();
-    $("#menuTrashIcon").show();
-    $("#segmentLevels").hide();
-    logScrolling = true;
+function getThread(threadName, threadId) {
+    return "<span class='text-success' data-toggle='tooltip' data-placement='top' title='Thread Id: " + threadId + "'>(" + threadName + ")</span>";
 }
 
 function closeSocket() {
     webSocket.close();
-}
-
-function startLog() {
-    $("#menuPlayIcon").addClass("disabled");
-    $("#menuPlayIcon").prop("disabled", true);
-    webSocket.send("start");
-    started = true;
-    $("#menuStopIcon").removeClass("disabled");
-    $("#menuStopIcon").prop("disabled", false);
-}
-
-function stopLog() {
-    started = false;
-    writeResponse("^C</br>");
-    $("#menuStopIcon").addClass("disabled");
-    $("#menuStopIcon").prop("disabled", true);
-    webSocket.send("stop");
-    $("#menuPlayIcon").removeClass("disabled");
-    $("#menuPlayIcon").prop("disabled", false);
-}
-
-function clearScreen() {
-    segmentLog.innerHTML = "";
-}
-
-function getClassLogLevel(level) {
-
-    if (level === "WARNING" || level === "WARN")
-        return "warning";
-    if (level === "SEVERE" || level === "ERROR")
-        return "error";
-    if (level === "INFO")
-        return "positive";
-    if (level === "FINE")
-        return "blue";
-    if (level === "FINER")
-        return "blue"; // TODO: Find better colors
-    if (level === "FINEST")
-        return "blue"; // TODO: Find better colors
-    return level;
-}
-
-function getLogLevelColor(level) {
-    
-    if (level === "WARNING" || level === "WARN")
-        return "orange";
-    if (level === "SEVERE" || level === "ERROR")
-        return "red";
-    if (level === "INFO")
-        return "green";
-    if (level === "FINE")
-        return "teal";
-    if (level === "FINER")
-        return "blue";
-    if (level === "FINEST")
-        return "violet";
-    return level;
 }
 
 function enhanceStacktrace(loggerName, stacktrace) {
@@ -282,39 +319,63 @@ function enhanceStacktrace(loggerName, stacktrace) {
             if (!startWithAt) {
                 var parts = line.split(":");
                 line = "<b>" + parts[0] + ":</b>" + parts[1];
-            }else{
+            } else {
                 var isMyClass = line.includes(loggerName);
-                if (isMyClass && loggerName){
+                if (isMyClass && loggerName) {
                     line = '<b>' + line + '</b>';
                 }
                 line = tab + tab + line;
             }
-            
+
         }
 
         enhanceStacktrace.push(line + '<br/>');
     }
     var newStacktrace = enhanceStacktrace.join('');
-    return "<span class='red text'>" + newStacktrace + "</span>";
+    return "<span class=\"text-wrap text-danger\">" + newStacktrace + "</span>";
 }
 
-function toggleException(sequenceNumber) {
-    var element = document.getElementById(sequenceNumber);
-    var result_style = element.style;
-
-    if (result_style.display === '') {
-        result_style.display = "none";
-    } else {
-        result_style.display = '';
+function populateLoggerLevelModal(){
+    // Get all logger names 
+    
+    var loggerNames = httpGet(loggersUrl);
+    var loggerNamesArray = JSON.parse(loggerNames);
+    
+    var levelsUrl = loggersUrl + "/levels";
+    var levelNames = httpGet(levelsUrl);
+    var levelNamesArray = JSON.parse(levelNames);
+    
+    var tbodyLevels = $('#logLevelsTableBody');
+    
+    // Populate the dropdown
+    for (var i = 0; i < loggerNamesArray.length; i++) {
+        var row = "<tr><td id='" + createLevelRowId(loggerNamesArray[i].name) + "' class=" + getTextClass(loggerNamesArray[i].effectiveLevel) + ">" + loggerNamesArray[i].name + "</td><td>" + createDropdown(loggerNamesArray[i].name, loggerNamesArray[i].effectiveLevel,levelNamesArray) + "</td></tr>";
+        tbodyLevels.append(row);
     }
+    
+    $('select').on('change', function() {
+        changeLogLevel(this.value, $(this).find('option:selected').text());
+    });
+    
+    populated = true;
 }
 
-function writeResponse(text) {
-    segmentLog.innerHTML += text;
-    if(logScrolling){
-        var element = document.getElementById("logTerminal");
-        element.scrollIntoView({block: "end"});
-    }
+function changeLogLevel(val,text){
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", loggersUrl, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    var data = JSON.stringify({"name": val, "configuredLevel": text});
+    xhr.send(data);
+    
+    // Also change the style of the row
+    var id = createLevelRowId(val);
+    $('#' + id).removeClass();
+    $('#' + id).addClass(getTextClass(text));    
+}
+
+function createLevelRowId(logger){
+    var name = logger + "_row";
+    return name.replaceAll(".", "_");
 }
 
 function httpGet(theUrl) {
@@ -322,4 +383,20 @@ function httpGet(theUrl) {
     xmlHttp.open("GET", theUrl, false); // false for synchronous request
     xmlHttp.send(null);
     return xmlHttp.responseText;
+}
+
+function createDropdown(name, level, levelNamesArray){
+    
+    var dd = "<select class='custom-select custom-select-sm'>";
+    // Populate the dropdown
+    for (var i = 0; i < levelNamesArray.length; i++) {
+        var selected = "";
+        if(level === levelNamesArray[i]){
+            selected = "selected";
+        }
+        dd = dd + "<option " + selected + " value='" + name + "'>" + levelNamesArray[i] +"</option>";
+    }
+    dd = dd + "</select>";
+    
+    return dd;
 }
