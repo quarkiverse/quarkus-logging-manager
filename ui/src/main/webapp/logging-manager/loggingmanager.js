@@ -13,7 +13,11 @@ var loggersUrl = "/loggers";
 
 var filter = "";
 
+var localstoragekey = "quarkus_logging_manager_state";
+
 $('document').ready(function () {
+    loadSettings();
+    
     openSocket();
     // Make sure we stop the connection when the browser close
     window.onbeforeunload = function () {
@@ -59,7 +63,65 @@ $('document').ready(function () {
     $('#filterModal').on('shown.bs.modal', function () {
         $('#currentFilterInput').trigger('focus');
     });
+    
+    // save settings on hide
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState == 'hidden') { 
+            saveSettings();
+        }
+    });
 });
+
+function loadSettings(){
+    if (localstoragekey in localStorage) {
+        var state = JSON.parse(localStorage.getItem(localstoragekey));
+
+        zoom = state.zoom;
+        applyZoom();
+
+        logScrolling = state.logScrolling;
+        applyFollowLog();
+
+        $("#currentFilterInput").val(state.filter);
+        applyFilter();
+        
+        $('#levelIconSwitch').prop('checked', state.levelIconSwitch);
+        $('#sequenceNumberSwitch').prop('checked', state.sequenceNumberSwitch);
+        $('#dateSwitch').prop('checked', state.dateSwitch);
+        $('#timeSwitch').prop('checked', state.timeSwitch);
+        $('#levelSwitch').prop('checked', state.levelSwitch);
+        $('#sourceClassFullAbbreviatedSwitch').prop('checked', state.sourceClassFullAbbreviatedSwitch);
+        $('#sourceClassFullSwitch').prop('checked', state.sourceClassFullSwitch);
+        $('#sourceClassSwitch').prop('checked', state.sourceClassSwitch);
+        $('#sourceMethodNameSwitch').prop('checked', state.sourceMethodNameSwitch);
+        $('#threadIdSwitch').prop('checked', state.threadIdSwitch);
+        $('#threadNameSwitch').prop('checked', state.threadNameSwitch);
+        $('#messageSwitch').prop('checked', state.messageSwitch);        
+    }    
+}
+
+function saveSettings(){
+    // Running state
+    var state = {
+        "zoom": zoom,
+        "logScrolling": logScrolling,
+        "filter": filter,
+        "levelIconSwitch": $('#levelIconSwitch').is(":checked"),
+        "sequenceNumberSwitch": $('#sequenceNumberSwitch').is(":checked"),
+        "dateSwitch": $('#dateSwitch').is(":checked"),
+        "timeSwitch": $('#timeSwitch').is(":checked"),
+        "levelSwitch": $('#levelSwitch').is(":checked"),
+        "sourceClassFullAbbreviatedSwitch": $('#sourceClassFullAbbreviatedSwitch').is(":checked"),
+        "sourceClassFullSwitch": $('#sourceClassFullSwitch').is(":checked"),
+        "sourceClassSwitch": $('#sourceClassSwitch').is(":checked"),
+        "sourceMethodNameSwitch": $('#sourceMethodNameSwitch').is(":checked"),
+        "threadIdSwitch": $('#threadIdSwitch').is(":checked"),
+        "threadNameSwitch": $('#threadNameSwitch').is(":checked"),
+        "messageSwitch": $('#messageSwitch').is(":checked")
+    };
+
+    localStorage.setItem(localstoragekey, JSON.stringify(state));
+}
 
 function stopStartEvent() {
     if (isRunning) {
@@ -90,25 +152,32 @@ function clearScreenEvent() {
     segmentLog.innerHTML = "";
 }
 
+function applyZoom(){
+    $('#segmentLog').css("font-size", zoom + "em");
+}
+
 function zoomOutEvent() {
     zoom = zoom - increment;
-    $('#segmentLog').css("font-size", zoom + "em");
+    applyZoom();
 }
 
 function zoomInEvent() {
     zoom = zoom + increment;
-    $('#segmentLog').css("font-size", zoom + "em");
+    applyZoom();
 }
 
 function followLogEvent() {
+    logScrolling = !logScrolling;
+    applyFollowLog();
+}
+
+function applyFollowLog(){
     if (logScrolling) {
-        logScrolling = false;
-        $("#followLogIcon").removeClass("text-success");
-        $("#followLogIcon").removeClass("fa-spin");
-    } else {
-        logScrolling = true;
         $("#followLogIcon").addClass("text-success");
         $("#followLogIcon").addClass("fa-spin");
+    }else{
+        $("#followLogIcon").removeClass("text-success");
+        $("#followLogIcon").removeClass("fa-spin");
     }
 }
 
@@ -143,7 +212,6 @@ function applyFilter(){
 }
 
 function getLogLine(htmlline){
-    
     if(filter===""){
         return htmlline;
     }else{
@@ -158,8 +226,8 @@ function getLogLine(htmlline){
 }
 
 function clearFilter(){
+    filter = "";
     $("#currentFilterInput").val("");
-    filter === "";
     currentFilter.innerHTML = "";
     
     var currentlines = $("#segmentLog").html().split('<!-- logline -->');
@@ -173,7 +241,6 @@ function clearFilter(){
 
     segmentLog.innerHTML = "";
     writeResponse(filteredHtml);
-    
 }
 
 function writeResponse(text) {
@@ -217,10 +284,11 @@ function openSocket() {
     };
 
     webSocket.onclose = function () {
+        saveSettings();
         if (isRunning) {
             stopLog();
-            writeResponse("Connection closed<br/>");
         }
+        writeResponse("Connection closed<br/>");
     };
 
     function messageLog(json) {
