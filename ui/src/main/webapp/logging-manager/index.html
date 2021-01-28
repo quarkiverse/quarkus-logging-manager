@@ -46,6 +46,9 @@
                     <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Log levels">
                         <a id="logLevelsButton" class="nav-link" data-toggle="modal" data-target="#logLevelsModal"><i class="fas fa-layer-group"></i></a>
                     </li>
+                    <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Columns">
+                        <a id="columnsButton" class="nav-link" data-toggle="modal" data-target="#columnsModal"><i class="fas fa-columns"></i></a>
+                    </li>
                     <li id="filterMenuButton" class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Filter">
                         <a id="filterButton" class="nav-link" data-toggle="modal" data-target="#filterModal"><i class="fas fa-filter"></i></a>
                     </li>
@@ -60,7 +63,7 @@
         </nav>
 
         <!-- Log -->
-        <a id="followLogButton" class="nav-link" data-toggle="tooltip" data-placement="bottom" title="Follow log (auto scroll)"><i id="followLogIcon" class="text-success fas fa-circle-notch fa-spin"></i></a>
+        <a id="followLogButton" class="nav-link" data-toggle="tooltip" data-placement="left" title="Follow log (auto scroll)"><i id="followLogIcon" class="text-success fas fa-circle-notch fa-spin"></i></a>
         <div id="logTerminal" class="bg-dark text-light ">
             <samp id="segmentLog" class="text-wrap">
 
@@ -113,6 +116,83 @@
             </div>
         </div>
 
+        <!-- Columns -->
+        <div class="modal fade" id="columnsModal" tabindex="-1" aria-labelledby="columnsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="columnsModalLabel">Columns</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="custom-control custom-switch">
+                            <input checked type="checkbox" class="custom-control-input" id="levelIconSwitch">
+                            <label class="custom-control-label" for="levelIconSwitch">Log Level Icon</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="sequenceNumberSwitch">
+                            <label class="custom-control-label" for="sequenceNumberSwitch">Sequence Number</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input checked type="checkbox" class="custom-control-input" id="dateSwitch">
+                            <label class="custom-control-label" for="dateSwitch">Date</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input checked type="checkbox" class="custom-control-input" id="timeSwitch">
+                            <label class="custom-control-label" for="timeSwitch">Time</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input checked type="checkbox" class="custom-control-input" id="levelSwitch">
+                            <label class="custom-control-label" for="levelSwitch">Log Level</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input checked type="checkbox" class="custom-control-input" id="sourceClassFullAbbreviatedSwitch">
+                            <label class="custom-control-label" for="sourceClassFullAbbreviatedSwitch">Full Class Name (Abbreviated)</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="sourceClassFullSwitch">
+                            <label class="custom-control-label" for="sourceClassFullSwitch">Full Class Name</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="sourceClassSwitch">
+                            <label class="custom-control-label" for="sourceClassSwitch">Class Name</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input checked type="checkbox" class="custom-control-input" id="sourceMethodNameSwitch">
+                            <label class="custom-control-label" for="sourceMethodNameSwitch">Method Name</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="threadIdSwitch">
+                            <label class="custom-control-label" for="threadIdSwitch">Thread Id</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input checked type="checkbox" class="custom-control-input" id="threadNameSwitch">
+                            <label class="custom-control-label" for="threadNameSwitch">Thread Name</label>
+                        </div>
+                        
+                        <div class="custom-control custom-switch">
+                            <input checked type="checkbox" class="custom-control-input" id="messageSwitch">
+                            <label class="custom-control-label" for="messageSwitch">Log message</label>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
         <script src="jquery.min.js"></script>
         <script src="bootstrap.bundle.min.js"></script>
         <script src="loggingmanager.js"></script>
