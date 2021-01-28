@@ -33,23 +33,9 @@ $('document').ready(function () {
     
     populateLoggerLevelModal();
     
-    // Add listener to stop
-    var ctrlDown = false,
-            ctrlKey = 17,
-            cmdKey = 91,
-            cKey = 67;
-
-    $(document).keydown(function (e) {
-        if (e.keyCode === ctrlKey || e.keyCode === cmdKey)
-            ctrlDown = true;
-    }).keyup(function (e) {
-        if (e.keyCode === ctrlKey || e.keyCode === cmdKey)
-            ctrlDown = false;
-    });
-
-    $(document).keydown(function (e) {
-        if (ctrlDown && (e.keyCode === cKey))stopLog();
-    });
+    addControlCListener();
+    
+    addEnterListener();
     
     $('[data-toggle="tooltip"]').tooltip();
     
@@ -121,6 +107,34 @@ function saveSettings(){
     };
 
     localStorage.setItem(localstoragekey, JSON.stringify(state));
+}
+
+function addControlCListener(){
+    // Add listener to stop
+    var ctrlDown = false,
+            ctrlKey = 17,
+            cmdKey = 91,
+            cKey = 67;
+
+    $(document).keydown(function (e) {
+        if (e.keyCode === ctrlKey || e.keyCode === cmdKey)
+            ctrlDown = true;
+    }).keyup(function (e) {
+        if (e.keyCode === ctrlKey || e.keyCode === cmdKey)
+            ctrlDown = false;
+    });
+
+    $(document).keydown(function (e) {
+        if (ctrlDown && (e.keyCode === cKey))stopLog();
+    });
+}
+
+function addEnterListener(){
+    $(document).keydown(function (e) {
+        if (e.keyCode === 13 && !$('#filterModal').hasClass('show')){
+            writeResponse("</br>");
+        } 
+    });
 }
 
 function stopStartEvent() {

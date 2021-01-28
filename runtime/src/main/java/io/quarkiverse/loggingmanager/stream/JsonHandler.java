@@ -1,14 +1,14 @@
 package io.quarkiverse.loggingmanager.stream;
 
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
+import org.jboss.logmanager.ExtHandler;
+import org.jboss.logmanager.ExtLogRecord;
 
 import io.vertx.core.http.ServerWebSocket;
 
 /**
  * Log handler for Logger Manager
  */
-public class JsonHandler extends Handler {
+public class JsonHandler extends ExtHandler {
 
     private final ServerWebSocket session;
 
@@ -18,23 +18,20 @@ public class JsonHandler extends Handler {
     }
 
     @Override
-    public void publish(LogRecord logRecord) {
+    public final void doPublish(final ExtLogRecord record) {
+        // Don't log empty messages
+        if (record.getMessage() == null || record.getMessage().isEmpty()) {
+            return;
+        }
+
         if (session != null) {
-            String message = getFormatter().format(logRecord);
+            String message = getFormatter().format(record);
             try {
                 session.writeTextMessage(message);
             } catch (Throwable ex) {
                 session.close();
             }
         }
-    }
 
-    @Override
-    public void flush() {
     }
-
-    @Override
-    public void close() throws SecurityException {
-    }
-
 }
