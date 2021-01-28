@@ -4,6 +4,7 @@ var increment = 0.05;
 var webSocket;
 var messages = document.getElementById("messages");
 var tab = "&nbsp;&nbsp;&nbsp;&nbsp";
+var space = "&nbsp;";
 
 var isRunning = true;
 var logScrolling = true;
@@ -12,7 +13,11 @@ var loggersUrl = "/loggers";
 
 var filter = "";
 
+var localstoragekey = "quarkus_logging_manager_state";
+
 $('document').ready(function () {
+    loadSettings();
+    
     openSocket();
     // Make sure we stop the connection when the browser close
     window.onbeforeunload = function () {
@@ -28,6 +33,83 @@ $('document').ready(function () {
     
     populateLoggerLevelModal();
     
+    addControlCListener();
+    
+    addEnterListener();
+    
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    currentFilterInput.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            currentFilterInputButton.click();
+        }
+    });
+    
+    $('#filterModal').on('shown.bs.modal', function () {
+        $('#currentFilterInput').trigger('focus');
+    });
+    
+    // save settings on hide
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState == 'hidden') { 
+            saveSettings();
+        }
+    });
+});
+
+function loadSettings(){
+    if (localstoragekey in localStorage) {
+        var state = JSON.parse(localStorage.getItem(localstoragekey));
+
+        zoom = state.zoom;
+        applyZoom();
+
+        logScrolling = state.logScrolling;
+        applyFollowLog();
+
+        $("#currentFilterInput").val(state.filter);
+        applyFilter();
+        
+        $('#levelIconSwitch').prop('checked', state.levelIconSwitch);
+        $('#sequenceNumberSwitch').prop('checked', state.sequenceNumberSwitch);
+        $('#dateSwitch').prop('checked', state.dateSwitch);
+        $('#timeSwitch').prop('checked', state.timeSwitch);
+        $('#levelSwitch').prop('checked', state.levelSwitch);
+        $('#sourceClassFullAbbreviatedSwitch').prop('checked', state.sourceClassFullAbbreviatedSwitch);
+        $('#sourceClassFullSwitch').prop('checked', state.sourceClassFullSwitch);
+        $('#sourceClassSwitch').prop('checked', state.sourceClassSwitch);
+        $('#sourceMethodNameSwitch').prop('checked', state.sourceMethodNameSwitch);
+        $('#threadIdSwitch').prop('checked', state.threadIdSwitch);
+        $('#threadNameSwitch').prop('checked', state.threadNameSwitch);
+        $('#messageSwitch').prop('checked', state.messageSwitch);        
+    }    
+}
+
+function saveSettings(){
+    // Running state
+    var state = {
+        "zoom": zoom,
+        "logScrolling": logScrolling,
+        "filter": filter,
+        "levelIconSwitch": $('#levelIconSwitch').is(":checked"),
+        "sequenceNumberSwitch": $('#sequenceNumberSwitch').is(":checked"),
+        "dateSwitch": $('#dateSwitch').is(":checked"),
+        "timeSwitch": $('#timeSwitch').is(":checked"),
+        "levelSwitch": $('#levelSwitch').is(":checked"),
+        "sourceClassFullAbbreviatedSwitch": $('#sourceClassFullAbbreviatedSwitch').is(":checked"),
+        "sourceClassFullSwitch": $('#sourceClassFullSwitch').is(":checked"),
+        "sourceClassSwitch": $('#sourceClassSwitch').is(":checked"),
+        "sourceMethodNameSwitch": $('#sourceMethodNameSwitch').is(":checked"),
+        "threadIdSwitch": $('#threadIdSwitch').is(":checked"),
+        "threadNameSwitch": $('#threadNameSwitch').is(":checked"),
+        "messageSwitch": $('#messageSwitch').is(":checked")
+    };
+
+    localStorage.setItem(localstoragekey, JSON.stringify(state));
+}
+
+function addControlCListener(){
     // Add listener to stop
     var ctrlDown = false,
             ctrlKey = 17,
@@ -45,20 +127,15 @@ $('document').ready(function () {
     $(document).keydown(function (e) {
         if (ctrlDown && (e.keyCode === cKey))stopLog();
     });
-    
-    $('[data-toggle="tooltip"]').tooltip();
-    
-    currentFilterInput.addEventListener("keyup", function(event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            currentFilterInputButton.click();
-        }
+}
+
+function addEnterListener(){
+    $(document).keydown(function (e) {
+        if (e.keyCode === 13 && !$('#filterModal').hasClass('show')){
+            writeResponse("</br>");
+        } 
     });
-    
-    $('#filterModal').on('shown.bs.modal', function () {
-        $('#currentFilterInput').trigger('focus');
-    });
-});
+}
 
 function stopStartEvent() {
     if (isRunning) {
@@ -89,25 +166,32 @@ function clearScreenEvent() {
     segmentLog.innerHTML = "";
 }
 
+function applyZoom(){
+    $('#segmentLog').css("font-size", zoom + "em");
+}
+
 function zoomOutEvent() {
     zoom = zoom - increment;
-    $('#segmentLog').css("font-size", zoom + "em");
+    applyZoom();
 }
 
 function zoomInEvent() {
     zoom = zoom + increment;
-    $('#segmentLog').css("font-size", zoom + "em");
+    applyZoom();
 }
 
 function followLogEvent() {
+    logScrolling = !logScrolling;
+    applyFollowLog();
+}
+
+function applyFollowLog(){
     if (logScrolling) {
-        logScrolling = false;
-        $("#followLogIcon").removeClass("text-success");
-        $("#followLogIcon").removeClass("fa-spin");
-    } else {
-        logScrolling = true;
         $("#followLogIcon").addClass("text-success");
         $("#followLogIcon").addClass("fa-spin");
+    }else{
+        $("#followLogIcon").removeClass("text-success");
+        $("#followLogIcon").removeClass("fa-spin");
     }
 }
 
@@ -142,7 +226,6 @@ function applyFilter(){
 }
 
 function getLogLine(htmlline){
-    
     if(filter===""){
         return htmlline;
     }else{
@@ -157,8 +240,8 @@ function getLogLine(htmlline){
 }
 
 function clearFilter(){
+    filter = "";
     $("#currentFilterInput").val("");
-    filter === "";
     currentFilter.innerHTML = "";
     
     var currentlines = $("#segmentLog").html().split('<!-- logline -->');
@@ -172,7 +255,6 @@ function clearFilter(){
 
     segmentLog.innerHTML = "";
     writeResponse(filteredHtml);
-    
 }
 
 function writeResponse(text) {
@@ -216,28 +298,32 @@ function openSocket() {
     };
 
     webSocket.onclose = function () {
+        saveSettings();
         if (isRunning) {
             stopLog();
-            writeResponse("Connection closed<br/>");
         }
+        writeResponse("Connection closed<br/>");
     };
 
     function messageLog(json) {
         
         var timestamp = new Date(json.timestamp);
-        var timestring = timestamp.toLocaleTimeString();
-        var datestring = timestamp.toLocaleDateString();
         var level = json.level;
 
         var htmlLine = "<span>" + 
-            getLevelIcon(level) + tab
-                + datestring + tab
-                + timestring + tab
-                + getLevelText(level) + tab
-                + getClassName(json.sourceClassNameFull, json.sourceClassNameFullShort, json.sourceMethodName) + tab
-                + getThread(json.threadName, json.threadId) + tab
-                + json.formattedMessage + "<br/>";
-        
+            getLevelIcon(level)
+                + getSequenceNumber(json.sequenceNumber)
+                + getDateString(timestamp)
+                + getTimeString(timestamp)
+                + getLevelText(level)
+                + getClassFullAbbreviatedName(json.sourceClassNameFull, json.sourceClassNameFullShort)
+                + getFullClassName(json.sourceClassNameFull)
+                + getClassName(json.sourceClassName)
+                + getMethodName(json.sourceMethodName)
+                + getThreadId(json.threadName, json.threadId)
+                + getThreadName(json.threadName, json.threadId)
+                + getLogMessage(json.formattedMessage) + "<br/>";
+                
         if (json.stacktrace) {
             for (var i in json.stacktrace) {
                 var stacktrace = enhanceStacktrace(json.loggerName, json.stacktrace[i]);
@@ -256,31 +342,58 @@ function openSocket() {
 }
 
 function getLevelIcon(level) {
-    level = level.toUpperCase();
-    if (level === "WARNING" || level === "WARN")
-        return "<i class='levelicon text-warning fas fa-exclamation-triangle'></i>";
-    if (level === "SEVERE" || level === "ERROR")
-        return "<i class='levelicon text-danger fas fa-radiation'></i>";
-    if (level === "INFO")
-        return "<i class='levelicon text-primary fas fa-info-circle'></i>";
-    if (level === "DEBUG")
-        return "<i class='levelicon text-secondary fas fa-bug'></i>";
+    if($('#levelIconSwitch').is(":checked")){
+        level = level.toUpperCase();
+        if (level === "WARNING" || level === "WARN")
+            return "<i class='levelicon text-warning fas fa-exclamation-triangle'></i>" + tab;
+        if (level === "SEVERE" || level === "ERROR")
+            return "<i class='levelicon text-danger fas fa-radiation'></i>" + tab;
+        if (level === "INFO")
+            return "<i class='levelicon text-primary fas fa-info-circle'></i>" + tab;
+        if (level === "DEBUG")
+            return "<i class='levelicon text-secondary fas fa-bug'></i>" + tab;
 
-    return "<i class='levelicon fas fa-circle'></i>";
+        return "<i class='levelicon fas fa-circle'></i>" + tab;
+    }
+    return "";
+}
+
+function getSequenceNumber(sequenceNumber){
+    if($('#sequenceNumberSwitch').is(":checked")){
+        return "<span class='badge badge-info'>" + sequenceNumber + "</span>" + tab;   
+    }
+    return "";
+}
+
+function getDateString(timestamp){
+    if($('#dateSwitch').is(":checked")){
+        return timestamp.toLocaleDateString() + tab;
+    }
+    return "";
+}
+
+function getTimeString(timestamp){
+    if($('#timeSwitch').is(":checked")){
+        return timestamp.toLocaleTimeString() + tab;
+    }
+    return "";
 }
 
 function getLevelText(level) {
-    level = level.toUpperCase();
-    if (level === "WARNING" || level === "WARN")
-        return "<span class='text-warning'>WARN </span>";
-    if (level === "SEVERE" || level === "ERROR")
-        return "<span class='text-danger'>ERROR</span>";
-    if (level === "INFO")
-        return "<span class='text-primary'>INFO </span>";
-    if (level === "DEBUG")
-        return "<span class='text-secondary'>DEBUG</span>";
+    if($('#levelSwitch').is(":checked")){
+        level = level.toUpperCase();
+        if (level === "WARNING" || level === "WARN")
+            return "<span class='text-warning'>WARN </span>" + tab;
+        if (level === "SEVERE" || level === "ERROR")
+            return "<span class='text-danger'>ERROR</span>" + tab;
+        if (level === "INFO")
+            return "<span class='text-primary'>INFO </span>" + tab;
+        if (level === "DEBUG")
+            return "<span class='text-secondary'>DEBUG</span>" + tab;
 
-    return level;
+        return level + tab;
+    }
+    return "";
 }
 
 function getTextClass(level){
@@ -297,12 +410,53 @@ function getTextClass(level){
     return "";
 }
 
-function getClassName(sourceClassNameFull, sourceClassNameFullShort, sourceMethodName) {
-    return "<span class='text-primary' data-toggle='tooltip' data-placement='top' title='" + sourceClassNameFull + "'>[" + sourceClassNameFullShort + "]</span> " + sourceMethodName;
+function getClassFullAbbreviatedName(sourceClassNameFull, sourceClassNameFullShort) {
+    if($('#sourceClassFullAbbreviatedSwitch').is(":checked")){
+        return "<span class='text-primary' data-toggle='tooltip' data-placement='top' title='" + sourceClassNameFull + "'>[" + sourceClassNameFullShort + "]</span>" + space;
+    }
+    return "";
 }
 
-function getThread(threadName, threadId) {
-    return "<span class='text-success' data-toggle='tooltip' data-placement='top' title='Thread Id: " + threadId + "'>(" + threadName + ")</span>";
+function getFullClassName(sourceClassNameFull) {
+    if($('#sourceClassFullSwitch').is(":checked")){
+        return "<span class='text-primary'>[" + sourceClassNameFull + "]</span>" + space;
+    }
+    return "";
+}
+
+function getClassName(className) {
+    if($('#sourceClassSwitch').is(":checked")){
+        return "<span class='text-primary'>[" + className + "]</span>" + space;
+    }
+    return "";
+}
+
+function getMethodName(methodName) {
+    if($('#sourceMethodNameSwitch').is(":checked")){
+        return methodName + tab;
+    }
+    return "";
+}
+
+function getThreadId(threadName, threadId) {
+    if($('#threadIdSwitch').is(":checked")){
+        return "<span class='text-success' data-toggle='tooltip' data-placement='top' title='Thread Name: " + threadName + "'>(" + threadId + ")</span>" + tab;
+    }
+    return "";
+}
+
+function getThreadName(threadName, threadId) {
+    if($('#threadNameSwitch').is(":checked")){
+        return "<span class='text-success' data-toggle='tooltip' data-placement='top' title='Thread Id: " + threadId + "'>(" + threadName + ")</span>" + tab;
+    }
+    return "";
+}
+
+function getLogMessage(message){
+    if($('#messageSwitch').is(":checked")){
+        return message;
+    }
+    return "";
 }
 
 function closeSocket() {
@@ -326,9 +480,7 @@ function enhanceStacktrace(loggerName, stacktrace) {
                 }
                 line = tab + tab + line;
             }
-
         }
-
         enhanceStacktrace.push(line + '<br/>');
     }
     var newStacktrace = enhanceStacktrace.join('');
