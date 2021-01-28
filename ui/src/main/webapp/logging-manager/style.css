@@ -39,6 +39,7 @@ body{
 
 #logTerminal {
     padding-bottom: 5px;
+    line-height: 1.01;
 }
 
 #followLogButton {

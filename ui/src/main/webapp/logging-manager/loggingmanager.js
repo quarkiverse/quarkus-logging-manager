@@ -133,6 +133,8 @@ function addEnterListener(){
     $(document).keydown(function (e) {
         if (e.keyCode === 13 && !$('#filterModal').hasClass('show')){
             writeResponse("</br>");
+            var element = document.getElementById("logTerminal");
+            element.scrollIntoView({block: "end"});
         } 
     });
 }
@@ -345,7 +347,7 @@ function getLevelIcon(level) {
     if($('#levelIconSwitch').is(":checked")){
         level = level.toUpperCase();
         if (level === "WARNING" || level === "WARN")
-            return "<i class='levelicon text-warning fas fa-exclamation-triangle'></i>" + tab;
+            return "<i class='levelicon text-warning fas fa-exclamation-circle'></i>" + tab;
         if (level === "SEVERE" || level === "ERROR")
             return "<i class='levelicon text-danger fas fa-radiation'></i>" + tab;
         if (level === "INFO")
@@ -367,7 +369,7 @@ function getSequenceNumber(sequenceNumber){
 
 function getDateString(timestamp){
     if($('#dateSwitch').is(":checked")){
-        return timestamp.toLocaleDateString() + tab;
+        return timestamp.toLocaleDateString() + space;
     }
     return "";
 }
@@ -383,11 +385,11 @@ function getLevelText(level) {
     if($('#levelSwitch').is(":checked")){
         level = level.toUpperCase();
         if (level === "WARNING" || level === "WARN")
-            return "<span class='text-warning'>WARN </span>" + tab;
+            return "<span class='text-warning'>WARN" + space + "</span>" + tab;
         if (level === "SEVERE" || level === "ERROR")
             return "<span class='text-danger'>ERROR</span>" + tab;
         if (level === "INFO")
-            return "<span class='text-primary'>INFO </span>" + tab;
+            return "<span class='text-primary'>INFO" + space + "</span>" + tab;
         if (level === "DEBUG")
             return "<span class='text-secondary'>DEBUG</span>" + tab;
 

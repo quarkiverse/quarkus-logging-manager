@@ -1,12 +1,16 @@
 package io.quarkiverse.loggingmanager.stream;
 
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.MemoryHandler;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
+
+import org.jboss.logmanager.ExtLogRecord;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.quarkus.arc.Unremovable;
@@ -24,6 +28,16 @@ import io.vertx.ext.web.RoutingContext;
 public class LogstreamSocket {
 
     private static final Logger log = Logger.getLogger(LogstreamSocket.class.getName());
+    private final int HISTORY_SIZE = 50; //TODO: Get from config
+    private final HistoryHandler historyHandler = new HistoryHandler(HISTORY_SIZE);
+
+    public void postConstruct(@Observes @Initialized(ApplicationScoped.class) Object o) {
+        // Add history handler
+        Logger logger = Logger.getLogger("");
+        if (logger != null) {
+            logger.addHandler(historyHandler);
+        }
+    }
 
     void setup(@Observes Router router) {
         router.route("/logstream").handler(new io.vertx.core.Handler<RoutingContext>() {
@@ -36,7 +50,8 @@ public class LogstreamSocket {
                             if (event.succeeded()) {
                                 ServerWebSocket socket = event.result();
                                 SessionState state = new SessionState();
-                                state.handler = new MemoryHandler(new JsonHandler(socket), 1000, Level.FINEST);
+                                WebSocketHandler webSocketHandler = new WebSocketHandler(socket);
+                                state.handler = new MemoryHandler(webSocketHandler, 1000, Level.FINEST);
                                 state.session = socket;
                                 socket.closeHandler(new io.vertx.core.Handler<Void>() {
                                     @Override
@@ -51,6 +66,12 @@ public class LogstreamSocket {
                                     }
                                 });
                                 start(state);
+
+                                // Polulate history
+                                List<ExtLogRecord> history = historyHandler.getHistory();
+                                for (ExtLogRecord lr : history) {
+                                    webSocketHandler.doPublish(lr);
+                                }
                             } else {
                                 log.log(Level.SEVERE, "Failed to connect to log server", event.cause());
                             }

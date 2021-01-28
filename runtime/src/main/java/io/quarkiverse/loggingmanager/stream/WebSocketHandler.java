@@ -8,11 +8,11 @@ import io.vertx.core.http.ServerWebSocket;
 /**
  * Log handler for Logger Manager
  */
-public class JsonHandler extends ExtHandler {
+public class WebSocketHandler extends ExtHandler {
 
     private final ServerWebSocket session;
 
-    public JsonHandler(ServerWebSocket session) {
+    public WebSocketHandler(ServerWebSocket session) {
         this.session = session;
         setFormatter(new JsonFormatter());
     }
@@ -24,7 +24,7 @@ public class JsonHandler extends ExtHandler {
             return;
         }
 
-        if (session != null) {
+        if (session != null && isLoggable(record)) {
             String message = getFormatter().format(record);
             try {
                 session.writeTextMessage(message);
