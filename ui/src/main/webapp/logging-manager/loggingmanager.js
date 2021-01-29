@@ -35,11 +35,11 @@ $('document').ready(function () {
     populateLoggerLevelModal();
     
     addControlCListener();
-    
     addEnterListener();
+    addScrollListener();
     
-    $('[data-toggle="tooltip"]').tooltip();
-    
+    $('[data-toggle="tooltip"]').tooltip();    
+
     currentFilterInput.addEventListener("keyup", function(event) {
         if (event.keyCode === 13) {
             event.preventDefault();
@@ -127,6 +127,19 @@ function addControlCListener(){
 
     $(document).keydown(function (e) {
         if (ctrlDown && (e.keyCode === cKey))stopLog();
+    });
+}
+
+function addScrollListener(){
+    $(document).on('mousewheel DOMMouseScroll', function(event) {
+        if (event.shiftKey) {
+            if( event.originalEvent.detail > 0 || event.originalEvent.wheelDelta < 0 ) {
+                zoomOutEvent();
+            } else {
+                zoomInEvent();
+            }
+            return false;
+        }
     });
 }
 
