@@ -2,7 +2,6 @@ package io.quarkiverse.loggingmanager.stream;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.jboss.logmanager.ExtHandler;
 import org.jboss.logmanager.ExtLogRecord;
@@ -12,13 +11,11 @@ import org.jboss.logmanager.ExtLogRecord;
  */
 public class HistoryHandler extends ExtHandler {
 
-    private final int size;
+    private int size = 0;
     private final List<ExtLogRecord> history = new LinkedList<>();
 
-    public HistoryHandler(int size) {
+    public void setSize(int size) {
         this.size = size;
-        super.setLevel(Level.INFO);
-        setFormatter(new JsonFormatter());
     }
 
     @Override
@@ -36,6 +33,10 @@ public class HistoryHandler extends ExtHandler {
             }
         }
 
+    }
+
+    public boolean hasHistory() {
+        return !history.isEmpty();
     }
 
     public List<ExtLogRecord> getHistory() {

@@ -1,6 +1,7 @@
 package io.quarkiverse.loggingmanager.stream;
 
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,6 +11,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logmanager.ExtLogRecord;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -28,14 +30,23 @@ import io.vertx.ext.web.RoutingContext;
 public class LogstreamSocket {
 
     private static final Logger log = Logger.getLogger(LogstreamSocket.class.getName());
-    private final int HISTORY_SIZE = 50; //TODO: Get from config
-    private final HistoryHandler historyHandler = new HistoryHandler(HISTORY_SIZE);
+    private final HistoryHandler historyHandler = new HistoryHandler();
+
+    @ConfigProperty(name = "quarkus.log.level", defaultValue = "INFO")
+    private String defaultLevel;
+
+    @ConfigProperty(name = "quarkus.logging-manager.ui.history-size", defaultValue = "50")
+    private OptionalInt historySize;
 
     public void postConstruct(@Observes @Initialized(ApplicationScoped.class) Object o) {
         // Add history handler
-        Logger logger = Logger.getLogger("");
-        if (logger != null) {
-            logger.addHandler(historyHandler);
+        if (historySize.isPresent() && historySize.getAsInt() > 0) {
+            Logger logger = Logger.getLogger("");
+            if (logger != null) {
+                historyHandler.setLevel(Level.parse(defaultLevel));
+                historyHandler.setSize(historySize.getAsInt());
+                logger.addHandler(historyHandler);
+            }
         }
     }
 
@@ -68,9 +79,11 @@ public class LogstreamSocket {
                                 start(state);
 
                                 // Polulate history
-                                List<ExtLogRecord> history = historyHandler.getHistory();
-                                for (ExtLogRecord lr : history) {
-                                    webSocketHandler.doPublish(lr);
+                                if (historyHandler.hasHistory()) {
+                                    List<ExtLogRecord> history = historyHandler.getHistory();
+                                    for (ExtLogRecord lr : history) {
+                                        webSocketHandler.doPublish(lr);
+                                    }
                                 }
                             } else {
                                 log.log(Level.SEVERE, "Failed to connect to log server", event.cause());
