@@ -1,4 +1,5 @@
-var zoom = 0.9;
+var zoom = 0.90;
+var linespace = 1.00;
 var increment = 0.05;
 
 var webSocket;
@@ -37,6 +38,7 @@ $('document').ready(function () {
     addControlCListener();
     addEnterListener();
     addScrollListener();
+    addLineSpaceListener();
     
     $('[data-toggle="tooltip"]').tooltip();    
 
@@ -66,6 +68,9 @@ function loadSettings(){
         zoom = state.zoom;
         applyZoom();
 
+        linespace = state.linespace;
+        applyLineSpacing();
+
         logScrolling = state.logScrolling;
         applyFollowLog();
 
@@ -91,6 +96,7 @@ function saveSettings(){
     // Running state
     var state = {
         "zoom": zoom,
+        "linespace": linespace,
         "logScrolling": logScrolling,
         "filter": filter,
         "levelIconSwitch": $('#levelIconSwitch').is(":checked"),
@@ -143,6 +149,16 @@ function addScrollListener(){
     });
 }
 
+function addLineSpaceListener(){
+    $(document).keydown(function (event) {
+        if (event.shiftKey && event.keyCode === 38) {
+            lineSpaceIncreaseEvent();
+        }else if (event.shiftKey && event.keyCode === 40) {
+            lineSpaceDecreaseEvent();
+        }
+    });
+}
+
 function addEnterListener(){
     $(document).keydown(function (e) {
         if (e.keyCode === 13 && !$('#filterModal').hasClass('show')){
@@ -182,18 +198,44 @@ function clearScreenEvent() {
     segmentLog.innerHTML = "";
 }
 
+function applyLineSpacing(){
+    $('#logTerminal').css("line-height", linespace);
+}
+
+function lineSpaceDecreaseEvent() {
+    linespace = parseFloat(linespace) - parseFloat(increment);
+    linespace = parseFloat(linespace).toFixed(2);
+    showInfoMessage("<i class='fas fa-text-height'></i>" + space  + linespace);
+    applyLineSpacing();
+}
+
+function lineSpaceIncreaseEvent() {
+    linespace = parseFloat(linespace) + parseFloat(increment);
+    linespace = parseFloat(linespace).toFixed(2);
+    showInfoMessage("<i class='fas fa-text-height'></i>" + space  + linespace);
+    applyLineSpacing();
+}
+
 function applyZoom(){
     $('#segmentLog').css("font-size", zoom + "em");
 }
 
 function zoomOutEvent() {
-    zoom = zoom - increment;
+    zoom = parseFloat(zoom) - parseFloat(increment);
+    zoom = parseFloat(zoom).toFixed(2);
+    showInfoMessage("<i class='fas fa-search-minus'></i>" + space  + zoom);
     applyZoom();
 }
 
 function zoomInEvent() {
-    zoom = zoom + increment;
+    zoom = parseFloat(zoom) + parseFloat(increment);
+    zoom = parseFloat(zoom).toFixed(2);
+    showInfoMessage("<i class='fas fa-search-plus'></i>" + space  + zoom);
     applyZoom();
+}
+
+function showInfoMessage(msg){
+    $('#informationSection').empty().show().html(msg).delay(3000).fadeOut(300);
 }
 
 function followLogEvent() {
@@ -205,9 +247,11 @@ function applyFollowLog(){
     if (logScrolling) {
         $("#followLogIcon").addClass("text-success");
         $("#followLogIcon").addClass("fa-spin");
+        showInfoMessage("<i class='fas fa-check-circle'></i>" + space  + "Autoscroll ON");
     }else{
         $("#followLogIcon").removeClass("text-success");
         $("#followLogIcon").removeClass("fa-spin");
+        showInfoMessage("<i class='fas fa-times-circle'></i>" + space  + "Autoscroll OFF");
     }
 }
 
