@@ -115,6 +115,7 @@ class LoggingManagerProcessor {
             }
 
             String loggersPath = nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.basePath);
+            String logStreamPath = nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.ui.streamPath);
 
             AppArtifact artifact = WebJarUtil.getAppArtifact(curateOutcomeBuildItem, UI_WEBJAR_GROUP_ID,
                     UI_WEBJAR_ARTIFACT_ID);
@@ -122,7 +123,7 @@ class LoggingManagerProcessor {
             if (launchMode.getLaunchMode().isDevOrTest()) {
                 Path tempPath = WebJarUtil.copyResourcesForDevOrTest(curateOutcomeBuildItem, launchMode, artifact,
                         UI_WEBJAR_PREFIX, false);
-                updateApiUrl(tempPath.resolve(FILE_TO_UPDATE), loggersPath);
+                updateApiUrl(tempPath.resolve(FILE_TO_UPDATE), loggersPath, logStreamPath);
 
                 loggingManagerBuildProducer
                         .produce(new LoggingManagerBuildItem(tempPath.toAbsolutePath().toString(),
@@ -183,16 +184,21 @@ class LoggingManagerProcessor {
         }
     }
 
-    private void updateApiUrl(Path loggingManagerJs, String loggingPath) throws IOException {
+    private void updateApiUrl(Path loggingManagerJs, String loggingPath, String logStreamPath) throws IOException {
         String content = new String(Files.readAllBytes(loggingManagerJs), StandardCharsets.UTF_8);
         String result = updateApiUrl(content, loggingPath);
+        result = updateStreamUrl(result, logStreamPath);
         if (result != null) {
             Files.write(loggingManagerJs, result.getBytes(StandardCharsets.UTF_8));
         }
     }
 
     public String updateApiUrl(String original, String loggingPath) {
-        return original.replace("loggersUrl = \"/loggers\";", "loggersUrl = \"" + loggingPath + "\";");
+        return original.replace("loggersUrl = \"hereTheApiUrl\";", "loggersUrl = \"" + loggingPath + "\";");
+    }
+
+    public String updateStreamUrl(String original, String logstreamUrl) {
+        return original.replace("logstreamUrl = \"hereTheStreamUrl\";", "logstreamUrl = \"" + logstreamUrl + "\";");
     }
 
     private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {

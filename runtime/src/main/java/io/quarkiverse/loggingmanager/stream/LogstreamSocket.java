@@ -38,6 +38,12 @@ public class LogstreamSocket {
     @ConfigProperty(name = "quarkus.logging-manager.ui.history-size", defaultValue = "50")
     private OptionalInt historySize;
 
+    @ConfigProperty(name = "quarkus.http.non-application-root-path", defaultValue = "/q")
+    private String nonApplicationRootPath;
+
+    @ConfigProperty(name = "quarkus.logging-manager.ui.stream-path", defaultValue = "/logging-stream")
+    private String streamPath;
+
     public void postConstruct(@Observes @Initialized(ApplicationScoped.class) Object o) {
         // Add history handler
         if (historySize.isPresent() && historySize.getAsInt() > 0) {
@@ -51,7 +57,7 @@ public class LogstreamSocket {
     }
 
     void setup(@Observes Router router) {
-        router.route("/logstream").handler(new io.vertx.core.Handler<RoutingContext>() {
+        router.route(nonApplicationRootPath + streamPath).handler(new io.vertx.core.Handler<RoutingContext>() {
             @Override
             public void handle(RoutingContext event) {
                 if ("websocket".equalsIgnoreCase(event.request().getHeader(HttpHeaderNames.UPGRADE))) {

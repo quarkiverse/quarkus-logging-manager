@@ -9,7 +9,8 @@ var space = "&nbsp;";
 var isRunning = true;
 var logScrolling = true;
 
-var loggersUrl = "/loggers";
+var loggersUrl = "hereTheApiUrl";
+var logstreamUrl = "hereTheStreamUrl";
 
 var filter = "";
 
@@ -281,7 +282,7 @@ function openSocket() {
         new_uri = "ws:";
     }
     new_uri += "//" + loc.host;
-    new_uri += "/logstream"; // TODO: configure this ?
+    new_uri += logstreamUrl;
     webSocket = new WebSocket(new_uri);
 
     webSocket.onopen = function (event) {

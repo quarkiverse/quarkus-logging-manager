@@ -14,6 +14,13 @@ public class LoggingManagerUIConfig {
     String rootPath;
 
     /**
+     * The path where Logging Stream is available.
+     * The value `/` is not allowed as it blocks the application from serving anything else.
+     */
+    @ConfigItem(defaultValue = "/logging-stream")
+    String streamPath;
+
+    /**
      * Always include the UI. By default this will only be included in dev and test.
      * Setting this to true will also include the UI in Prod
      */
