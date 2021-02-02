@@ -1,12 +1,18 @@
 package io.quarkiverse.loggingmanager.stream;
 
+import java.util.List;
+import java.util.OptionalInt;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.MemoryHandler;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logmanager.ExtLogRecord;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.quarkus.arc.Unremovable;
@@ -24,9 +30,34 @@ import io.vertx.ext.web.RoutingContext;
 public class LogstreamSocket {
 
     private static final Logger log = Logger.getLogger(LogstreamSocket.class.getName());
+    private final HistoryHandler historyHandler = new HistoryHandler();
+
+    @ConfigProperty(name = "quarkus.log.level", defaultValue = "INFO")
+    private String defaultLevel;
+
+    @ConfigProperty(name = "quarkus.logging-manager.ui.history-size", defaultValue = "50")
+    private OptionalInt historySize;
+
+    @ConfigProperty(name = "quarkus.http.non-application-root-path", defaultValue = "/q")
+    private String nonApplicationRootPath;
+
+    @ConfigProperty(name = "quarkus.logging-manager.ui.stream-path", defaultValue = "/logging-stream")
+    private String streamPath;
+
+    public void postConstruct(@Observes @Initialized(ApplicationScoped.class) Object o) {
+        // Add history handler
+        if (historySize.isPresent() && historySize.getAsInt() > 0) {
+            Logger logger = Logger.getLogger("");
+            if (logger != null) {
+                historyHandler.setLevel(Level.parse(defaultLevel));
+                historyHandler.setSize(historySize.getAsInt());
+                logger.addHandler(historyHandler);
+            }
+        }
+    }
 
     void setup(@Observes Router router) {
-        router.route("/logstream").handler(new io.vertx.core.Handler<RoutingContext>() {
+        router.route(nonApplicationRootPath + streamPath).handler(new io.vertx.core.Handler<RoutingContext>() {
             @Override
             public void handle(RoutingContext event) {
                 if ("websocket".equalsIgnoreCase(event.request().getHeader(HttpHeaderNames.UPGRADE))) {
@@ -36,7 +67,8 @@ public class LogstreamSocket {
                             if (event.succeeded()) {
                                 ServerWebSocket socket = event.result();
                                 SessionState state = new SessionState();
-                                state.handler = new MemoryHandler(new JsonHandler(socket), 1000, Level.FINEST);
+                                WebSocketHandler webSocketHandler = new WebSocketHandler(socket);
+                                state.handler = new MemoryHandler(webSocketHandler, 1000, Level.FINEST);
                                 state.session = socket;
                                 socket.closeHandler(new io.vertx.core.Handler<Void>() {
                                     @Override
@@ -51,6 +83,14 @@ public class LogstreamSocket {
                                     }
                                 });
                                 start(state);
+
+                                // Polulate history
+                                if (historyHandler.hasHistory()) {
+                                    List<ExtLogRecord> history = historyHandler.getHistory();
+                                    for (ExtLogRecord lr : history) {
+                                        webSocketHandler.doPublish(lr);
+                                    }
+                                }
                             } else {
                                 log.log(Level.SEVERE, "Failed to connect to log server", event.cause());
                             }

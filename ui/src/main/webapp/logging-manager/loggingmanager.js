@@ -1,4 +1,5 @@
-var zoom = 0.9;
+var zoom = 0.90;
+var linespace = 1.00;
 var increment = 0.05;
 
 var webSocket;
@@ -9,7 +10,8 @@ var space = "&nbsp;";
 var isRunning = true;
 var logScrolling = true;
 
-var loggersUrl = "/loggers";
+var loggersUrl = "hereTheApiUrl";
+var logstreamUrl = "hereTheStreamUrl";
 
 var filter = "";
 
@@ -34,11 +36,12 @@ $('document').ready(function () {
     populateLoggerLevelModal();
     
     addControlCListener();
-    
     addEnterListener();
+    addScrollListener();
+    addLineSpaceListener();
     
-    $('[data-toggle="tooltip"]').tooltip();
-    
+    $('[data-toggle="tooltip"]').tooltip();    
+
     currentFilterInput.addEventListener("keyup", function(event) {
         if (event.keyCode === 13) {
             event.preventDefault();
@@ -65,6 +68,9 @@ function loadSettings(){
         zoom = state.zoom;
         applyZoom();
 
+        linespace = state.linespace;
+        applyLineSpacing();
+
         logScrolling = state.logScrolling;
         applyFollowLog();
 
@@ -90,6 +96,7 @@ function saveSettings(){
     // Running state
     var state = {
         "zoom": zoom,
+        "linespace": linespace,
         "logScrolling": logScrolling,
         "filter": filter,
         "levelIconSwitch": $('#levelIconSwitch').is(":checked"),
@@ -129,10 +136,35 @@ function addControlCListener(){
     });
 }
 
+function addScrollListener(){
+    $(document).on('mousewheel DOMMouseScroll', function(event) {
+        if (event.shiftKey) {
+            if( event.originalEvent.detail > 0 || event.originalEvent.wheelDelta < 0 ) {
+                zoomOutEvent();
+            } else {
+                zoomInEvent();
+            }
+            return false;
+        }
+    });
+}
+
+function addLineSpaceListener(){
+    $(document).keydown(function (event) {
+        if (event.shiftKey && event.keyCode === 38) {
+            lineSpaceIncreaseEvent();
+        }else if (event.shiftKey && event.keyCode === 40) {
+            lineSpaceDecreaseEvent();
+        }
+    });
+}
+
 function addEnterListener(){
     $(document).keydown(function (e) {
         if (e.keyCode === 13 && !$('#filterModal').hasClass('show')){
             writeResponse("</br>");
+            var element = document.getElementById("logTerminal");
+            element.scrollIntoView({block: "end"});
         } 
     });
 }
@@ -166,18 +198,44 @@ function clearScreenEvent() {
     segmentLog.innerHTML = "";
 }
 
+function applyLineSpacing(){
+    $('#logTerminal').css("line-height", linespace);
+}
+
+function lineSpaceDecreaseEvent() {
+    linespace = parseFloat(linespace) - parseFloat(increment);
+    linespace = parseFloat(linespace).toFixed(2);
+    showInfoMessage("<i class='fas fa-text-height'></i>" + space  + linespace);
+    applyLineSpacing();
+}
+
+function lineSpaceIncreaseEvent() {
+    linespace = parseFloat(linespace) + parseFloat(increment);
+    linespace = parseFloat(linespace).toFixed(2);
+    showInfoMessage("<i class='fas fa-text-height'></i>" + space  + linespace);
+    applyLineSpacing();
+}
+
 function applyZoom(){
     $('#segmentLog').css("font-size", zoom + "em");
 }
 
 function zoomOutEvent() {
-    zoom = zoom - increment;
+    zoom = parseFloat(zoom) - parseFloat(increment);
+    zoom = parseFloat(zoom).toFixed(2);
+    showInfoMessage("<i class='fas fa-search-minus'></i>" + space  + zoom);
     applyZoom();
 }
 
 function zoomInEvent() {
-    zoom = zoom + increment;
+    zoom = parseFloat(zoom) + parseFloat(increment);
+    zoom = parseFloat(zoom).toFixed(2);
+    showInfoMessage("<i class='fas fa-search-plus'></i>" + space  + zoom);
     applyZoom();
+}
+
+function showInfoMessage(msg){
+    $('#informationSection').empty().show().html(msg).delay(3000).fadeOut(300);
 }
 
 function followLogEvent() {
@@ -189,9 +247,11 @@ function applyFollowLog(){
     if (logScrolling) {
         $("#followLogIcon").addClass("text-success");
         $("#followLogIcon").addClass("fa-spin");
+        showInfoMessage("<i class='fas fa-check-circle'></i>" + space  + "Autoscroll ON");
     }else{
         $("#followLogIcon").removeClass("text-success");
         $("#followLogIcon").removeClass("fa-spin");
+        showInfoMessage("<i class='fas fa-times-circle'></i>" + space  + "Autoscroll OFF");
     }
 }
 
@@ -279,7 +339,7 @@ function openSocket() {
         new_uri = "ws:";
     }
     new_uri += "//" + loc.host;
-    new_uri += "/logstream"; // TODO: configure this ?
+    new_uri += logstreamUrl;
     webSocket = new WebSocket(new_uri);
 
     webSocket.onopen = function (event) {
@@ -345,7 +405,7 @@ function getLevelIcon(level) {
     if($('#levelIconSwitch').is(":checked")){
         level = level.toUpperCase();
         if (level === "WARNING" || level === "WARN")
-            return "<i class='levelicon text-warning fas fa-exclamation-triangle'></i>" + tab;
+            return "<i class='levelicon text-warning fas fa-exclamation-circle'></i>" + tab;
         if (level === "SEVERE" || level === "ERROR")
             return "<i class='levelicon text-danger fas fa-radiation'></i>" + tab;
         if (level === "INFO")
@@ -367,7 +427,7 @@ function getSequenceNumber(sequenceNumber){
 
 function getDateString(timestamp){
     if($('#dateSwitch').is(":checked")){
-        return timestamp.toLocaleDateString() + tab;
+        return timestamp.toLocaleDateString() + space;
     }
     return "";
 }
@@ -383,11 +443,11 @@ function getLevelText(level) {
     if($('#levelSwitch').is(":checked")){
         level = level.toUpperCase();
         if (level === "WARNING" || level === "WARN")
-            return "<span class='text-warning'>WARN </span>" + tab;
+            return "<span class='text-warning'>WARN" + space + "</span>" + tab;
         if (level === "SEVERE" || level === "ERROR")
             return "<span class='text-danger'>ERROR</span>" + tab;
         if (level === "INFO")
-            return "<span class='text-primary'>INFO </span>" + tab;
+            return "<span class='text-primary'>INFO" + space + "</span>" + tab;
         if (level === "DEBUG")
             return "<span class='text-secondary'>DEBUG</span>" + tab;
 

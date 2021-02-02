@@ -39,11 +39,21 @@ body{
 
 #logTerminal {
     padding-bottom: 5px;
+    line-height: 1.00;
 }
 
 #followLogButton {
     position: fixed;
-    right: 0px;
+    right: 10px;
+    color: green;
+}
+
+#informationSection {
+    position: fixed;
+    right: 10px;
+    bottom: 5px;
+    color: white;
+    font-size: 1.6em;
 }
 
 hr {
