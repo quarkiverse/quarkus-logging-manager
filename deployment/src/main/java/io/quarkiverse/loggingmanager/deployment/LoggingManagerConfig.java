@@ -10,7 +10,7 @@ public class LoggingManagerConfig {
     /**
      * The base path, defaults to /loggers
      */
-    @ConfigItem(defaultValue = "/loggers")
+    @ConfigItem(defaultValue = "/logging-manager")
     String basePath;
 
     /**

@@ -2,8 +2,10 @@ package io.quarkiverse.loggingmanager.deployment;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.eclipse.microprofile.openapi.OASFactory;
 import org.eclipse.microprofile.openapi.OASFilter;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
 import org.eclipse.microprofile.openapi.models.Operation;
@@ -17,24 +19,19 @@ import org.eclipse.microprofile.openapi.models.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.models.responses.APIResponse;
 import org.eclipse.microprofile.openapi.models.responses.APIResponses;
 
-import io.smallrye.openapi.api.models.ComponentsImpl;
-import io.smallrye.openapi.api.models.OperationImpl;
-import io.smallrye.openapi.api.models.PathItemImpl;
-import io.smallrye.openapi.api.models.PathsImpl;
-import io.smallrye.openapi.api.models.media.ContentImpl;
-import io.smallrye.openapi.api.models.media.MediaTypeImpl;
+import io.quarkus.vertx.http.runtime.logstream.LogController;
 import io.smallrye.openapi.api.models.media.SchemaImpl;
-import io.smallrye.openapi.api.models.parameters.ParameterImpl;
-import io.smallrye.openapi.api.models.parameters.RequestBodyImpl;
-import io.smallrye.openapi.api.models.responses.APIResponseImpl;
-import io.smallrye.openapi.api.models.responses.APIResponsesImpl;
 
 /**
  * Create OpenAPI entries (if configured)
  */
 public class LoggingManagerOpenAPIFilter implements OASFilter {
-    private static final String CONTENT_TYPE = "application/json";
-    private static final String REF_LOGGER_INFO = "#/components/schemas/LoggerInfo";
+    private static final String JSON_CONTENT_TYPE = "application/json";
+    private static final String FORM_CONTENT_TYPE = "application/x-www-form-urlencoded";
+
+    private static final String REF_LOGGER_NAME = "#/components/schemas/LoggerName";
+    private static final String REF_LOGGER_LEVEL = "#/components/schemas/LoggerLevel";
+
     private static final String REF_LIST_LOGGER_INFO = "#/components/schemas/ListLoggerInfo";
     private static final String REF_LIST_STRING = "#/components/schemas/ListString";
 
@@ -49,14 +46,17 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     @Override
     public void filterOpenAPI(OpenAPI openAPI) {
         if (openAPI.getComponents() == null) {
-            openAPI.setComponents(new ComponentsImpl());
+            openAPI.setComponents(OASFactory.createComponents());
         }
+
+        openAPI.getComponents().addSchema("LoggerName", createLoggerName());
+        openAPI.getComponents().addSchema("LoggerLevel", createLoggerLevel());
+
         openAPI.getComponents().addSchema("LoggerInfo", createLoggerInfo());
-        openAPI.getComponents().addSchema("ListLoggerInfo", createListLoggerInfo());
         openAPI.getComponents().addSchema("ListString", createListString());
 
         if (openAPI.getPaths() == null) {
-            openAPI.setPaths(new PathsImpl());
+            openAPI.setPaths(OASFactory.createPaths());
         }
         Paths paths = openAPI.getPaths();
 
@@ -68,7 +68,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     }
 
     private PathItem createLevelsPathItem() {
-        PathItem pathItem = new PathItemImpl();
+        PathItem pathItem = OASFactory.createPathItem();
         pathItem.setDescription("All available levels ");
         pathItem.setSummary(
                 "Return all levels that is available");
@@ -77,7 +77,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     }
 
     private Operation createLevelsOperation() {
-        Operation operation = new OperationImpl();
+        Operation operation = OASFactory.createOperation();
         operation.setDescription("This returns all possible log levels");
         operation.setOperationId("logging_manager_levels");
         operation.setTags(Collections.singletonList(tag));
@@ -87,31 +87,31 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     }
 
     private APIResponses createLevelsAPIResponses() {
-        APIResponses responses = new APIResponsesImpl();
+        APIResponses responses = OASFactory.createAPIResponses();
         responses.addAPIResponse("200", createLevelsAPIResponse());
         return responses;
     }
 
     private APIResponse createLevelsAPIResponse() {
-        APIResponse response = new APIResponseImpl();
+        APIResponse response = OASFactory.createAPIResponse();
         response.setContent(createLevelsContent());
         return response;
     }
 
     private Content createLevelsContent() {
-        Content content = new ContentImpl();
-        content.addMediaType(CONTENT_TYPE, createLevelsMediaType());
+        Content content = OASFactory.createContent();
+        content.addMediaType(JSON_CONTENT_TYPE, createLevelsMediaType());
         return content;
     }
 
     private MediaType createLevelsMediaType() {
-        MediaType mediaType = new MediaTypeImpl();
-        mediaType.setSchema(new SchemaImpl().ref(REF_LIST_STRING));
+        MediaType mediaType = OASFactory.createMediaType();
+        mediaType.setSchema(OASFactory.createSchema().ref(REF_LIST_STRING));
         return mediaType;
     }
 
     private PathItem createLoggersPathItem() {
-        PathItem pathItem = new PathItemImpl();
+        PathItem pathItem = OASFactory.createPathItem();
         pathItem.setDescription("Logging Manager Loggers");
         pathItem.setSummary(
                 "Return info on all loggers, or a specific logger");
@@ -121,7 +121,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     }
 
     private Operation createLoggerPostOperation() {
-        Operation operation = new OperationImpl();
+        Operation operation = OASFactory.createOperation();
         operation.setDescription("Update a log level for a certain logger");
         operation.setOperationId("logging_manager_update");
         operation.setTags(Collections.singletonList(tag));
@@ -132,37 +132,44 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     }
 
     private RequestBody createLoggersPostRequestBody() {
-        RequestBody requestBody = new RequestBodyImpl();
+        RequestBody requestBody = OASFactory.createRequestBody();
         requestBody.setContent(createRequestBodyContent());
         return requestBody;
     }
 
     private Content createRequestBodyContent() {
-        Content content = new ContentImpl();
-        content.addMediaType(CONTENT_TYPE, createRequestBodyMediaType());
+        Content content = OASFactory.createContent();
+        content.addMediaType(FORM_CONTENT_TYPE, createRequestBodyMediaType());
+
         return content;
     }
 
     private MediaType createRequestBodyMediaType() {
-        MediaType mediaType = new MediaTypeImpl();
-        mediaType.setSchema(new SchemaImpl().ref(REF_LOGGER_INFO));
-        mediaType.setExample("{\n" +
-                "\t\"name\": \"com.myapp.somenamespace.MyClass\",\n" +
-                "\t\"configuredLevel\": \"ERROR\"\n" +
-                "}");
+        MediaType mediaType = OASFactory.createMediaType();
+
+        Schema schema = OASFactory.createSchema();
+        schema.setType(Schema.SchemaType.OBJECT);
+
+        Map<String, Schema> properties = new HashMap<>();
+        properties.put("loggerName", OASFactory.createSchema().ref(REF_LOGGER_NAME));
+        properties.put("loggerLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL));
+        schema.setProperties(properties);
+
+        mediaType.setSchema(schema);
+
         return mediaType;
     }
 
     private APIResponses createLoggerPostAPIResponses() {
-        APIResponses responses = new APIResponsesImpl();
-        APIResponseImpl apiResponse = new APIResponseImpl();
+        APIResponses responses = OASFactory.createAPIResponses();
+        APIResponse apiResponse = OASFactory.createAPIResponse();
         apiResponse.setDescription("Created");
         responses.addAPIResponse("201", apiResponse);
         return responses;
     }
 
     private Operation createLoggersOperation() {
-        Operation operation = new OperationImpl();
+        Operation operation = OASFactory.createOperation();
         operation.setDescription("Get information on all loggers or a specific logger.");
         operation.setOperationId("logging_manager_get_all");
         operation.setTags(Collections.singletonList(tag));
@@ -173,48 +180,67 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     }
 
     private APIResponses createLoggersAPIResponses() {
-        APIResponses responses = new APIResponsesImpl();
+        APIResponses responses = OASFactory.createAPIResponses();
         responses.addAPIResponse("200", createLoggersAPIResponse());
-        APIResponseImpl notFound = new APIResponseImpl();
+        APIResponse notFound = OASFactory.createAPIResponse();
         notFound.setDescription("Not Found");
         responses.addAPIResponse("404", notFound);
         return responses;
     }
 
     private APIResponse createLoggersAPIResponse() {
-        APIResponse response = new APIResponseImpl();
+        APIResponse response = OASFactory.createAPIResponse();
         response.setContent(createLoggersContent());
         return response;
     }
 
     private Content createLoggersContent() {
-        Content content = new ContentImpl();
-        content.addMediaType(CONTENT_TYPE, createLoggersMediaType());
+        Content content = OASFactory.createContent();
+        content.addMediaType(JSON_CONTENT_TYPE, createLoggersMediaType());
         return content;
     }
 
     private MediaType createLoggersMediaType() {
-        MediaType mediaType = new MediaTypeImpl();
-        mediaType.setSchema(new SchemaImpl().ref(REF_LIST_LOGGER_INFO));
+        MediaType mediaType = OASFactory.createMediaType();
+        mediaType.setSchema(OASFactory.createSchema().ref(REF_LIST_LOGGER_INFO));
         return mediaType;
     }
 
     private Parameter createLoggersParameter() {
-        Parameter p = new ParameterImpl();
+        Parameter p = OASFactory.createParameter();
         p.setName("loggerName");
         p.setIn(Parameter.In.QUERY);
-        p.setSchema(new SchemaImpl().type(Schema.SchemaType.STRING));
+        p.setSchema(OASFactory.createSchema().type(Schema.SchemaType.STRING));
         return p;
+    }
+
+    private Schema createLoggerName() {
+        Schema schema = new SchemaImpl("LoggerName");
+        schema.setType(Schema.SchemaType.STRING);
+        schema.setDescription("The logger name");
+
+        return schema;
+    }
+
+    private Schema createLoggerLevel() {
+        Schema schema = new SchemaImpl("LoggerLevel");
+        schema.setType(Schema.SchemaType.STRING);
+
+        List<String> loggerLevels = LogController.LEVELS;
+        for (String l : loggerLevels) {
+            schema.addEnumeration(l);
+        }
+        return schema;
     }
 
     private Schema createLoggerInfo() {
         Schema schema = new SchemaImpl("LoggerInfo");
         schema.setType(Schema.SchemaType.OBJECT);
-        schema.setProperties(createProperties());
+        schema.setProperties(createLoggerInfoProperties());
         return schema;
     }
 
-    private Map<String, Schema> createProperties() {
+    private Map<String, Schema> createLoggerInfoProperties() {
         Map<String, Schema> map = new HashMap<>();
         map.put("configuredLevel", createStringSchema("configuredLevel"));
         map.put("effectiveLevel", createStringSchema("effectiveLevel"));
@@ -226,13 +252,6 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     private Schema createStringSchema(String name) {
         Schema schema = new SchemaImpl(name);
         schema.setType(Schema.SchemaType.STRING);
-        return schema;
-    }
-
-    private Schema createListLoggerInfo() {
-        Schema schema = new SchemaImpl("ListLoggerInfo");
-        schema.setType(Schema.SchemaType.ARRAY);
-        schema.setItems(new SchemaImpl().ref(REF_LIST_LOGGER_INFO));
         return schema;
     }
 
