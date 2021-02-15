@@ -85,33 +85,38 @@ class LoggingManagerProcessor {
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             LoggingManagerConfig loggingManagerConfig,
             BodyHandlerBuildItem bodyHandlerBuildItem,
-            LoggerManagerRecorder recorder) {
+            LoggerManagerRecorder recorder,
+            LaunchModeBuildItem launchMode,
+            LoggingManagerRuntimeConfig runtimeConfig) {
 
-        Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
-        Handler<RoutingContext> levelHandler = recorder.levelHandler();
+        if (shouldInclude(launchMode, loggingManagerConfig)) {
+            Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
+            Handler<RoutingContext> levelHandler = recorder.levelHandler();
 
-        String basePath = nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.basePath);
+            String basePath = nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.basePath);
 
-        routeProducer.produce(new RouteBuildItem.Builder()
-                .routeFunction(recorder.routeFunction(basePath, bodyHandlerBuildItem.getHandler()))
-                .handler(loggerHandler).build());
-        routeProducer.produce(new RouteBuildItem.Builder()
-                .route(basePath + "/levels")
-                .handler(levelHandler).build());
+            routeProducer.produce(new RouteBuildItem.Builder()
+                    .routeFunction(recorder.routeFunction(basePath, bodyHandlerBuildItem.getHandler(), runtimeConfig))
+                    .handler(loggerHandler).build());
+            routeProducer.produce(new RouteBuildItem.Builder()
+                    .route(basePath + "/levels")
+                    .handler(levelHandler).build());
 
-        displayableEndpoints.produce(new NotFoundPageDisplayableEndpointBuildItem(basePath + "/", "All available loggers"));
-        displayableEndpoints
-                .produce(new NotFoundPageDisplayableEndpointBuildItem(basePath + "/levels/", "All available log levels"));
+            displayableEndpoints.produce(new NotFoundPageDisplayableEndpointBuildItem(basePath + "/", "All available loggers"));
+            displayableEndpoints
+                    .produce(new NotFoundPageDisplayableEndpointBuildItem(basePath + "/levels/", "All available log levels"));
+        }
     }
 
     @BuildStep(onlyIf = OpenAPIIncluded.class)
     public void includeInOpenAPIEndpoint(BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer,
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             Capabilities capabilities,
+            LaunchModeBuildItem launchMode,
             LoggingManagerConfig loggingManagerConfig) {
 
         // Add to OpenAPI if OpenAPI is available
-        if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI)) {
+        if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI) && shouldInclude(launchMode, loggingManagerConfig)) {
             LoggingManagerOpenAPIFilter filter = new LoggingManagerOpenAPIFilter(
                     nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.basePath), loggingManagerConfig.openapiTag);
             openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter));
@@ -187,7 +192,7 @@ class LoggingManagerProcessor {
 
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
-    void registerLoggingManagerHandler(
+    void registerLoggingManagerUiHandler(
             BuildProducer<RouteBuildItem> routeProducer,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClassProducer,
             LoggerManagerRecorder recorder,
@@ -196,7 +201,7 @@ class LoggingManagerProcessor {
             LaunchModeBuildItem launchMode,
             LoggingManagerConfig loggingManagerConfig) throws Exception {
 
-        if (shouldInclude(launchMode, loggingManagerConfig)) {
+        if (shouldIncludeUi(launchMode, loggingManagerConfig)) {
             Handler<RoutingContext> handler = recorder.uiHandler(loggingManagerBuildItem.getLoggingManagerFinalDestination(),
                     loggingManagerBuildItem.getLoggingManagerPath(), runtimeConfig);
 
@@ -296,7 +301,11 @@ class LoggingManagerProcessor {
         }
     }
 
-    private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {
+    private static boolean shouldIncludeUi(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {
         return launchMode.getLaunchMode().isDevOrTest() || loggingManagerConfig.ui.alwaysInclude;
+    }
+
+    private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {
+        return launchMode.getLaunchMode().isDevOrTest() || loggingManagerConfig.alwaysInclude;
     }
 }

@@ -23,7 +23,7 @@ public class LoggerManagerRecorder {
     public Handler<RoutingContext> uiHandler(String loggingManagerFinalDestination, String loggingManagerPath,
             LoggingManagerRuntimeConfig runtimeConfig) {
 
-        if (runtimeConfig.enable) {
+        if (runtimeConfig.enableUi) {
             return new LoggingManagerStaticHandler(loggingManagerFinalDestination, loggingManagerPath);
         } else {
             return new LoggingManagerNotFoundHandler();
@@ -31,19 +31,30 @@ public class LoggerManagerRecorder {
     }
 
     public Handler<RoutingContext> logStreamWebSocketHandler(LoggingManagerRuntimeConfig runtimeConfig) {
-        if (runtimeConfig.enable) {
+        if (runtimeConfig.enableUi) {
             return new LogStreamWebSocket();
         } else {
             return new LoggingManagerNotFoundHandler();
         }
     }
 
-    public Function<Router, Route> routeFunction(String rootPath, Handler<RoutingContext> bodyHandler) {
-        return new Function<Router, Route>() {
-            @Override
-            public Route apply(Router router) {
-                return router.route(rootPath).handler(bodyHandler);
-            }
-        };
+    public Function<Router, Route> routeFunction(String rootPath, Handler<RoutingContext> bodyHandler,
+            LoggingManagerRuntimeConfig runtimeConfig) {
+        if (runtimeConfig.enable) {
+            return new Function<Router, Route>() {
+                @Override
+                public Route apply(Router router) {
+                    return router.route(rootPath).handler(bodyHandler);
+                }
+            };
+        } else {
+            return new Function<Router, Route>() {
+                @Override
+                public Route apply(Router router) {
+                    return router.route(rootPath).handler(new LoggingManagerNotFoundHandler());
+                }
+            };
+        }
+
     }
 }

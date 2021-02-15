@@ -26,6 +26,13 @@ public class LoggingManagerConfig {
     String openapiTag;
 
     /**
+     * Always include this. By default this will always be included.
+     * Setting this to false will also exclude this in Prod
+     */
+    @ConfigItem(defaultValue = "true")
+    boolean alwaysInclude;
+
+    /**
      * UI configuration
      */
     @ConfigItem
