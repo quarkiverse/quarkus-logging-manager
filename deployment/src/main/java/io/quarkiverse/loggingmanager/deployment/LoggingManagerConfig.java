@@ -8,9 +8,9 @@ import io.quarkus.runtime.annotations.ConfigRoot;
 public class LoggingManagerConfig {
 
     /**
-     * The base path, defaults to /loggers
+     * The base path
      */
-    @ConfigItem(defaultValue = "/loggers")
+    @ConfigItem(defaultValue = "/logging-manager")
     String basePath;
 
     /**
@@ -22,8 +22,15 @@ public class LoggingManagerConfig {
     /**
      * The tag to use if OpenAPI is included
      */
-    @ConfigItem(defaultValue = "Loggers")
+    @ConfigItem(defaultValue = "Logging-manager")
     String openapiTag;
+
+    /**
+     * Always include this. By default this will always be included.
+     * Setting this to false will also exclude this in Prod
+     */
+    @ConfigItem(defaultValue = "true")
+    boolean alwaysInclude;
 
     /**
      * UI configuration

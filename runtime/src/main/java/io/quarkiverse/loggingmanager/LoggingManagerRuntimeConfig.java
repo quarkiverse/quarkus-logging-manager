@@ -12,5 +12,12 @@ public class LoggingManagerRuntimeConfig {
      * {@code always-include}).
      */
     @ConfigItem(name = "ui.enable", defaultValue = "true")
+    boolean enableUi;
+
+    /**
+     * If Logging Manager should be enabled. By default, Logging Manager is enabled if it is included (see
+     * {@code always-include}).
+     */
+    @ConfigItem(name = "enable", defaultValue = "true")
     boolean enable;
 }
