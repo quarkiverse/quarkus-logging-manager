@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
@@ -38,6 +39,7 @@ import io.quarkus.deployment.configuration.ConfigurationError;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.deployment.util.IoUtil;
 import io.quarkus.deployment.util.WebJarUtil;
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildItem;
 import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
 import io.quarkus.vertx.http.deployment.HttpRootPathBuildItem;
@@ -219,12 +221,15 @@ class LoggingManagerProcessor {
             // Add the log stream (In dev mode, the stream is already available at /dev/logstream)
             if (!launchMode.getLaunchMode().isDevOrTest() && loggingManagerConfig.ui.alwaysInclude) {
 
+                RuntimeValue<Optional<HistoryHandler>> historyHandler = recorder.handler();
+
                 reflectiveClassProducer.produce(new ReflectiveClassBuildItem(true, true,
                         LogStreamWebSocket.class,
                         HistoryHandler.class,
                         WebSocketHandler.class,
                         JsonFormatter.class));
-                Handler<RoutingContext> logStreamWebSocketHandler = recorder.logStreamWebSocketHandler(runtimeConfig);
+                Handler<RoutingContext> logStreamWebSocketHandler = recorder.logStreamWebSocketHandler(runtimeConfig,
+                        historyHandler);
 
                 routeProducer.produce(new RouteBuildItem.Builder()
                         .route(loggingManagerConfig.basePath + "/logstream")

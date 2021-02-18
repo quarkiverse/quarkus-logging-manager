@@ -1,8 +1,11 @@
 package io.quarkiverse.loggingmanager;
 
+import java.util.Optional;
 import java.util.function.Function;
 
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
+import io.quarkus.vertx.http.runtime.logstream.HistoryHandler;
 import io.quarkus.vertx.http.runtime.logstream.LogStreamWebSocket;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.Route;
@@ -30,9 +33,14 @@ public class LoggerManagerRecorder {
         }
     }
 
-    public Handler<RoutingContext> logStreamWebSocketHandler(LoggingManagerRuntimeConfig runtimeConfig) {
+    public RuntimeValue<Optional<HistoryHandler>> handler() {
+        return new RuntimeValue<>(Optional.of(new HistoryHandler()));
+    }
+
+    public Handler<RoutingContext> logStreamWebSocketHandler(LoggingManagerRuntimeConfig runtimeConfig,
+            RuntimeValue<Optional<HistoryHandler>> historyHandler) {
         if (runtimeConfig.enableUi) {
-            return new LogStreamWebSocket();
+            return new LogStreamWebSocket(historyHandler.getValue().get());
         } else {
             return new LoggingManagerNotFoundHandler();
         }
