@@ -24,6 +24,7 @@ import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.bootstrap.model.AppArtifact;
 import io.quarkus.bootstrap.util.IoUtils;
 import io.quarkus.builder.Version;
+import io.quarkus.builder.item.SimpleBuildItem;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -33,6 +34,7 @@ import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
+import io.quarkus.deployment.builditem.LogHandlerBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.configuration.ConfigurationError;
@@ -48,6 +50,7 @@ import io.quarkus.vertx.http.deployment.RouteBuildItem;
 import io.quarkus.vertx.http.deployment.devmode.NotFoundPageDisplayableEndpointBuildItem;
 import io.quarkus.vertx.http.runtime.logstream.HistoryHandler;
 import io.quarkus.vertx.http.runtime.logstream.JsonFormatter;
+import io.quarkus.vertx.http.runtime.logstream.LogStreamRecorder;
 import io.quarkus.vertx.http.runtime.logstream.LogStreamWebSocket;
 import io.quarkus.vertx.http.runtime.logstream.WebSocketHandler;
 import io.vertx.core.Handler;
@@ -175,6 +178,7 @@ class LoggingManagerProcessor {
         } else if (loggingManagerConfig.ui.alwaysInclude) {
             // Make sure the WebSocket gets included.
             annotatedProducer.produce(AdditionalBeanBuildItem.unremovableOf(LogStreamWebSocket.class));
+            annotatedProducer.produce(AdditionalBeanBuildItem.unremovableOf(HistoryHandler.class));
 
             // Get the index.html
             String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getFrameworkRootPath(),
@@ -193,11 +197,21 @@ class LoggingManagerProcessor {
     }
 
     @BuildStep
+    @Record(ExecutionTime.STATIC_INIT)
+    public HistoryHandlerBuildItem hander(BuildProducer<LogHandlerBuildItem> logHandlerBuildItemBuildProducer,
+            LogStreamRecorder recorder) {
+        RuntimeValue<Optional<HistoryHandler>> handler = recorder.handler();
+        logHandlerBuildItemBuildProducer.produce(new LogHandlerBuildItem((RuntimeValue) handler));
+        return new HistoryHandlerBuildItem(handler);
+    }
+
+    @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
     void registerLoggingManagerUiHandler(
             BuildProducer<RouteBuildItem> routeProducer,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClassProducer,
             LoggerManagerRecorder recorder,
+            HistoryHandlerBuildItem historyHandlerBuildItem,
             LoggingManagerRuntimeConfig runtimeConfig,
             LoggingManagerBuildItem loggingManagerBuildItem,
             LaunchModeBuildItem launchMode,
@@ -221,15 +235,14 @@ class LoggingManagerProcessor {
             // Add the log stream (In dev mode, the stream is already available at /dev/logstream)
             if (!launchMode.getLaunchMode().isDevOrTest() && loggingManagerConfig.ui.alwaysInclude) {
 
-                RuntimeValue<Optional<HistoryHandler>> historyHandler = recorder.handler();
-
                 reflectiveClassProducer.produce(new ReflectiveClassBuildItem(true, true,
                         LogStreamWebSocket.class,
                         HistoryHandler.class,
                         WebSocketHandler.class,
                         JsonFormatter.class));
+
                 Handler<RoutingContext> logStreamWebSocketHandler = recorder.logStreamWebSocketHandler(runtimeConfig,
-                        historyHandler);
+                        historyHandlerBuildItem.value);
 
                 routeProducer.produce(new RouteBuildItem.Builder()
                         .route(loggingManagerConfig.basePath + "/logstream")
@@ -312,5 +325,13 @@ class LoggingManagerProcessor {
 
     private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {
         return launchMode.getLaunchMode().isDevOrTest() || loggingManagerConfig.alwaysInclude;
+    }
+
+    public static final class HistoryHandlerBuildItem extends SimpleBuildItem {
+        final RuntimeValue<Optional<HistoryHandler>> value;
+
+        public HistoryHandlerBuildItem(RuntimeValue<Optional<HistoryHandler>> value) {
+            this.value = value;
+        }
     }
 }

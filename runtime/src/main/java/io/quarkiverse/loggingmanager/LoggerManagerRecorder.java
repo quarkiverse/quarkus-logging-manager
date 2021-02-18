@@ -33,10 +33,6 @@ public class LoggerManagerRecorder {
         }
     }
 
-    public RuntimeValue<Optional<HistoryHandler>> handler() {
-        return new RuntimeValue<>(Optional.of(new HistoryHandler()));
-    }
-
     public Handler<RoutingContext> logStreamWebSocketHandler(LoggingManagerRuntimeConfig runtimeConfig,
             RuntimeValue<Optional<HistoryHandler>> historyHandler) {
         if (runtimeConfig.enableUi) {
