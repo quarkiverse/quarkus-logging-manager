@@ -96,16 +96,15 @@ class LoggingManagerProcessor {
             Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
             Handler<RoutingContext> levelHandler = recorder.levelHandler();
 
-            String basePath = nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.basePath);
-
-            routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
-                    .routeFunction(recorder.routeFunction(basePath, bodyHandlerBuildItem.getHandler(), runtimeConfig))
+            routeProducer.produce(new RouteBuildItem.Builder()
+                    .routeFunction(loggingManagerConfig.basePath,
+                            recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
                     .displayOnNotFoundPage("All available loggers")
                     .handler(loggerHandler)
                     .build());
 
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
-                    .route(loggingManagerConfig.basePath + "/levels")
+                    .nestedRoute(loggingManagerConfig.basePath, "levels")
                     .displayOnNotFoundPage("All available log levels")
                     .handler(levelHandler)
                     .build());
@@ -239,7 +238,7 @@ class LoggingManagerProcessor {
                         historyHandlerBuildItem.value);
 
                 routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
-                        .route(loggingManagerConfig.basePath + "/logstream")
+                        .nestedRoute(loggingManagerConfig.basePath, "logstream")
                         .handler(logStreamWebSocketHandler)
                         .build());
             }
