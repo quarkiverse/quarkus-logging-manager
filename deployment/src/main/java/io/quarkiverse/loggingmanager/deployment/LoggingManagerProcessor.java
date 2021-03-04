@@ -47,7 +47,6 @@ import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
 import io.quarkus.vertx.http.deployment.HttpRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
-import io.quarkus.vertx.http.deployment.devmode.NotFoundPageDisplayableEndpointBuildItem;
 import io.quarkus.vertx.http.runtime.logstream.HistoryHandler;
 import io.quarkus.vertx.http.runtime.logstream.JsonFormatter;
 import io.quarkus.vertx.http.runtime.logstream.LogStreamRecorder;
@@ -86,7 +85,6 @@ class LoggingManagerProcessor {
     @Record(ExecutionTime.RUNTIME_INIT)
     @BuildStep
     void includeRestEndpoints(BuildProducer<RouteBuildItem> routeProducer,
-            BuildProducer<NotFoundPageDisplayableEndpointBuildItem> displayableEndpoints,
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             LoggingManagerConfig loggingManagerConfig,
             BodyHandlerBuildItem bodyHandlerBuildItem,
@@ -98,18 +96,19 @@ class LoggingManagerProcessor {
             Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
             Handler<RoutingContext> levelHandler = recorder.levelHandler();
 
-            String basePath = nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.basePath);
+            String basePath = nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.basePath);
 
-            routeProducer.produce(new RouteBuildItem.Builder()
+            routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .routeFunction(recorder.routeFunction(basePath, bodyHandlerBuildItem.getHandler(), runtimeConfig))
-                    .handler(loggerHandler).build());
-            routeProducer.produce(new RouteBuildItem.Builder()
-                    .route(basePath + "/levels")
-                    .handler(levelHandler).build());
+                    .displayOnNotFoundPage("All available loggers")
+                    .handler(loggerHandler)
+                    .build());
 
-            displayableEndpoints.produce(new NotFoundPageDisplayableEndpointBuildItem(basePath + "/", "All available loggers"));
-            displayableEndpoints
-                    .produce(new NotFoundPageDisplayableEndpointBuildItem(basePath + "/levels/", "All available log levels"));
+            routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
+                    .route(loggingManagerConfig.basePath + "/levels")
+                    .displayOnNotFoundPage("All available log levels")
+                    .handler(levelHandler)
+                    .build());
         }
     }
 
@@ -123,7 +122,8 @@ class LoggingManagerProcessor {
         // Add to OpenAPI if OpenAPI is available
         if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI) && shouldInclude(launchMode, loggingManagerConfig)) {
             LoggingManagerOpenAPIFilter filter = new LoggingManagerOpenAPIFilter(
-                    nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.basePath), loggingManagerConfig.openapiTag);
+                    nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.basePath),
+                    loggingManagerConfig.openapiTag);
             openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter));
         }
     }
@@ -133,7 +133,6 @@ class LoggingManagerProcessor {
             BuildProducer<AdditionalBeanBuildItem> annotatedProducer,
             BuildProducer<RouteBuildItem> routeProducer,
             BuildProducer<LoggingManagerBuildItem> loggingManagerBuildProducer,
-            BuildProducer<NotFoundPageDisplayableEndpointBuildItem> notFoundPageDisplayableEndpointProducer,
             HttpRootPathBuildItem httpRootPathBuildItem,
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             BuildProducer<GeneratedResourceBuildItem> generatedResourceProducer,
@@ -151,8 +150,7 @@ class LoggingManagerProcessor {
                 UI_WEBJAR_ARTIFACT_ID);
         AppArtifact userApplication = curateOutcomeBuildItem.getEffectiveModel().getAppArtifact();
 
-        String uiPath = httpRootPathBuildItem
-                .adjustPath(nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.ui.rootPath));
+        String uiPath = nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.ui.rootPath);
 
         if (launchMode.getLaunchMode().isDevOrTest()) {
             // The static resources
@@ -163,7 +161,7 @@ class LoggingManagerProcessor {
             if (!Files.exists(indexHtml)) {
                 Files.createFile(indexHtml);
             }
-            String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getFrameworkRootPath(),
+            String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getNonApplicationRootPath(),
                     "/dev/logstream");
 
             IoUtils.writeFile(indexHtml, indexHtmlContent);
@@ -171,20 +169,16 @@ class LoggingManagerProcessor {
             loggingManagerBuildProducer
                     .produce(new LoggingManagerBuildItem(tempPath.toAbsolutePath().toString(), uiPath));
 
-            notFoundPageDisplayableEndpointProducer.produce(new NotFoundPageDisplayableEndpointBuildItem(
-                    nonApplicationRootPathBuildItem.adjustPath(loggingManagerConfig.ui.rootPath + "/"),
-                    "Quarkus Logging manager"));
-
         } else if (loggingManagerConfig.ui.alwaysInclude) {
             // Make sure the WebSocket gets included.
             annotatedProducer.produce(AdditionalBeanBuildItem.unremovableOf(LogStreamWebSocket.class));
             annotatedProducer.produce(AdditionalBeanBuildItem.unremovableOf(HistoryHandler.class));
 
             // Get the index.html
-            String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getFrameworkRootPath(),
+            String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getNonApplicationRootPath(),
                     loggingManagerConfig.basePath + "/logstream");
             // Update the resource Url to be relative
-            indexHtmlContent = indexHtmlContent.replaceAll(nonApplicationRootPathBuildItem.adjustPath("/dev/resources/"), "");
+            indexHtmlContent = indexHtmlContent.replaceAll(nonApplicationRootPathBuildItem.resolvePath("/dev/resources/"), "");
 
             String fileName = UI_FINAL_DESTINATION + "/" + INDEX_HTML;
             generatedResourceProducer.produce(new GeneratedResourceBuildItem(fileName, indexHtmlContent.getBytes()));
@@ -210,6 +204,7 @@ class LoggingManagerProcessor {
     void registerLoggingManagerUiHandler(
             BuildProducer<RouteBuildItem> routeProducer,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClassProducer,
+            NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             LoggerManagerRecorder recorder,
             HistoryHandlerBuildItem historyHandlerBuildItem,
             LoggingManagerRuntimeConfig runtimeConfig,
@@ -221,15 +216,14 @@ class LoggingManagerProcessor {
             Handler<RoutingContext> handler = recorder.uiHandler(loggingManagerBuildItem.getLoggingManagerFinalDestination(),
                     loggingManagerBuildItem.getLoggingManagerPath(), runtimeConfig);
 
-            routeProducer.produce(new RouteBuildItem.Builder()
+            routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .route(loggingManagerConfig.ui.rootPath)
                     .handler(handler)
-                    .nonApplicationRoute(false)
+                    .displayOnNotFoundPage("Quarkus Logging manager")
                     .build());
-            routeProducer.produce(new RouteBuildItem.Builder()
+            routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .route(loggingManagerConfig.ui.rootPath + "/*")
                     .handler(handler)
-                    .nonApplicationRoute(false)
                     .build());
 
             // Add the log stream (In dev mode, the stream is already available at /dev/logstream)
@@ -244,10 +238,9 @@ class LoggingManagerProcessor {
                 Handler<RoutingContext> logStreamWebSocketHandler = recorder.logStreamWebSocketHandler(runtimeConfig,
                         historyHandlerBuildItem.value);
 
-                routeProducer.produce(new RouteBuildItem.Builder()
+                routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                         .route(loggingManagerConfig.basePath + "/logstream")
                         .handler(logStreamWebSocketHandler)
-                        .nonApplicationRoute(false)
                         .build());
             }
         }

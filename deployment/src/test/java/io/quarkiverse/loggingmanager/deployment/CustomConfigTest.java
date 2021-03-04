@@ -16,7 +16,7 @@ public class CustomConfigTest {
     @RegisterExtension
     static final QuarkusUnitTest config = new QuarkusUnitTest()
             .setArchiveProducer(() -> ShrinkWrap.create(JavaArchive.class)
-                    .addAsResource(new StringAsset("quarkus.logging-manager.ui.root-path=/custom"), "application.properties"));
+                    .addAsResource(new StringAsset("quarkus.logging-manager.ui.root-path=custom"), "application.properties"));
 
     @Test
     public void shouldUseCustomConfig() {

@@ -10,7 +10,7 @@ public class LoggingManagerUIConfig {
      * The path where Logging Manager is available.
      * The value `/` is not allowed as it blocks the application from serving anything else.
      */
-    @ConfigItem(defaultValue = "/logging-manager-ui")
+    @ConfigItem(defaultValue = "logging-manager-ui")
     String rootPath;
 
     /**
