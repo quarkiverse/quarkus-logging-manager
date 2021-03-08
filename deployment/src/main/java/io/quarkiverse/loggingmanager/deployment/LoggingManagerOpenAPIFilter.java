@@ -51,7 +51,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
 
         openAPI.getComponents().addSchema("LoggerName", createLoggerName());
         openAPI.getComponents().addSchema("LoggerLevel", createLoggerLevel());
-
+        openAPI.getComponents().addSchema("ListLoggerInfo", createListLoggerInfo());
         openAPI.getComponents().addSchema("LoggerInfo", createLoggerInfo());
         openAPI.getComponents().addSchema("ListString", createListString());
 
@@ -259,6 +259,13 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
         Schema schema = new SchemaImpl("ListString");
         schema.setType(Schema.SchemaType.ARRAY);
         schema.setItems(new SchemaImpl().type(Schema.SchemaType.STRING));
+        return schema;
+    }
+
+    private Schema createListLoggerInfo() {
+        Schema schema = new SchemaImpl("ListLoggerInfo");
+        schema.setType(Schema.SchemaType.ARRAY);
+        schema.setItems(new SchemaImpl().ref(REF_LIST_LOGGER_INFO));
         return schema;
     }
 
