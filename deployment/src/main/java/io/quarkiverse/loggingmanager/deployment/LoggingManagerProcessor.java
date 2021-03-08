@@ -96,7 +96,7 @@ class LoggingManagerProcessor {
             Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
             Handler<RoutingContext> levelHandler = recorder.levelHandler();
 
-            routeProducer.produce(new RouteBuildItem.Builder()
+            routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .routeFunction(loggingManagerConfig.basePath,
                             recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
                     .displayOnNotFoundPage("All available loggers")
@@ -175,10 +175,10 @@ class LoggingManagerProcessor {
 
             // Get the index.html
             String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getNonApplicationRootPath(),
-                    loggingManagerConfig.basePath + "/logstream");
+                    "/" + loggingManagerConfig.basePath + "/logstream");
             // Update the resource Url to be relative
-            indexHtmlContent = indexHtmlContent.replaceAll(nonApplicationRootPathBuildItem.resolvePath("/dev/resources/"), "");
-
+            String pathToBeReplaced = nonApplicationRootPathBuildItem.resolvePath("dev/resources");
+            indexHtmlContent = indexHtmlContent.replaceAll(pathToBeReplaced + "/", "");
             String fileName = UI_FINAL_DESTINATION + "/" + INDEX_HTML;
             generatedResourceProducer.produce(new GeneratedResourceBuildItem(fileName, indexHtmlContent.getBytes()));
             nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(fileName));
@@ -273,7 +273,7 @@ class LoggingManagerProcessor {
 
                 // Make sure the non apllication path and streaming path is replaced
                 indexHtmlContent = indexHtmlContent.replaceAll("\\{frameworkRootPath}",
-                        nonApplicationRootPath);
+                        cleanFrameworkRootPath(nonApplicationRootPath));
                 indexHtmlContent = indexHtmlContent.replaceAll("\\{streamingPath}",
                         streamingPath);
 
@@ -288,6 +288,19 @@ class LoggingManagerProcessor {
                 return indexHtmlContent;
             }
         }
+    }
+
+    /**
+     * This removes the last / from the path
+     * 
+     * @param p the path
+     * @return the path without the last /
+     */
+    private String cleanFrameworkRootPath(String p) {
+        if (p != null && !p.isEmpty() && p.endsWith("/")) {
+            return p.substring(0, p.length() - 1);
+        }
+        return p;
     }
 
     private void addStaticResource(BuildProducer<GeneratedResourceBuildItem> generatedResourceProducer,
