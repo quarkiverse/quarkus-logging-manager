@@ -193,7 +193,8 @@ class LoggingManagerProcessor {
     @Record(ExecutionTime.STATIC_INIT)
     public HistoryHandlerBuildItem hander(BuildProducer<LogHandlerBuildItem> logHandlerBuildItemBuildProducer,
             LogStreamRecorder recorder) {
-        RuntimeValue<Optional<HistoryHandler>> handler = recorder.handler();
+        // Should be made configurable:
+        RuntimeValue<Optional<HistoryHandler>> handler = recorder.handler(50);
         logHandlerBuildItemBuildProducer.produce(new LogHandlerBuildItem((RuntimeValue) handler));
         return new HistoryHandlerBuildItem(handler);
     }
