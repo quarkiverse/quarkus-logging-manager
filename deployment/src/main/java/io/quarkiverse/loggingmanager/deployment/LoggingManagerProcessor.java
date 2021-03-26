@@ -153,7 +153,6 @@ class LoggingManagerProcessor {
 
         if (launchMode.getLaunchMode().isDevOrTest()) {
             // The static resources
-            // TODO: Make this public in core
             Path tempPath = WebJarUtil.createResourcesDirectory(userApplication, artifact);
 
             Path indexHtml = Paths.get(tempPath.toString(), INDEX_HTML);
@@ -192,9 +191,10 @@ class LoggingManagerProcessor {
     @BuildStep
     @Record(ExecutionTime.STATIC_INIT)
     public HistoryHandlerBuildItem hander(BuildProducer<LogHandlerBuildItem> logHandlerBuildItemBuildProducer,
-            LogStreamRecorder recorder) {
-        // Should be made configurable:
-        RuntimeValue<Optional<HistoryHandler>> handler = recorder.handler(50);
+            LogStreamRecorder recorder,
+            LoggingManagerConfig loggingManagerConfig) {
+
+        RuntimeValue<Optional<HistoryHandler>> handler = recorder.handler(loggingManagerConfig.historySize);
         logHandlerBuildItemBuildProducer.produce(new LogHandlerBuildItem((RuntimeValue) handler));
         return new HistoryHandlerBuildItem(handler);
     }
