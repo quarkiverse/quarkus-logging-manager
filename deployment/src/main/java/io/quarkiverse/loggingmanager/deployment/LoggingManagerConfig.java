@@ -33,6 +33,12 @@ public class LoggingManagerConfig {
     boolean alwaysInclude;
 
     /**
+     * The number of history log entries to remember.
+     */
+    @ConfigItem(defaultValue = "50")
+    public int historySize;
+
+    /**
      * UI configuration
      */
     @ConfigItem
