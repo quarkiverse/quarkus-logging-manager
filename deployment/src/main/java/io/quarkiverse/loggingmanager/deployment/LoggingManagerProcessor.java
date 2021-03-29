@@ -22,7 +22,6 @@ import io.quarkiverse.loggingmanager.LoggerManagerRecorder;
 import io.quarkiverse.loggingmanager.LoggingManagerRuntimeConfig;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.bootstrap.model.AppArtifact;
-import io.quarkus.bootstrap.util.IoUtils;
 import io.quarkus.builder.Version;
 import io.quarkus.builder.item.SimpleBuildItem;
 import io.quarkus.deployment.Capabilities;
@@ -162,7 +161,7 @@ class LoggingManagerProcessor {
             String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getNonApplicationRootPath(),
                     "/dev/logstream");
 
-            IoUtils.writeFile(indexHtml, indexHtmlContent);
+            Files.write(indexHtml, indexHtmlContent.getBytes());
 
             loggingManagerBuildProducer
                     .produce(new LoggingManagerBuildItem(tempPath.toAbsolutePath().toString(), uiPath));
@@ -275,6 +274,10 @@ class LoggingManagerProcessor {
                 // Make sure the non apllication path and streaming path is replaced
                 indexHtmlContent = indexHtmlContent.replaceAll("\\{frameworkRootPath}",
                         cleanFrameworkRootPath(nonApplicationRootPath));
+
+                indexHtmlContent = indexHtmlContent.replaceAll("\\{devRootAppend}",
+                        cleanFrameworkRootPath(nonApplicationRootPath) + "/dev");
+
                 indexHtmlContent = indexHtmlContent.replaceAll("\\{streamingPath}",
                         streamingPath);
 
@@ -293,7 +296,7 @@ class LoggingManagerProcessor {
 
     /**
      * This removes the last / from the path
-     * 
+     *
      * @param p the path
      * @return the path without the last /
      */
