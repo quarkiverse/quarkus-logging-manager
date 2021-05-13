@@ -18,21 +18,10 @@
             body {
                 background: #343a40;
             }
-            #logstreamManagerNav {
-                padding-top: 29px !important;
-                padding-bottom: 29px !important;
+            .navbar {
                 border-bottom: 1px solid #414850 !important;
             }
 
-            #logstreamHideLogButton, #logstreamResizeButton, #logstreamFullScreenButton {
-                display: none;
-            }
-            #logstreamManagerNav{
-                border: none;
-            }
-            #logstreamManagerNavAppInfo, #logstreamManagerNavBrand{
-                display: unset;
-            }
             .navbar-brand img {
                 border-right: 1px solid darkgrey;
                 padding-right: 10px;
@@ -41,11 +30,25 @@
             .navbar-text {
                 font-size: 0.9em;
             }
+            
         </style>
     </head>
     <body>
 
-        {navContent}
+        <!-- Top Header -->
+        <nav class="navbar sticky-top navbar-dark bg-dark">
+            <a class="navbar-brand" href="/">
+                <img src="quarkiverse_icon_reverse.svg" width="40" height="30" class="d-inline-block align-middle" alt="Quarkiverse"/>
+                <span id="navbar-title" class="align-middle">Logging Manager</span>
+            </a>
+            
+            {navContent}
+            
+            <span class="navbar-text">
+                {applicationName} {applicationVersion} (powered by Quarkus {quarkusVersion})
+            </span>
+        </nav>
+        
         {logContent}
         {modalsContent}
 
