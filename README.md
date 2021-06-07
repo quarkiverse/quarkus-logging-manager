@@ -46,7 +46,7 @@ To use this in your application, simply add this in your pom.xml:
 
 Note: Replace `${logger-manager.version}` with the latest version
 
-Then browse to [http://localhost:8080/q/logging-manager/](http://localhost:8080/q/logging-manager/)
+Then browse to [http://localhost:8080/q/logging-manager-ui/](http://localhost:8080/q/logging-manager-ui/)
 
 ![logger_manager_log_screenshot](logstream.gif "Log stream Screenshot")
 
