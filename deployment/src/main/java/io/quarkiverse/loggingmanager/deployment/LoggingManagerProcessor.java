@@ -65,6 +65,7 @@ class LoggingManagerProcessor {
 
     private static final String STATIC_RESOURCE_FOLDER = "dev-static/";
     private static final String INDEX_HTML = "index.html";
+    private static final String LOGO_SVG = "quarkiverse_icon_reverse.svg";
 
     private final Config config = ConfigProvider.getConfig();
 
@@ -163,6 +164,13 @@ class LoggingManagerProcessor {
 
             Files.write(indexHtml, indexHtmlContent.getBytes());
 
+            Path logoSvg = Paths.get(tempPath.toString(), LOGO_SVG);
+            if (!Files.exists(logoSvg)) {
+                Files.createFile(logoSvg);
+            }
+            byte[] logo = getLogo();
+            Files.write(logoSvg, logo);
+
             loggingManagerBuildProducer
                     .produce(new LoggingManagerBuildItem(tempPath.toAbsolutePath().toString(), uiPath));
 
@@ -177,9 +185,16 @@ class LoggingManagerProcessor {
             // Update the resource Url to be relative
             String pathToBeReplaced = nonApplicationRootPathBuildItem.resolvePath("dev/resources");
             indexHtmlContent = indexHtmlContent.replaceAll(pathToBeReplaced + "/", "");
-            String fileName = UI_FINAL_DESTINATION + "/" + INDEX_HTML;
-            generatedResourceProducer.produce(new GeneratedResourceBuildItem(fileName, indexHtmlContent.getBytes()));
-            nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(fileName));
+            String indexHtmlFileName = UI_FINAL_DESTINATION + "/" + INDEX_HTML;
+            generatedResourceProducer.produce(new GeneratedResourceBuildItem(indexHtmlFileName, indexHtmlContent.getBytes()));
+            nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(indexHtmlFileName));
+
+            // Get the logo
+            byte[] logo = getLogo();
+            String logoFileName = UI_FINAL_DESTINATION + "/" + LOGO_SVG;
+
+            generatedResourceProducer.produce(new GeneratedResourceBuildItem(logoFileName, logo));
+            nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(logoFileName));
 
             addStaticResource(generatedResourceProducer, nativeImageResourceProducer);
 
@@ -242,6 +257,13 @@ class LoggingManagerProcessor {
                         .handler(logStreamWebSocketHandler)
                         .build());
             }
+        }
+    }
+
+    private byte[] getLogo() throws IOException {
+        try (InputStream logo = LoggingManagerProcessor.class.getClassLoader()
+                .getResourceAsStream("META-INF/resources/template/" + LOGO_SVG)) {
+            return IoUtil.readBytes(logo);
         }
     }
 

@@ -43,13 +43,13 @@ public class LoggingManagerStaticHandler implements Handler<RoutingContext> {
                 .setWebRoot(loggingManagerFinalDestination)
                 .setDefaultContentEncoding("UTF-8");
 
-        if (event.normalisedPath().length() == loggingManagerPath.length()) {
+        if (event.normalizedPath().length() == loggingManagerPath.length()) {
 
             event.response().setStatusCode(302);
             event.response().headers().set(HttpHeaders.LOCATION, loggingManagerPath + "/");
             event.response().end();
             return;
-        } else if (event.normalisedPath().length() == loggingManagerPath.length() + 1) {
+        } else if (event.normalizedPath().length() == loggingManagerPath.length() + 1) {
             event.reroute(loggingManagerPath + "/index.html");
             return;
         }
