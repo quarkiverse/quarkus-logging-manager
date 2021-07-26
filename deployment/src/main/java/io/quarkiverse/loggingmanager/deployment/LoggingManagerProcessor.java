@@ -342,7 +342,7 @@ class LoggingManagerProcessor {
             Path staticResource = it.next();
             if (!Files.isDirectory(staticResource) && Files.isRegularFile(staticResource)) {
                 String fileName = UI_FINAL_DESTINATION + "/"
-                        + staticResource.toString().substring(STATIC_RESOURCE_FOLDER.length() + 1);
+                        + staticResource.toString().substring(STATIC_RESOURCE_FOLDER.length());
                 byte[] content = Files.readAllBytes(staticResource);
                 generatedResourceProducer.produce(new GeneratedResourceBuildItem(fileName, content));
                 nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(fileName));
