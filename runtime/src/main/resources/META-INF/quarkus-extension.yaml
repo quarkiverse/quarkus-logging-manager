@@ -3,10 +3,12 @@ name: "Logging manager"
 metadata:
   short-name: "logging manager"
   keywords:
+  - "logging"    
   - "logging manager"
   - "log"
   - "logging levels"
+  - "log level"
   - "log file"
   categories:
-  - "logging"
+  - "core"
   status: "stable"
