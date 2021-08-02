@@ -37,6 +37,7 @@ import io.quarkus.deployment.builditem.LogHandlerBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.configuration.ConfigurationError;
+import io.quarkus.deployment.logging.LogStreamBuildItem;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.deployment.util.IoUtil;
 import io.quarkus.deployment.util.WebJarUtil;
@@ -46,11 +47,10 @@ import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
 import io.quarkus.vertx.http.deployment.HttpRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
-import io.quarkus.vertx.http.runtime.logstream.HistoryHandler;
 import io.quarkus.vertx.http.runtime.logstream.JsonFormatter;
 import io.quarkus.vertx.http.runtime.logstream.LogStreamRecorder;
 import io.quarkus.vertx.http.runtime.logstream.LogStreamWebSocket;
-import io.quarkus.vertx.http.runtime.logstream.WebSocketHandler;
+import io.quarkus.vertx.http.runtime.logstream.WebSocketLogHandler;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
@@ -132,6 +132,7 @@ class LoggingManagerProcessor {
             BuildProducer<AdditionalBeanBuildItem> annotatedProducer,
             BuildProducer<RouteBuildItem> routeProducer,
             BuildProducer<LoggingManagerBuildItem> loggingManagerBuildProducer,
+            BuildProducer<LogStreamBuildItem> logStreamBuildProducer,
             HttpRootPathBuildItem httpRootPathBuildItem,
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             BuildProducer<GeneratedResourceBuildItem> generatedResourceProducer,
@@ -175,9 +176,12 @@ class LoggingManagerProcessor {
                     .produce(new LoggingManagerBuildItem(tempPath.toAbsolutePath().toString(), uiPath));
 
         } else if (loggingManagerConfig.ui.alwaysInclude) {
+            // Indicate that we need this in production
+            logStreamBuildProducer.produce(new LogStreamBuildItem());
+
             // Make sure the WebSocket gets included.
             annotatedProducer.produce(AdditionalBeanBuildItem.unremovableOf(LogStreamWebSocket.class));
-            annotatedProducer.produce(AdditionalBeanBuildItem.unremovableOf(HistoryHandler.class));
+            annotatedProducer.produce(AdditionalBeanBuildItem.unremovableOf(WebSocketLogHandler.class));
 
             // Get the index.html
             String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getNonApplicationRootPath(),
@@ -206,10 +210,13 @@ class LoggingManagerProcessor {
     @Record(ExecutionTime.STATIC_INIT)
     public HistoryHandlerBuildItem hander(BuildProducer<LogHandlerBuildItem> logHandlerBuildItemBuildProducer,
             LogStreamRecorder recorder,
-            LoggingManagerConfig loggingManagerConfig) {
+            LoggingManagerConfig loggingManagerConfig,
+            LaunchModeBuildItem launchMode) {
 
-        RuntimeValue<Optional<HistoryHandler>> handler = recorder.handler(loggingManagerConfig.historySize);
-        logHandlerBuildItemBuildProducer.produce(new LogHandlerBuildItem((RuntimeValue) handler));
+        RuntimeValue<Optional<WebSocketLogHandler>> handler = recorder.logHandler(loggingManagerConfig.historySize);
+        if (!launchMode.getLaunchMode().isDevOrTest() && loggingManagerConfig.ui.alwaysInclude) {
+            logHandlerBuildItemBuildProducer.produce(new LogHandlerBuildItem((RuntimeValue) handler));
+        }
         return new HistoryHandlerBuildItem(handler);
     }
 
@@ -245,8 +252,8 @@ class LoggingManagerProcessor {
 
                 reflectiveClassProducer.produce(new ReflectiveClassBuildItem(true, true,
                         LogStreamWebSocket.class,
-                        HistoryHandler.class,
-                        WebSocketHandler.class,
+                        WebSocketLogHandler.class,
+                        LogStreamWebSocket.class,
                         JsonFormatter.class));
 
                 Handler<RoutingContext> logStreamWebSocketHandler = recorder.logStreamWebSocketHandler(runtimeConfig,
@@ -359,9 +366,9 @@ class LoggingManagerProcessor {
     }
 
     public static final class HistoryHandlerBuildItem extends SimpleBuildItem {
-        final RuntimeValue<Optional<HistoryHandler>> value;
+        final RuntimeValue<Optional<WebSocketLogHandler>> value;
 
-        public HistoryHandlerBuildItem(RuntimeValue<Optional<HistoryHandler>> value) {
+        public HistoryHandlerBuildItem(RuntimeValue<Optional<WebSocketLogHandler>> value) {
             this.value = value;
         }
     }
