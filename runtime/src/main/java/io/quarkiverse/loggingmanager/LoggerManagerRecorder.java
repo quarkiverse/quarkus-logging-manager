@@ -5,8 +5,8 @@ import java.util.function.Consumer;
 
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
-import io.quarkus.vertx.http.runtime.logstream.HistoryHandler;
 import io.quarkus.vertx.http.runtime.logstream.LogStreamWebSocket;
+import io.quarkus.vertx.http.runtime.logstream.WebSocketLogHandler;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
@@ -33,7 +33,7 @@ public class LoggerManagerRecorder {
     }
 
     public Handler<RoutingContext> logStreamWebSocketHandler(LoggingManagerRuntimeConfig runtimeConfig,
-            RuntimeValue<Optional<HistoryHandler>> historyHandler) {
+            RuntimeValue<Optional<WebSocketLogHandler>> historyHandler) {
         if (runtimeConfig.enableUi) {
             return new LogStreamWebSocket(historyHandler.getValue().get());
         } else {
