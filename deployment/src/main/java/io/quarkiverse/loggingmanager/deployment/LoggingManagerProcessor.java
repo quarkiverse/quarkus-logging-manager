@@ -339,9 +339,7 @@ class LoggingManagerProcessor {
     private void addStaticResource(BuildProducer<GeneratedResourceBuildItem> generatedResourceProducer,
             BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer) throws IOException, URISyntaxException {
 
-        URI uri = LoggingManagerProcessor.class.getClassLoader().getResource(STATIC_RESOURCE_FOLDER).toURI();
-
-        FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.<String, Object> emptyMap());
+        FileSystem fileSystem = getFileSystem();
         Path myPath = fileSystem.getPath(STATIC_RESOURCE_FOLDER);
 
         Stream<Path> walk = Files.walk(myPath, 5);
@@ -354,6 +352,16 @@ class LoggingManagerProcessor {
                 generatedResourceProducer.produce(new GeneratedResourceBuildItem(fileName, content));
                 nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(fileName));
             }
+        }
+    }
+
+    private FileSystem getFileSystem() throws URISyntaxException, IOException {
+        URI uri = null;
+        try {
+            uri = LoggingManagerProcessor.class.getClassLoader().getResource(STATIC_RESOURCE_FOLDER).toURI();
+            return FileSystems.newFileSystem(uri, Collections.<String, Object> emptyMap());
+        } catch (java.nio.file.FileSystemAlreadyExistsException ex) {
+            return FileSystems.getFileSystem(uri);
         }
     }
 
