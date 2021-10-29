@@ -41,6 +41,7 @@ import io.quarkus.deployment.logging.LogStreamBuildItem;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.deployment.util.IoUtil;
 import io.quarkus.deployment.util.WebJarUtil;
+import io.quarkus.maven.dependency.ResolvedDependency;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildItem;
 import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
@@ -146,7 +147,7 @@ class LoggingManagerProcessor {
                     "quarkus.logging-manager.ui.root-path was set to \"/\", this is not allowed as it blocks the application from serving anything else.");
         }
 
-        AppArtifact artifact = WebJarUtil.getAppArtifact(curateOutcomeBuildItem, UI_WEBJAR_GROUP_ID,
+        ResolvedDependency resolvedDependency = WebJarUtil.getAppArtifact(curateOutcomeBuildItem, UI_WEBJAR_GROUP_ID,
                 UI_WEBJAR_ARTIFACT_ID);
         AppArtifact userApplication = curateOutcomeBuildItem.getEffectiveModel().getAppArtifact();
 
@@ -154,7 +155,7 @@ class LoggingManagerProcessor {
 
         if (launchMode.getLaunchMode().isDevOrTest()) {
             // The static resources
-            Path tempPath = WebJarUtil.createResourcesDirectory(userApplication, artifact);
+            Path tempPath = WebJarUtil.createResourcesDirectory(userApplication, resolvedDependency);
 
             Path indexHtml = Paths.get(tempPath.toString(), INDEX_HTML);
             if (!Files.exists(indexHtml)) {
