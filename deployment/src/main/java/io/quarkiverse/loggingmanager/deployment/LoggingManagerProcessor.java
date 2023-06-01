@@ -149,7 +149,7 @@ class LoggingManagerProcessor {
 
         ResolvedDependency resolvedDependency = WebJarUtil.getAppArtifact(curateOutcomeBuildItem, UI_WEBJAR_GROUP_ID,
                 UI_WEBJAR_ARTIFACT_ID);
-        AppArtifact userApplication = curateOutcomeBuildItem.getEffectiveModel().getAppArtifact();
+        ResolvedDependency userApplication = curateOutcomeBuildItem.getApplicationModel().getAppArtifact();
 
         String uiPath = nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.ui.rootPath);
 
