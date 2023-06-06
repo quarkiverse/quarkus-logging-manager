@@ -22,7 +22,7 @@
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
   </properties>
   <scm>
-    <connection>:git:git@github.com:quarkiverse/quarkus-logging-manager.git</connection>
+    <connection>scm:git:git@github.com:quarkiverse/quarkus-logging-manager.git</connection>
     <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-logging-manager.git</developerConnection>
     <url>https://github.com/quarkiverse/quarkus-logging-manager</url>
   </scm>
