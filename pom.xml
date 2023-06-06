@@ -10,7 +10,7 @@
 
     <groupId>io.quarkiverse.loggingmanager</groupId>
     <artifactId>quarkus-logging-manager-parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
     <name>Quarkus - Logging Manager - Parent</name>
 
     <packaging>pom</packaging>
@@ -54,8 +54,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
-  <scm>
-    <tag>3.0.0</tag>
-  </scm>
 </project>
