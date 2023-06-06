@@ -21,7 +21,6 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import io.quarkiverse.loggingmanager.LoggerManagerRecorder;
 import io.quarkiverse.loggingmanager.LoggingManagerRuntimeConfig;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.bootstrap.model.AppArtifact;
 import io.quarkus.builder.Version;
 import io.quarkus.builder.item.SimpleBuildItem;
 import io.quarkus.deployment.Capabilities;
