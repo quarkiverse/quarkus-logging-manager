@@ -30,7 +30,11 @@
         <module>deployment</module>
         <module>runtime</module>
     </modules>
-    
+    <scm>
+        <connection>scm:git:git@github.com:quarkiverse/quarkus-logging-manager.git</connection>
+        <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-logging-manager.git</developerConnection>
+        <url>https://github.com/quarkiverse/quarkus-logging-manager</url>
+    </scm>  
     <dependencyManagement>
         <dependencies>
             <dependency>
