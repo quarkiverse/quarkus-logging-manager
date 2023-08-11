@@ -161,7 +161,7 @@ class LoggingManagerProcessor {
                 Files.createFile(indexHtml);
             }
             String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getNonApplicationRootPath(),
-                    "/dev/logstream");
+                    "/dev-v1/logstream");
 
             Files.write(indexHtml, indexHtmlContent.getBytes());
 
@@ -187,7 +187,7 @@ class LoggingManagerProcessor {
             String indexHtmlContent = getIndexHtmlContents(nonApplicationRootPathBuildItem.getNonApplicationRootPath(),
                     "/" + loggingManagerConfig.basePath + "/logstream");
             // Update the resource Url to be relative
-            String pathToBeReplaced = nonApplicationRootPathBuildItem.resolvePath("dev/resources");
+            String pathToBeReplaced = nonApplicationRootPathBuildItem.resolvePath("dev-v1/resources");
             indexHtmlContent = indexHtmlContent.replaceAll(pathToBeReplaced + "/", "");
             String indexHtmlFileName = UI_FINAL_DESTINATION + "/" + INDEX_HTML;
             generatedResourceProducer.produce(new GeneratedResourceBuildItem(indexHtmlFileName, indexHtmlContent.getBytes()));
@@ -247,7 +247,7 @@ class LoggingManagerProcessor {
                     .handler(handler)
                     .build());
 
-            // Add the log stream (In dev mode, the stream is already available at /dev/logstream)
+            // Add the log stream (In dev mode, the stream is already available at /dev-v1/logstream)
             if (!launchMode.getLaunchMode().isDevOrTest() && loggingManagerConfig.ui.alwaysInclude) {
 
                 reflectiveClassProducer.produce(new ReflectiveClassBuildItem(true, true,
@@ -305,7 +305,7 @@ class LoggingManagerProcessor {
                         cleanFrameworkRootPath(nonApplicationRootPath));
 
                 indexHtmlContent = indexHtmlContent.replaceAll("\\{devRootAppend}",
-                        cleanFrameworkRootPath(nonApplicationRootPath) + "/dev");
+                        cleanFrameworkRootPath(nonApplicationRootPath) + "/dev-v1");
 
                 indexHtmlContent = indexHtmlContent.replaceAll("\\{streamingPath}",
                         streamingPath);
