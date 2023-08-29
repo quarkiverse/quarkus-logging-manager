@@ -1,6 +1,5 @@
 package io.quarkiverse.loggingmanager.deployment;
 
-import io.quarkus.runtime.annotations.ConfigDocSection;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
@@ -31,17 +30,4 @@ public class LoggingManagerConfig {
      */
     @ConfigItem(defaultValue = "true")
     boolean alwaysInclude;
-
-    /**
-     * The number of history log entries to remember.
-     */
-    @ConfigItem(defaultValue = "50")
-    public int historySize;
-
-    /**
-     * UI configuration
-     */
-    @ConfigItem
-    @ConfigDocSection
-    LoggingManagerUIConfig ui;
 }

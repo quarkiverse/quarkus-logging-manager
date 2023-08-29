@@ -3,7 +3,6 @@ package io.quarkiverse.loggingmanager;
 import static io.vertx.core.http.HttpMethod.GET;
 import static io.vertx.core.http.HttpMethod.POST;
 
-import io.quarkus.vertx.http.runtime.logstream.LogController;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;

@@ -7,10 +7,10 @@ log level of your loggers.
 
 | Endpoint        | Http Method           | Description  |
 | ------------- |:-------------:|:-----:|
-| `/loggers`      | `GET` | Returns the list of all loggers, with information about the configured and effective level |
-| `/loggers?loggerName={loggerName}`     | `GET`      |   Returns the logger specified by this name, with information about the configured and effective level |
-| `/loggers` | `POST`      |    Changes the log level of the specified logger |
-| `/loggers/levels` | `GET`      |    Get all the available level |
+| `/logging-manager`      | `GET` | Returns the list of all loggers, with information about the configured and effective level |
+| `/logging-manager?loggerName={loggerName}`     | `GET`      |   Returns the logger specified by this name, with information about the configured and effective level |
+| `/logging-manager` | `POST`      |    Changes the log level of the specified logger |
+| `/logging-manager/levels` | `GET`      |    Get all the available level |
 
 ## Security
 Security of endpoints is important and we do not want to allow unknown people to know (or worse, change!) the log levels of
@@ -46,10 +46,6 @@ To use this in your application, simply add this in your pom.xml:
 
 Note: Replace `${logger-manager.version}` with the latest version
 
-Then browse to [http://localhost:8080/q/logging-manager-ui/](http://localhost:8080/q/logging-manager-ui/)
-
-![logger_manager_log_screenshot](logstream.gif "Log stream Screenshot")
-
 ## OpenAPI
 
 You can include the Logger Manager API in the OpenAPI document (and thus also Swagger UI). This needs to be
@@ -64,8 +60,6 @@ This will then add the following to your OpenAPI:
 ![swagger_manager screenshot](openapi.png "Swagger UI Screenshot")
 
 ## Roadmap
-- [x] Add online log viewer option
-- [x] Graphical UI to read logger level
 - [x] OpenApiSpec for the endpoints
 - [x] Make endpoint configurable
 - [x] Enable customizable security on the endpoint (see readme file)

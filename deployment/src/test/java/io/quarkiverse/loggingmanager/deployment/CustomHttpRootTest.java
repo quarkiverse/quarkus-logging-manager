@@ -1,7 +1,5 @@
 package io.quarkiverse.loggingmanager.deployment;
 
-import static org.hamcrest.Matchers.containsString;
-
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -20,8 +18,6 @@ public class CustomHttpRootTest {
 
     @Test
     public void shouldUseCustomConfig() {
-        RestAssured.when().get("/q/logging-manager-ui").then().statusCode(200).body(containsString("Logging manager"));
-        RestAssured.when().get("/q/logging-manager-ui/index.html").then().statusCode(200)
-                .body(containsString("Logging manager"));
+        RestAssured.when().get("/q/logging-manager").then().statusCode(200);
     }
 }

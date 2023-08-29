@@ -11,7 +11,7 @@ import org.eclipse.microprofile.openapi.models.PathItem;
 import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.eclipse.microprofile.openapi.models.parameters.Parameter;
 
-import io.quarkus.vertx.http.runtime.logstream.LogController;
+import io.quarkiverse.loggingmanager.LogController;
 import io.smallrye.openapi.api.models.media.SchemaImpl;
 
 /**
