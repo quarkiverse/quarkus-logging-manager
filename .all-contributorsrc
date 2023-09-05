@@ -34,6 +34,15 @@
         "maintenance",
         "code"
       ]
+    },
+    {
+      "login": "spieps",
+      "name": "Seth Piepergerdes",
+      "avatar_url": "https://avatars.githubusercontent.com/u/103952931?v=4",
+      "profile": "https://github.com/spieps",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,
