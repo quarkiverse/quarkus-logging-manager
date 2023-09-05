@@ -62,6 +62,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "Koekebakkert",
+      "name": "Koekebakkert",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33450925?v=4",
+      "profile": "https://github.com/Koekebakkert",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,
