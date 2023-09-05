@@ -71,6 +71,15 @@
       "contributions": [
         "maintenance"
       ]
+    },
+    {
+      "login": "stuartwdouglas",
+      "name": "Stuart Douglas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/328571?v=4",
+      "profile": "https://github.com/stuartwdouglas",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
