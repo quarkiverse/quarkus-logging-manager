@@ -82,6 +82,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/survivant"><img src="https://avatars.githubusercontent.com/u/191879?v=4?s=100" width="100px;" alt="Sebastien Dionne"/><br /><sub><b>Sebastien Dionne</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-logging-manager/commits?author=survivant" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Koekebakkert"><img src="https://avatars.githubusercontent.com/u/33450925?v=4?s=100" width="100px;" alt="Koekebakkert"/><br /><sub><b>Koekebakkert</b></sub></a><br /><a href="#maintenance-Koekebakkert" title="Maintenance">🚧</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/stuartwdouglas"><img src="https://avatars.githubusercontent.com/u/328571?v=4?s=100" width="100px;" alt="Stuart Douglas"/><br /><sub><b>Stuart Douglas</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-logging-manager/commits?author=stuartwdouglas" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 
