@@ -24,12 +24,23 @@
         "code",
         "maintenance"
       ]
+    },
+    {
+      "login": "manofthepeace",
+      "name": "manofthepeace",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13215031?v=4",
+      "profile": "https://github.com/manofthepeace",
+      "contributions": [
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "projectName": "quarkiverse-logging-manager",
+  "projectName": "quarkus-logging-manager",
   "projectOwner": "quarkiverse",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs",
+  "commitConvention": "angular"
 }
