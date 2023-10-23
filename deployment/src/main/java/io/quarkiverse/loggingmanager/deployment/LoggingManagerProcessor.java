@@ -16,7 +16,9 @@ import io.quarkus.runtime.configuration.ConfigurationException;
 import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildItem;
 import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
+import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem.Builder;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
+import io.quarkus.vertx.http.runtime.management.ManagementInterfaceBuildTimeConfig;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
@@ -44,7 +46,8 @@ class LoggingManagerProcessor {
             BodyHandlerBuildItem bodyHandlerBuildItem,
             LoggerManagerRecorder recorder,
             LaunchModeBuildItem launchMode,
-            LoggingManagerRuntimeConfig runtimeConfig) {
+            LoggingManagerRuntimeConfig runtimeConfig,
+            ManagementInterfaceBuildTimeConfig managementConfig) {
 
         if ("/".equals(loggingManagerConfig.basePath)) {
             throw new ConfigurationException(
@@ -55,18 +58,28 @@ class LoggingManagerProcessor {
             Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
             Handler<RoutingContext> levelHandler = recorder.levelHandler();
 
-            routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
-                    .routeFunction(loggingManagerConfig.basePath,
-                            recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
-                    .displayOnNotFoundPage("All available loggers")
-                    .handler(loggerHandler)
-                    .build());
+            Builder loggerBuilder = nonApplicationRootPathBuildItem.routeBuilder();
+            Builder levelBuilder = nonApplicationRootPathBuildItem.routeBuilder();
 
-            routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
+            if (managementConfig.enabled) {
+                loggerBuilder.management();
+                levelBuilder.management();
+            }
+
+            loggerBuilder = loggerBuilder
+                    .routeFunction(loggingManagerConfig.basePath,
+                                   recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
+                    .displayOnNotFoundPage("All available loggers")
+                    .handler(loggerHandler);
+
+            routeProducer.produce(loggerBuilder.build());
+
+            levelBuilder = levelBuilder
                     .nestedRoute(loggingManagerConfig.basePath, "levels")
                     .displayOnNotFoundPage("All available log levels")
-                    .handler(levelHandler)
-                    .build());
+                    .handler(levelHandler);
+
+            routeProducer.produce(levelBuilder.build());
         }
     }
 
@@ -75,10 +88,12 @@ class LoggingManagerProcessor {
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             Capabilities capabilities,
             LaunchModeBuildItem launchMode,
-            LoggingManagerConfig loggingManagerConfig) {
+            LoggingManagerConfig loggingManagerConfig,
+            ManagementInterfaceBuildTimeConfig managementConfig) {
 
         // Add to OpenAPI if OpenAPI is available
-        if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI) && shouldInclude(launchMode, loggingManagerConfig)) {
+        if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI) && shouldInclude(launchMode, loggingManagerConfig, managementConfig)) {
+        if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI) && shouldInclude(launchMode, loggingManagerConfig, managementConfig)) {
             LoggingManagerOpenAPIFilter filter = new LoggingManagerOpenAPIFilter(
                     nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.basePath),
                     loggingManagerConfig.openapiTag);
@@ -88,6 +103,10 @@ class LoggingManagerProcessor {
 
     private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {
         return launchMode.getLaunchMode().isDevOrTest() || loggingManagerConfig.alwaysInclude;
+    }
+
+    private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig, ManagementInterfaceBuildTimeConfig managementConfig) {
+        return !managementConfig.enabled && shouldInclude(launchMode, loggingManagerConfig);
     }
 
 }
