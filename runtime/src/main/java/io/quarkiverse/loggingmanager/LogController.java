@@ -92,12 +92,12 @@ public class LogController {
         LOG.info("Log level updated [" + loggerName + "] changed to [" + levelValue + "]");
     }
 
-    private static String getConfiguredLogLevel(Logger logger) {
+    public static String getConfiguredLogLevel(Logger logger) {
         java.util.logging.Level level = logger.getLevel();
         return level != null ? level.getName() : null;
     }
 
-    private static String getEffectiveLogLevel(Logger logger) {
+    public static String getEffectiveLogLevel(Logger logger) {
         if (logger == null) {
             return null;
         }
