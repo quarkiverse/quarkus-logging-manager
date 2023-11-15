@@ -83,7 +83,8 @@ class LoggingManagerProcessor {
             ManagementInterfaceBuildTimeConfig managementConfig) {
 
         // Add to OpenAPI if OpenAPI is available
-        if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI) && shouldIncludeInOpenAPI(launchMode, loggingManagerConfig, managementConfig)) {
+        if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI)
+                && shouldIncludeInOpenAPI(launchMode, loggingManagerConfig, managementConfig)) {
             LoggingManagerOpenAPIFilter filter = new LoggingManagerOpenAPIFilter(
                     nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.basePath),
                     loggingManagerConfig.openapiTag);
@@ -95,7 +96,8 @@ class LoggingManagerProcessor {
         return launchMode.getLaunchMode().isDevOrTest() || loggingManagerConfig.alwaysInclude;
     }
 
-    private static boolean shouldIncludeInOpenAPI(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig, ManagementInterfaceBuildTimeConfig managementConfig) {
+    private static boolean shouldIncludeInOpenAPI(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig,
+            ManagementInterfaceBuildTimeConfig managementConfig) {
         return !managementConfig.enabled && shouldInclude(launchMode, loggingManagerConfig);
     }
 
