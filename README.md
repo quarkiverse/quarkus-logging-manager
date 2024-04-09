@@ -5,12 +5,12 @@
 The **Quarkus Logging Manager** Extension provides you endpoints to visualize and manage the
 log level of your loggers.
 
-| Endpoint        | Http Method           | Description  |
-| ------------- |:-------------:|:-----:|
-| `/logging-manager`      | `GET` | Returns the list of all loggers, with information about the configured and effective level |
-| `/logging-manager?loggerName={loggerName}`     | `GET`      |   Returns the logger specified by this name, with information about the configured and effective level |
-| `/logging-manager` | `POST`      |    Changes the log level of the specified logger |
-| `/logging-manager/levels` | `GET`      |    Get all the available level |
+| Endpoint                                 | Http Method           | Description  |
+|------------------------------------------|:-------------:|:-----:|
+| `/q/logging-manager`                     | `GET` | Returns the list of all loggers, with information about the configured and effective level |
+| `/q/logging-manager?loggerName={loggerName}` | `GET`      |   Returns the logger specified by this name, with information about the configured and effective level |
+| `/q/logging-manager`                        | `POST`      |    Changes the log level of the specified logger |
+| `/q/logging-manager/levels`                 | `GET`      |    Get all the available level |
 
 ## Security
 Security of endpoints is important and we do not want to allow unknown people to know (or worse, change!) the log levels of
@@ -22,12 +22,13 @@ All you have to do is define your application.properties similar to this:
 quarkus.http.auth.basic=true # If you want basic auth. Multiple auth mechanism are supported
 
 quarkus.http.auth.policy.admin-access.roles-allowed=admin
-quarkus.http.auth.permission.roles1.paths=/loggers
+quarkus.http.auth.permission.roles1.paths=/q/logging-manager
 quarkus.http.auth.permission.roles1.policy=admin-access
 ```
 And, in case you chose Basic Auth, provide a IdentityProvider (either by implementing one or adding an extension that provides
 one).
-Quarkus will take care of matching the paths (in this case `/loggers` to the policy you defined and granting or denying access).
+Quarkus will take care of matching the paths (in this case `/q/logging-manager` to the policy you defined and 
+granting or denying access).
 Then you can also secure all the endpoints in your application using this configuration.
 
 
