@@ -23,7 +23,6 @@ public class StaticDataDevUITest extends DevUIBuildTimeDataTest {
     @Test
     public void levelDataAvailable() throws Exception {
         JsonNode levelResponse = super.getBuildTimeData("level");
-        Thread.sleep(1000_000);
         Assertions.assertAll(
                 () -> Assertions.assertInstanceOf(ArrayNode.class, levelResponse),
                 () -> Assertions.assertEquals(LogController.LEVELS, levelResponse.findValuesAsText("level")));
