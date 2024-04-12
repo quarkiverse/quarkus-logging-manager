@@ -22,8 +22,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.release>17</maven.compiler.release>
         <maven.compiler.parameters>true</maven.compiler.parameters>
-        <quarkus.version>3.9.2</quarkus.version>
-        <compiler-plugin.version>3.11.0</compiler-plugin.version>
+        <quarkus.version>3.9.3</quarkus.version>
+        <compiler-plugin.version>3.12.1</compiler-plugin.version>
     </properties>
 
     <modules>
