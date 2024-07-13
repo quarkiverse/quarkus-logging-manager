@@ -2,7 +2,6 @@ name: "Logging Manager"
 artifact: ${project.groupId}:${project.artifactId}:${project.version}
 metadata:
   short-name: "logging manager"
-  type: "logging"
   keywords:
     - "logging"
     - "logging manager"
