@@ -1,3 +1,5 @@
+import '@vaadin/grid';
+import '@vaadin/grid/vaadin-grid-sort-column.js';
 import { LitElement, html, css} from 'lit';
 import { columnBodyRenderer } from '@vaadin/grid/lit.js';
 import { JsonRpc } from 'jsonrpc';
@@ -40,23 +42,23 @@ export class QwcLoggingManagerLoggers extends LitElement {
 
     render() {
         return html`<vaadin-grid .items="${this._loggers}" class="logger-table" theme="no-border">
-                    <vaadin-grid-column auto-width
+                    <vaadin-grid-sort-column auto-width
                         header="Logger"
                         ${columnBodyRenderer(this._loggerRenderer, [])}
                         resizable>
-                    </vaadin-grid-column>
+                    </vaadin-grid-sort-column>
 
-                    <vaadin-grid-column auto-width
+                    <vaadin-grid-sort-column auto-width
                         header="Effective Level"
                         ${columnBodyRenderer(this._effectiveLevelRenderer, [])}
                         resizable>
-                    </vaadin-grid-column>
+                    </vaadin-grid-sort-column>
 
-                    <vaadin-grid-column auto-width
+                    <vaadin-grid-sort-column auto-width
                         header="Configured Level"
                         ${columnBodyRenderer(this._configuredLevelRenderer, [])}
                         resizable>
-                    </vaadin-grid-column>
+                    </vaadin-grid-sort-column>
                 </vaadin-grid>`
     }
 
