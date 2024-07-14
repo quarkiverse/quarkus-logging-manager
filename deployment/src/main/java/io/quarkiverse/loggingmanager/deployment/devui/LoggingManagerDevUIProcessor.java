@@ -28,7 +28,7 @@ public class LoggingManagerDevUIProcessor {
                 .icon("font-awesome-solid:layer-group"));
 
         pageBuildItem.addPage(Page.webComponentPageBuilder()
-                .icon("font-awesome-solid:play-circle")
+                .icon("font-awesome-solid:play")
                 .componentLink("qwc-logging-manager-loggers.js"));
 
         return pageBuildItem;
