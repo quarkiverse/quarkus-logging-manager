@@ -1,14 +1,16 @@
----
-name: "Logging manager"
+name: "Logging Manager"
+artifact: ${project.groupId}:${project.artifactId}:${project.version}
 metadata:
   short-name: "logging manager"
   keywords:
-  - "logging"    
-  - "logging manager"
-  - "log"
-  - "logging levels"
-  - "log level"
-  - "log file"
+    - "logging"
+    - "logging manager"
+    - "log"
+    - "logging levels"
+    - "log level"
+    - "log file"
   categories:
-  - "core"
+    - "logging"
+  config:
+    - "quarkus.logging-manager."
   status: "stable"
