@@ -1,6 +1,7 @@
 # Logging Manager Extension 
 [![Maven Central](https://img.shields.io/maven-central/v/io.quarkiverse.loggingmanager/quarkus-logging-manager?color=cool-green&style=flat-square)](https://mvnrepository.com/artifact/io.quarkiverse.loggingmanager/quarkus-logging-manager)
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?color=cool-green&style=flat-square)](#contributors-)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
+[![Build](https://github.com/quarkiverse/quarkus-logging-manager/actions/workflows/build.yml/badge.svg)](https://github.com/quarkiverse/quarkus-logging-manager/actions/workflows/build.yml)
 
 The **Quarkus Logging Manager** Extension provides you endpoints to visualize and manage the
 log level of your loggers.
@@ -15,7 +16,7 @@ log level of your loggers.
 ## Security
 Security of endpoints is important and we do not want to allow unknown people to know (or worse, change!) the log levels of
 our applications.
-Fortunately we can secure our endpoints using Quarkus' default security mechanism, as described in [here][1].
+Fortunately we can secure our endpoints using Quarkus' default security mechanism, as described in [Security Overview](https://quarkus.io/guides/security-overview).
 All you have to do is define your application.properties similar to this: 
 
 ```properties
