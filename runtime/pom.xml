@@ -10,7 +10,7 @@
 
     <artifactId>quarkus-logging-manager</artifactId>
     <name>Quarkus - Logging Manager - Runtime</name>
-    <description>Provides you endpoints to visualize and manage the log level of your loggers</description>
+    <description>Provides endpoints to visualize and control the log level of your loggers.</description>
     
     <dependencies>
         <dependency>
