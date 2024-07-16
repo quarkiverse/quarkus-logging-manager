@@ -11,31 +11,28 @@
     <groupId>io.quarkiverse.loggingmanager</groupId>
     <artifactId>quarkus-logging-manager-parent</artifactId>
     <version>3.0.4-SNAPSHOT</version>
-    <name>Quarkus - Logging Manager - Parent</name>
-
     <packaging>pom</packaging>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.release>17</maven.compiler.release>
-        <maven.compiler.parameters>true</maven.compiler.parameters>
-        <quarkus.version>3.12.0</quarkus.version>
-        <compiler-plugin.version>3.13.0</compiler-plugin.version>
-    </properties>
+    <name>Quarkus - Logging Manager - Parent</name>
 
     <modules>
         <module>deployment</module>
         <module>runtime</module>
     </modules>
+
     <scm>
         <connection>scm:git:git@github.com:quarkiverse/quarkus-logging-manager.git</connection>
         <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-logging-manager.git</developerConnection>
         <url>https://github.com/quarkiverse/quarkus-logging-manager</url>
-      <tag>HEAD</tag>
-  </scm>  
+        <tag>HEAD</tag>
+    </scm>
+    <properties>
+        <compiler-plugin.version>3.13.0</compiler-plugin.version>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <quarkus.version>3.8.5</quarkus.version>
+    </properties>  
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -52,9 +49,19 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-maven-plugin</artifactId>
+                    <version>${quarkus.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${compiler-plugin.version}</version>
+                    <configuration>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
