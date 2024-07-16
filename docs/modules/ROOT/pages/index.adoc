@@ -1,0 +1,60 @@
+= Quarkus Logging Manager
+
+include::./includes/attributes.adoc[]
+
+The Quarkus Logging Manager Extension provides you endpoints to visualize and manage the log level of your loggers.
+
+== Installation
+
+If you want to use this extension, you need to add the `io.quarkiverse.loggingmanager:quarkus-logging-manager` extension first to your build file.
+
+For instance, with Maven, add the following dependency to your POM file:
+
+[source,xml,subs=attributes+]
+----
+<dependency>
+    <groupId>io.quarkiverse.loggingmanager</groupId>
+    <artifactId>quarkus-logging-manager</artifactId>
+    <version>${logger-manager.version}</version>
+    <scope>runtime</scope>
+</dependency>
+
+----
+
+== OpenAPI
+
+You can include the Logger Manager API in the OpenAPI document (and thus also Swagger UI). This needs to be enabled via config:
+
+[source,properties]
+----
+quarkus.logging-manager.openapi.included=true
+----
+
+Simply run your application with `mvn quarkus:dev` and execute your code. This will then add the following to your OpenAPI:
+
+image::openapi.png[Logging Manager OpenAPI]
+
+== Security
+
+Security of endpoints is important and we do not want to allow unknown people to know (or worse, change!) the log levels of our applications. 
+Fortunately we can secure our endpoints using Quarkus' default security mechanism, as described in Security Overview. 
+All you have to do is define your application.properties similar to this:
+
+[source,properties]
+----
+quarkus.http.auth.basic=true # If you want basic auth. Multiple auth mechanism are supported
+
+quarkus.http.auth.policy.admin-access.roles-allowed=admin
+quarkus.http.auth.permission.roles1.paths=/q/logging-manager
+quarkus.http.auth.permission.roles1.policy=admin-access
+----
+
+And, in case you chose Basic Auth, provide a IdentityProvider (either by implementing one or adding an extension that provides one). 
+Quarkus will take care of matching the paths (in this case /q/logging-manager to the policy you defined and granting or denying access). 
+Then you can also secure all the endpoints in your application using this configuration.
+
+
+[[extension-configuration-reference]]
+== Extension Configuration Reference
+
+include::includes/quarkus-logging-manager.adoc[leveloffset=+1, opts=optional]

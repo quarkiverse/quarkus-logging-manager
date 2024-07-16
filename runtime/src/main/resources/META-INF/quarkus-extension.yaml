@@ -14,3 +14,4 @@ metadata:
   config:
     - "quarkus.logging-manager."
   status: "stable"
+  guide: "https://quarkiverse.github.io/quarkiverse-docs/quarkus-logging-manager/dev/index.html"
