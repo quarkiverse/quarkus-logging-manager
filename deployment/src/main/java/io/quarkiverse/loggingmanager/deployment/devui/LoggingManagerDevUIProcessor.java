@@ -22,7 +22,7 @@ public class LoggingManagerDevUIProcessor {
                 .stream().map((level) -> Map.of(LEVEL, level))
                 .collect(Collectors.toList()));
 
-        pageBuildItem.addPage(Page.tableDataPageBuilder(LEVEL)
+        pageBuildItem.addPage(Page.tableDataPageBuilder("Level")
                 .showColumn(LEVEL)
                 .buildTimeDataKey(LEVEL)
                 .icon("font-awesome-solid:layer-group"));
