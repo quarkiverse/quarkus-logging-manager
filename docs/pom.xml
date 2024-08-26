@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.quarkiverse.loggingmanager</groupId>
         <artifactId>quarkus-logging-manager-parent</artifactId>
-        <version>999-SNAPSHOT</version>
+        <version>3.1.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
