@@ -32,7 +32,7 @@ a|icon:lock[title=Fixed at build time] [[quarkus-logging-manager_quarkus-logging
 
 [.description]
 --
-Whether or not to include the Logger Manager endpoints in the generated OpenAPI document
+Whether to include the Logger Manager endpoints in the generated OpenAPI document
 
 ifdef::add-copy-button-to-env-var[]
 Environment variable: env_var_with_copy_button:+++QUARKUS_LOGGING_MANAGER_OPENAPI_INCLUDED+++[]
@@ -66,7 +66,7 @@ a|icon:lock[title=Fixed at build time] [[quarkus-logging-manager_quarkus-logging
 
 [.description]
 --
-Always include this. By default this will always be included. Setting this to false will also exclude this in Prod
+Always include this. By default, this will always be included. Setting this to false will also exclude this in Prod
 
 ifdef::add-copy-button-to-env-var[]
 Environment variable: env_var_with_copy_button:+++QUARKUS_LOGGING_MANAGER_ALWAYS_INCLUDE+++[]

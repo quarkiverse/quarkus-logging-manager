@@ -19,7 +19,7 @@ public class LoggerManagerRecorder {
     }
 
     public Consumer<Route> routeConsumer(Handler<RoutingContext> bodyHandler, LoggingManagerRuntimeConfig runtimeConfig) {
-        if (runtimeConfig.enable) {
+        if (runtimeConfig.enable()) {
             return new Consumer<Route>() {
                 @Override
                 public void accept(Route route) {

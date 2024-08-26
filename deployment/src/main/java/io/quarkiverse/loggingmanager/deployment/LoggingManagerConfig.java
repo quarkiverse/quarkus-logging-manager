@@ -13,7 +13,7 @@ public class LoggingManagerConfig {
     String basePath;
 
     /**
-     * Whether or not to include the Logger Manager endpoints in the generated OpenAPI document
+     * Whether to include the Logger Manager endpoints in the generated OpenAPI document
      */
     @ConfigItem(name = "openapi.included", defaultValue = "false")
     boolean openapiIncluded;
@@ -25,7 +25,7 @@ public class LoggingManagerConfig {
     String openapiTag;
 
     /**
-     * Always include this. By default this will always be included.
+     * Always include this. By default, this will always be included.
      * Setting this to false will also exclude this in Prod
      */
     @ConfigItem(defaultValue = "true")
