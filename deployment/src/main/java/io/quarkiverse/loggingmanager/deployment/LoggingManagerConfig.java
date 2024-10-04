@@ -1,33 +1,38 @@
 package io.quarkiverse.loggingmanager.deployment;
 
-import io.quarkus.runtime.annotations.ConfigItem;
+import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
-@ConfigRoot
-public class LoggingManagerConfig {
+@ConfigMapping(prefix = "quarkus.logging-manager")
+@ConfigRoot(phase = ConfigPhase.BUILD_TIME)
+public interface LoggingManagerConfig {
 
     /**
      * The base path
      */
-    @ConfigItem(defaultValue = "logging-manager")
-    String basePath;
+    @WithDefault("logging-manager")
+    String basePath();
 
     /**
      * Whether to include the Logger Manager endpoints in the generated OpenAPI document
      */
-    @ConfigItem(name = "openapi.included", defaultValue = "false")
-    boolean openapiIncluded;
+    @WithName("openapi.included")
+    @WithDefault("false")
+    boolean openapiIncluded();
 
     /**
      * The tag to use if OpenAPI is included
      */
-    @ConfigItem(defaultValue = "Logging-manager")
-    String openapiTag;
+    @WithDefault("logging-manager")
+    String openapiTag();
 
     /**
      * Always include this. By default, this will always be included.
      * Setting this to false will also exclude this in Prod
      */
-    @ConfigItem(defaultValue = "true")
-    boolean alwaysInclude;
+    @WithDefault("true")
+    boolean alwaysInclude();
 }

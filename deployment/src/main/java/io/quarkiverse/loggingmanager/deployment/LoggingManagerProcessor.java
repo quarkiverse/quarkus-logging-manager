@@ -28,7 +28,7 @@ class LoggingManagerProcessor {
         LoggingManagerConfig config;
 
         public boolean getAsBoolean() {
-            return config.openapiIncluded;
+            return config.openapiIncluded();
         }
     }
 
@@ -48,7 +48,7 @@ class LoggingManagerProcessor {
             LoggingManagerRuntimeConfig runtimeConfig,
             ManagementInterfaceBuildTimeConfig managementConfig) {
 
-        if ("/".equals(loggingManagerConfig.basePath)) {
+        if ("/".equals(loggingManagerConfig.basePath())) {
             throw new ConfigurationException(
                     "quarkus.logging-manager.base-path was set to \"/\", this is not allowed as it blocks the application from serving anything else.");
         }
@@ -59,7 +59,7 @@ class LoggingManagerProcessor {
 
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .management()
-                    .routeFunction(loggingManagerConfig.basePath,
+                    .routeFunction(loggingManagerConfig.basePath(),
                             recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
                     .displayOnNotFoundPage("All available loggers")
                     .handler(loggerHandler)
@@ -67,7 +67,7 @@ class LoggingManagerProcessor {
 
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .management()
-                    .nestedRoute(loggingManagerConfig.basePath, "levels")
+                    .nestedRoute(loggingManagerConfig.basePath(), "levels")
                     .displayOnNotFoundPage("All available log levels")
                     .handler(levelHandler)
                     .build());
@@ -86,14 +86,14 @@ class LoggingManagerProcessor {
         if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI)
                 && shouldIncludeInOpenAPI(launchMode, loggingManagerConfig, managementConfig)) {
             LoggingManagerOpenAPIFilter filter = new LoggingManagerOpenAPIFilter(
-                    nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.basePath),
-                    loggingManagerConfig.openapiTag);
+                    nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.basePath()),
+                    loggingManagerConfig.openapiTag());
             openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter));
         }
     }
 
     private static boolean shouldInclude(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {
-        return launchMode.getLaunchMode().isDevOrTest() || loggingManagerConfig.alwaysInclude;
+        return launchMode.getLaunchMode().isDevOrTest() || loggingManagerConfig.alwaysInclude();
     }
 
     private static boolean shouldIncludeInOpenAPI(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig,
