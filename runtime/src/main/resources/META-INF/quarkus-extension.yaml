@@ -15,3 +15,4 @@ metadata:
     - "quarkus.logging-manager."
   status: "stable"
   guide: "https://quarkiverse.github.io/quarkiverse-docs/quarkus-logging-manager/dev/index.html"
+  icon-url: "https://raw.githubusercontent.com/quarkiverse/quarkus-logging-manager/main/docs/modules/ROOT/assets/images/logmanager.svg"
