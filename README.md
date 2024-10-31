@@ -1,4 +1,11 @@
-# Logging Manager Extension 
+<div align="center">
+
+<img src="https://github.com/quarkiverse/.github/blob/main/assets/images/quarkus.svg" width="67" height="70" ><img src="https://github.com/quarkiverse/.github/blob/main/assets/images/plus-sign.svg" height="70" ><img src="https://github.com/quarkiverse/quarkus-logging-manager/blob/main/docs/modules/ROOT/assets/images/logmanager.svg" height="70" >
+
+# Logging Manager
+</div>
+<br>
+
 [![Maven Central](https://img.shields.io/maven-central/v/io.quarkiverse.loggingmanager/quarkus-logging-manager?color=cool-green&style=flat-square)](https://mvnrepository.com/artifact/io.quarkiverse.loggingmanager/quarkus-logging-manager)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 [![Build](https://github.com/quarkiverse/quarkus-logging-manager/actions/workflows/build.yml/badge.svg)](https://github.com/quarkiverse/quarkus-logging-manager/actions/workflows/build.yml)
