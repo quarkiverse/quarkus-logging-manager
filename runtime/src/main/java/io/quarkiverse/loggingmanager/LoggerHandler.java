@@ -3,6 +3,8 @@ package io.quarkiverse.loggingmanager;
 import static io.vertx.core.http.HttpMethod.GET;
 import static io.vertx.core.http.HttpMethod.POST;
 
+import java.util.Objects;
+
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
@@ -34,7 +36,7 @@ public class LoggerHandler implements Handler<RoutingContext> {
         if (loggerName == null || loggerName.isEmpty()) {
             response.end(LogController.getLoggers().build());
         } else {
-            response.end(LogController.getLogger(loggerName).build());
+            response.end(Objects.requireNonNull(LogController.getLogger(loggerName)).build());
         }
     }
 
