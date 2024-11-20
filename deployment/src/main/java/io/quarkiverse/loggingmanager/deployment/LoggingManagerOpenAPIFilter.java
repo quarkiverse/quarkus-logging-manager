@@ -1,6 +1,7 @@
 package io.quarkiverse.loggingmanager.deployment;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.microprofile.openapi.OASFactory;
@@ -12,7 +13,6 @@ import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.eclipse.microprofile.openapi.models.parameters.Parameter;
 
 import io.quarkiverse.loggingmanager.LogController;
-import io.smallrye.openapi.api.models.media.SchemaImpl;
 
 /**
  * Create OpenAPI entries (if configured)
@@ -50,19 +50,21 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     }
 
     private Schema createLoggerLevel() {
-        Schema schema = new SchemaImpl("LoggerLevel")
-                .type(Schema.SchemaType.STRING);
+        Schema schema = OASFactory.createSchema()
+                .title("LoggerLevel")
+                .type(List.of(Schema.SchemaType.STRING));
         LogController.LEVELS.forEach(schema::addEnumeration);
         return schema;
     }
 
     private Schema createLoggerInfo() {
-        return new SchemaImpl("LoggerInfo")
-                .type(Schema.SchemaType.OBJECT)
+        return OASFactory.createSchema()
+                .title("LoggerInfo")
+                .type(List.of(Schema.SchemaType.OBJECT))
                 .properties(Map.of(
                         "configuredLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL),
                         "effectiveLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL),
-                        "name", OASFactory.createSchema().type(Schema.SchemaType.STRING)));
+                        "name", OASFactory.createSchema().type(List.of(Schema.SchemaType.STRING))));
     }
 
     private PathItem createLoggersPathItem() {
@@ -81,14 +83,14 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
                 .tags(Collections.singletonList(tag))
                 .addParameter(OASFactory.createParameter()
                         .name("loggerName").in(Parameter.In.QUERY)
-                        .schema(OASFactory.createSchema().type(Schema.SchemaType.STRING)))
+                        .schema(OASFactory.createSchema().type(List.of(Schema.SchemaType.STRING))))
                 .responses(OASFactory.createAPIResponses()
                         .addAPIResponse("200", OASFactory.createAPIResponse()
                                 .description("Ok")
                                 .content(OASFactory.createContent().addMediaType(
                                         JSON_CONTENT_TYPE,
                                         OASFactory.createMediaType().schema(OASFactory.createSchema()
-                                                .type(Schema.SchemaType.ARRAY)
+                                                .type(List.of(Schema.SchemaType.ARRAY))
                                                 .items(OASFactory.createSchema().ref(REF_LOGGER_INFO))))))
                         .addAPIResponse("404", OASFactory.createAPIResponse().description("Not Found")));
     }
@@ -103,7 +105,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
                         .content(OASFactory.createContent().addMediaType(
                                 FORM_CONTENT_TYPE,
                                 OASFactory.createMediaType().schema(OASFactory.createSchema()
-                                        .type(Schema.SchemaType.OBJECT)
+                                        .type(List.of(Schema.SchemaType.OBJECT))
                                         .properties(Map.of(
                                                 "loggerName", OASFactory.createSchema(),
                                                 "loggerLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL)))))))
@@ -126,7 +128,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
                                         .content(OASFactory.createContent().addMediaType(
                                                 JSON_CONTENT_TYPE,
                                                 OASFactory.createMediaType().schema(OASFactory.createSchema()
-                                                        .type(Schema.SchemaType.ARRAY)
+                                                        .type(List.of(Schema.SchemaType.ARRAY))
                                                         .items(OASFactory.createSchema().ref(REF_LOGGER_LEVEL))))))));
     }
 
