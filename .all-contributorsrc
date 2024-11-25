@@ -117,6 +117,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "MikeEdgar",
+      "name": "Michael Edgar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20868526?v=4",
+      "profile": "http://www.xlate.io/",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
