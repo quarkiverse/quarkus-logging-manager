@@ -108,6 +108,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "EricWittmann",
+      "name": "Eric Wittmann",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1890703?v=4",
+      "profile": "https://github.com/EricWittmann",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
