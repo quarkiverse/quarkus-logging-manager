@@ -126,6 +126,15 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "alex-kovalenko1982",
+      "name": "Alex Kovalenko",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69167029?v=4",
+      "profile": "https://github.com/alex-kovalenko1982",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,

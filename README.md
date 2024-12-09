@@ -98,6 +98,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://lesincroyableslivres.fr/"><img src="https://avatars.githubusercontent.com/u/1279749?v=4?s=100" width="100px;" alt="Guillaume Smet"/><br /><sub><b>Guillaume Smet</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-logging-manager/commits?author=gsmet" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/EricWittmann"><img src="https://avatars.githubusercontent.com/u/1890703?v=4?s=100" width="100px;" alt="Eric Wittmann"/><br /><sub><b>Eric Wittmann</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-logging-manager/commits?author=EricWittmann" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://www.xlate.io/"><img src="https://avatars.githubusercontent.com/u/20868526?v=4?s=100" width="100px;" alt="Michael Edgar"/><br /><sub><b>Michael Edgar</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-logging-manager/pulls?q=is%3Apr+reviewed-by%3AMikeEdgar" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/alex-kovalenko1982"><img src="https://avatars.githubusercontent.com/u/69167029?v=4?s=100" width="100px;" alt="Alex Kovalenko"/><br /><sub><b>Alex Kovalenko</b></sub></a><br /><a href="#ideas-alex-kovalenko1982" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
   </tbody>
 </table>
