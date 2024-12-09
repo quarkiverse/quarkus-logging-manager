@@ -17,7 +17,6 @@ import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildIte
 import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
-import io.quarkus.vertx.http.runtime.management.ManagementInterfaceBuildTimeConfig;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
@@ -45,8 +44,7 @@ class LoggingManagerProcessor {
             BodyHandlerBuildItem bodyHandlerBuildItem,
             LoggerManagerRecorder recorder,
             LaunchModeBuildItem launchMode,
-            LoggingManagerRuntimeConfig runtimeConfig,
-            ManagementInterfaceBuildTimeConfig managementConfig) {
+            LoggingManagerRuntimeConfig runtimeConfig) {
 
         if ("/".equals(loggingManagerConfig.basePath())) {
             throw new ConfigurationException(
@@ -79,12 +77,11 @@ class LoggingManagerProcessor {
             NonApplicationRootPathBuildItem nonApplicationRootPathBuildItem,
             Capabilities capabilities,
             LaunchModeBuildItem launchMode,
-            LoggingManagerConfig loggingManagerConfig,
-            ManagementInterfaceBuildTimeConfig managementConfig) {
+            LoggingManagerConfig loggingManagerConfig) {
 
         // Add to OpenAPI if OpenAPI is available
         if (capabilities.isPresent(Capability.SMALLRYE_OPENAPI)
-                && shouldIncludeInOpenAPI(launchMode, loggingManagerConfig, managementConfig)) {
+                && shouldIncludeInOpenAPI(launchMode, loggingManagerConfig)) {
             LoggingManagerOpenAPIFilter filter = new LoggingManagerOpenAPIFilter(
                     nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.basePath()),
                     loggingManagerConfig.openapiTag());
@@ -96,9 +93,8 @@ class LoggingManagerProcessor {
         return launchMode.getLaunchMode().isDevOrTest() || loggingManagerConfig.alwaysInclude();
     }
 
-    private static boolean shouldIncludeInOpenAPI(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig,
-            ManagementInterfaceBuildTimeConfig managementConfig) {
-        return !managementConfig.enabled && shouldInclude(launchMode, loggingManagerConfig);
+    private static boolean shouldIncludeInOpenAPI(LaunchModeBuildItem launchMode, LoggingManagerConfig loggingManagerConfig) {
+        return shouldInclude(launchMode, loggingManagerConfig);
     }
 
 }
