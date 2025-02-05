@@ -26,7 +26,7 @@ public interface LoggingManagerConfig {
     /**
      * The tag to use if OpenAPI is included
      */
-    @WithDefault("logging-manager")
+    @WithDefault("Logging Manager")
     String openapiTag();
 
     /**
