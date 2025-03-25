@@ -36,7 +36,7 @@ public class LoggingManagerDevUIProcessor {
         cardPageBuildItemBuildProducer.produce(card);
     }
 
-    @BuildStep(onlyIf = IsDevelopment.class)
+    @BuildStep
     JsonRPCProvidersBuildItem createJsonRPCService() {
         return new JsonRPCProvidersBuildItem(LoggingManagerJsonRpcService.class);
     }
