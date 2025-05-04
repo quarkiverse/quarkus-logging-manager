@@ -59,14 +59,14 @@ class LoggingManagerProcessor {
                     .management()
                     .routeFunction(loggingManagerConfig.basePath(),
                             recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
-                    .displayOnNotFoundPage("All available loggers")
+                    .displayOnNotFoundPage("LogManager All available loggers")
                     .handler(loggerHandler)
                     .build());
 
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .management()
                     .nestedRoute(loggingManagerConfig.basePath(), "levels")
-                    .displayOnNotFoundPage("All available log levels")
+                    .displayOnNotFoundPage("LogManager All available log levels")
                     .handler(levelHandler)
                     .build());
         }

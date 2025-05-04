@@ -1,6 +1,7 @@
 package io.quarkiverse.loggingmanager.deployment;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,13 +64,14 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     }
 
     private Schema createLoggerInfo() {
+        Map<String, Schema> properties = new LinkedHashMap<>();
+        properties.put("configuredLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL));
+        properties.put("effectiveLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL));
+        properties.put("name", OASFactory.createSchema().type(List.of(Schema.SchemaType.STRING)));
         return OASFactory.createSchema()
                 .title("LoggerInfo")
                 .type(List.of(Schema.SchemaType.OBJECT))
-                .properties(Map.of(
-                        "configuredLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL),
-                        "effectiveLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL),
-                        "name", OASFactory.createSchema().type(List.of(Schema.SchemaType.STRING))));
+                .properties(properties);
     }
 
     private PathItem createLoggersPathItem() {
@@ -101,6 +103,9 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
     }
 
     private Operation createLoggerPostOperation() {
+        Map<String, Schema> properties = new LinkedHashMap<>();
+        properties.put("loggerName", OASFactory.createSchema());
+        properties.put("loggerLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL));
         return OASFactory.createOperation()
                 .operationId("logging_manager_update")
                 .summary("Update log level")
@@ -111,9 +116,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
                                 FORM_CONTENT_TYPE,
                                 OASFactory.createMediaType().schema(OASFactory.createSchema()
                                         .type(List.of(Schema.SchemaType.OBJECT))
-                                        .properties(Map.of(
-                                                "loggerName", OASFactory.createSchema(),
-                                                "loggerLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL)))))))
+                                        .properties(properties)))))
                 .responses(OASFactory.createAPIResponses()
                         .addAPIResponse("201", OASFactory.createAPIResponse().description("Created")));
     }
