@@ -12,9 +12,9 @@ import org.eclipse.microprofile.openapi.models.Operation;
 import org.eclipse.microprofile.openapi.models.PathItem;
 import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.eclipse.microprofile.openapi.models.parameters.Parameter;
+import org.eclipse.microprofile.openapi.models.tags.Tag;
 
 import io.quarkiverse.loggingmanager.LogController;
-import io.smallrye.openapi.internal.models.tags.Tag;
 
 /**
  * Create OpenAPI entries (if configured)
@@ -46,7 +46,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
         if (openAPI.getPaths() == null) {
             openAPI.setPaths(OASFactory.createPaths());
         }
-        Tag tag = new Tag();
+        Tag tag = OASFactory.createTag();
         tag.setName(this.tag);
         tag.setDescription("Visualize and manage the log level of your loggers.");
         openAPI.addTag(tag);
