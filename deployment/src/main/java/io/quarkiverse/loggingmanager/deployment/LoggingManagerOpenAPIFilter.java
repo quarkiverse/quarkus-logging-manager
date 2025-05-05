@@ -49,7 +49,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
         Tag tag = new Tag();
         tag.setName(this.tag);
         tag.setDescription("Visualize and manage the log level of your loggers.");
-        openAPI.setTags(List.of(tag));
+        openAPI.addTag(tag);
         openAPI.getPaths()
                 .addPathItem(basePath, createLoggersPathItem())
                 .addPathItem(basePath + "/levels", createLevelsPathItem());
