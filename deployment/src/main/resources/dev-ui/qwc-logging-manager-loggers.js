@@ -9,8 +9,8 @@ import { JsonRpc } from 'jsonrpc';
 export class QwcLoggingManagerLoggers extends LitElement {
     jsonRpc = new JsonRpc(this);
     static styles = css`
-        .logger-table {
-            height: 650px;
+        .datatable {
+            height: 100%;
         }
         .ml-10 {
             margin-left: 10px;
@@ -47,7 +47,7 @@ export class QwcLoggingManagerLoggers extends LitElement {
     }
 
     render() {
-        return html`<vaadin-vertical-layout theme="spacing">
+        return html`<vaadin-vertical-layout theme="spacing" style="height: 100%">
             <vaadin-text-field
                     placeholder="Search loggers..."
                     style="width: 50%;"
@@ -68,7 +68,7 @@ export class QwcLoggingManagerLoggers extends LitElement {
             >
                 <vaadin-icon slot="prefix" icon="vaadin:search"></vaadin-icon>
             </vaadin-text-field>
-            <vaadin-grid .items="${this._filteredLoggers}" class="logger-table ml-10">
+            <vaadin-grid .items="${this._filteredLoggers}" class="datatable ml-10">
                     <vaadin-grid-sort-column auto-width
                         header="Logger"
                         path="name"
