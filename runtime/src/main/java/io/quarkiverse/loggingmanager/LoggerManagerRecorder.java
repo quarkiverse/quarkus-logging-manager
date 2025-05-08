@@ -20,7 +20,13 @@ public class LoggerManagerRecorder {
 
     public Consumer<Route> routeConsumer(Handler<RoutingContext> bodyHandler, LoggingManagerRuntimeConfig runtimeConfig) {
         if (runtimeConfig.enable()) {
-            return route -> route.handler(bodyHandler);
+            return route -> route.handler(rc -> {
+                if (rc.body().available()) {
+                    rc.next();
+                } else {
+                    bodyHandler.handle(rc);
+                }
+            });
         } else {
             return route -> route.handler(new LoggingManagerNotFoundHandler());
         }
