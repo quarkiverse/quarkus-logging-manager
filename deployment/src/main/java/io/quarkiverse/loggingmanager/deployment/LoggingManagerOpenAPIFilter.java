@@ -15,10 +15,12 @@ import org.eclipse.microprofile.openapi.models.parameters.Parameter;
 import org.eclipse.microprofile.openapi.models.tags.Tag;
 
 import io.quarkiverse.loggingmanager.LogController;
+import io.quarkus.smallrye.openapi.OpenApiFilter;
 
 /**
  * Create OpenAPI entries (if configured)
  */
+@OpenApiFilter(value = OpenApiFilter.RunStage.BOTH, priority = 99)
 public class LoggingManagerOpenAPIFilter implements OASFilter {
 
     private static final String JSON_CONTENT_TYPE = "application/json";
