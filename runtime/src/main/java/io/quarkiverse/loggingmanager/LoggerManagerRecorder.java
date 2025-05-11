@@ -10,8 +10,12 @@ import io.vertx.ext.web.RoutingContext;
 @Recorder
 public class LoggerManagerRecorder {
 
-    public Handler<RoutingContext> loggerHandler() {
-        return new LoggerHandler();
+    public Handler<RoutingContext> loggerGetHandler() {
+        return new LoggerGetHandler();
+    }
+
+    public Handler<RoutingContext> loggerPostHandler() {
+        return new LoggerPostHandler();
     }
 
     public Handler<RoutingContext> levelHandler() {

@@ -52,21 +52,30 @@ class LoggingManagerProcessor {
         }
 
         if (shouldInclude(launchMode, loggingManagerConfig)) {
-            Handler<RoutingContext> loggerHandler = recorder.loggerHandler();
+            Handler<RoutingContext> loggerGetHandler = recorder.loggerGetHandler();
+            Handler<RoutingContext> loggerPostHandler = recorder.loggerPostHandler();
             Handler<RoutingContext> levelHandler = recorder.levelHandler();
 
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .management()
                     .routeFunction(loggingManagerConfig.basePath(),
                             recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
-                    .displayOnNotFoundPage("LogManager All available loggers")
-                    .handler(loggerHandler)
+                    .displayOnNotFoundPage("LogManager get all available loggers")
+                    .handler(loggerGetHandler)
+                    .build());
+
+            routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
+                    .management()
+                    .routeFunction(loggingManagerConfig.basePath() + "/update",
+                            recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
+                    .displayOnNotFoundPage("LogManager update log levels")
+                    .handler(loggerPostHandler)
                     .build());
 
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .management()
                     .nestedRoute(loggingManagerConfig.basePath(), "levels")
-                    .displayOnNotFoundPage("LogManager All available log levels")
+                    .displayOnNotFoundPage("LogManager get all available log levels")
                     .handler(levelHandler)
                     .build());
         }
