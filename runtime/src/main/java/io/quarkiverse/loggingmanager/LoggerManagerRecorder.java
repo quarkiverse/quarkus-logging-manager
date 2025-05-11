@@ -10,8 +10,12 @@ import io.vertx.ext.web.RoutingContext;
 @Recorder
 public class LoggerManagerRecorder {
 
-    public Handler<RoutingContext> loggerHandler() {
-        return new LoggerHandler();
+    public Handler<RoutingContext> loggerGetHandler() {
+        return new LoggerGetHandler();
+    }
+
+    public Handler<RoutingContext> loggerPostHandler() {
+        return new LoggerPostHandler();
     }
 
     public Handler<RoutingContext> levelHandler() {
@@ -20,13 +24,7 @@ public class LoggerManagerRecorder {
 
     public Consumer<Route> routeConsumer(Handler<RoutingContext> bodyHandler, LoggingManagerRuntimeConfig runtimeConfig) {
         if (runtimeConfig.enable()) {
-            return route -> route.handler(rc -> {
-                if (rc.body().available()) {
-                    rc.next();
-                } else {
-                    bodyHandler.handle(rc);
-                }
-            });
+            return route -> route.handler(bodyHandler);
         } else {
             return route -> route.handler(new LoggingManagerNotFoundHandler());
         }

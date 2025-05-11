@@ -51,7 +51,8 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
         tag.setDescription("Visualize and manage the log level of your loggers.");
         openAPI.addTag(tag);
         openAPI.getPaths()
-                .addPathItem(basePath, createLoggersPathItem())
+                .addPathItem(basePath, createLoggersPathGetItem())
+                .addPathItem(basePath + "/update", createLoggersPathPostItem())
                 .addPathItem(basePath + "/levels", createLevelsPathItem());
     }
 
@@ -74,11 +75,17 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
                 .properties(properties);
     }
 
-    private PathItem createLoggersPathItem() {
+    private PathItem createLoggersPathGetItem() {
         return OASFactory.createPathItem()
                 .summary("Return info on all loggers, or a specific logger")
                 .description("Logging Manager Loggers")
-                .GET(createLoggersGetOperation())
+                .GET(createLoggersGetOperation());
+    }
+
+    private PathItem createLoggersPathPostItem() {
+        return OASFactory.createPathItem()
+                .summary("Return info on all loggers, or a specific logger")
+                .description("Logging Manager Loggers")
                 .POST(createLoggerPostOperation());
     }
 
