@@ -59,7 +59,7 @@ class LoggingManagerProcessor {
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .management()
                     .routeFunction(loggingManagerConfig.basePath(),
-                            recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
+                            recorder.routeGetConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
                     .displayOnNotFoundPage("LogManager get all available loggers")
                     .handler(loggerGetHandler)
                     .build());
@@ -67,7 +67,7 @@ class LoggingManagerProcessor {
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .management()
                     .routeFunction(loggingManagerConfig.basePath() + "/update",
-                            recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
+                            recorder.routePostConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
                     .displayOnNotFoundPage("LogManager update log levels")
                     .handler(loggerPostHandler)
                     .build());
