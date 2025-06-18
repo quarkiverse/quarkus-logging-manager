@@ -104,7 +104,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
 
     private Operation createLoggerPostOperation() {
         Map<String, Schema> properties = new LinkedHashMap<>();
-        properties.put("loggerName", OASFactory.createSchema());
+        properties.put("loggerName", OASFactory.createSchema().type(List.of(Schema.SchemaType.STRING)));
         properties.put("loggerLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL));
         return OASFactory.createOperation()
                 .operationId("logging_manager_update")
