@@ -1,10 +1,14 @@
 <div align="center">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <img src="https://raw.githubusercontent.com/quarkiverse/.github/main/assets/images/quarkus.svg" alt="Quarkus logo" style="height: 70px; width: auto;">
+    <img src="https://raw.githubusercontent.com/quarkiverse/.github/main/assets/images/plus-sign.svg" alt="Plus sign" style="height: 70px; width: auto;">
+    <img src="https://raw.githubusercontent.com/quarkiverse/quarkus-logging-manager/main/docs/modules/ROOT/assets/images/logmanager.svg" alt="PF logo" style="height: 70px; width: auto;">
+  </div>
 
-<img src="https://github.com/quarkiverse/.github/blob/main/assets/images/quarkus.svg" width="67" height="70" ><img src="https://github.com/quarkiverse/.github/blob/main/assets/images/plus-sign.svg" height="70" ><img src="https://github.com/quarkiverse/quarkus-logging-manager/blob/main/docs/modules/ROOT/assets/images/logmanager.svg" height="70" >
-
-# Logging Manager
+  <h1>Logging Manager</h1>
 </div>
 <br>
+
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.quarkiverse.loggingmanager/quarkus-logging-manager?color=cool-green&style=flat-square)](https://mvnrepository.com/artifact/io.quarkiverse.loggingmanager/quarkus-logging-manager)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
