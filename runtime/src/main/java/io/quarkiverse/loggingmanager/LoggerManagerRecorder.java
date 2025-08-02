@@ -2,8 +2,6 @@ package io.quarkiverse.loggingmanager;
 
 import java.util.function.Consumer;
 
-import jakarta.inject.Inject;
-
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.vertx.core.Handler;
@@ -15,7 +13,6 @@ public class LoggerManagerRecorder {
 
     private final RuntimeValue<LoggingManagerRuntimeConfig> runtimeConfig;
 
-    @Inject
     public LoggerManagerRecorder(RuntimeValue<LoggingManagerRuntimeConfig> runtimeConfig) {
         this.runtimeConfig = runtimeConfig;
     }
