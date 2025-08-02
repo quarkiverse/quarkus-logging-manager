@@ -3,7 +3,6 @@ package io.quarkiverse.loggingmanager.deployment;
 import java.util.function.BooleanSupplier;
 
 import io.quarkiverse.loggingmanager.LoggerManagerRecorder;
-import io.quarkiverse.loggingmanager.LoggingManagerRuntimeConfig;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -43,8 +42,7 @@ class LoggingManagerProcessor {
             LoggingManagerConfig loggingManagerConfig,
             BodyHandlerBuildItem bodyHandlerBuildItem,
             LoggerManagerRecorder recorder,
-            LaunchModeBuildItem launchMode,
-            LoggingManagerRuntimeConfig runtimeConfig) {
+            LaunchModeBuildItem launchMode) {
 
         if ("/".equals(loggingManagerConfig.basePath())) {
             throw new ConfigurationException(
