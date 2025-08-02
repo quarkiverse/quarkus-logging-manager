@@ -2,6 +2,7 @@ package io.quarkiverse.loggingmanager;
 
 import java.util.function.Consumer;
 
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.Route;
@@ -18,8 +19,9 @@ public class LoggerManagerRecorder {
         return new LevelHandler();
     }
 
-    public Consumer<Route> routeConsumer(Handler<RoutingContext> bodyHandler, LoggingManagerRuntimeConfig runtimeConfig) {
-        if (runtimeConfig.enable()) {
+    public Consumer<Route> routeConsumer(Handler<RoutingContext> bodyHandler,
+            RuntimeValue<LoggingManagerRuntimeConfig> runtimeConfig) {
+        if (runtimeConfig.getValue().enable()) {
             return route -> route.handler(bodyHandler);
         } else {
             return route -> route.handler(new LoggingManagerNotFoundHandler());

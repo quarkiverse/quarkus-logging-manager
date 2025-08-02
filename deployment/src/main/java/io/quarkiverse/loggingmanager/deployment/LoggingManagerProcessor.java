@@ -12,6 +12,7 @@ import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.configuration.ConfigurationException;
 import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildItem;
 import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
@@ -58,7 +59,7 @@ class LoggingManagerProcessor {
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .management()
                     .routeFunction(loggingManagerConfig.basePath(),
-                            recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
+                            recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), new RuntimeValue<>(runtimeConfig)))
                     .displayOnNotFoundPage("LogManager All available loggers")
                     .handler(loggerHandler)
                     .build());
