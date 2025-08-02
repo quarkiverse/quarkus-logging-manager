@@ -58,7 +58,7 @@ class LoggingManagerProcessor {
             routeProducer.produce(nonApplicationRootPathBuildItem.routeBuilder()
                     .management()
                     .routeFunction(loggingManagerConfig.basePath(),
-                            recorder.routeConsumer(bodyHandlerBuildItem.getHandler(), runtimeConfig))
+                            recorder.routeConsumer(bodyHandlerBuildItem.getHandler()))
                     .displayOnNotFoundPage("LogManager All available loggers")
                     .handler(loggerHandler)
                     .build());
