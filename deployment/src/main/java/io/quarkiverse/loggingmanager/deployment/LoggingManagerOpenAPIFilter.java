@@ -52,8 +52,11 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
         openAPI.addTag(tag);
         openAPI.getPaths()
                 .addPathItem(basePath, createLoggersPathItem())
-                .addPathItem(basePath + "/levels", createLevelsPathItem());
+                .addPathItem(basePath + "/levels", createLevelsPathItem())
+                .addPathItem(basePath + "/duration", createDurationPathItem());
     }
+
+
 
     private Schema createLoggerLevel() {
         Schema schema = OASFactory.createSchema()
@@ -138,6 +141,39 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
                                                 OASFactory.createMediaType().schema(OASFactory.createSchema()
                                                         .type(List.of(Schema.SchemaType.ARRAY))
                                                         .items(OASFactory.createSchema().ref(REF_LOGGER_LEVEL))))))));
+    }
+
+    private PathItem createDurationPathItem() {
+        Map<String, Schema> properties = new LinkedHashMap<>();
+        properties.put("loggerName", OASFactory.createSchema().type(List.of(Schema.SchemaType.STRING)));
+        properties.put("loggerLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL));
+        properties.put("duration", OASFactory.createSchema()
+                                               .type(List.of(Schema.SchemaType.INTEGER))
+                                               .description("Duration in seconds before reverting to the previous level"));
+
+        return OASFactory.createPathItem()
+                 .summary("Set temporary log level duration")
+                 .description("Update a logger's level for a specified duration before reverting")
+                 .POST(OASFactory.createOperation()
+                          .operationId("logging_manager_set_duration")
+                          .summary("Set a temporary log level")
+                          .description("Set a log level for a specific logger that will automatically revert after a given duration")
+                          .tags(Collections.singletonList(tag))
+                          .requestBody(OASFactory.createRequestBody()
+                                  .content(OASFactory.createContent().addMediaType(
+                                            FORM_CONTENT_TYPE,
+                                            OASFactory.createMediaType().schema(OASFactory.createSchema()
+                                                    .type(List.of(Schema.SchemaType.OBJECT))
+                                                    .properties(properties)))))
+                          .responses(OASFactory.createAPIResponses()
+                                  .addAPIResponse("200", OASFactory.createAPIResponse()
+                                            .description("Log level already set to the requested value"))
+                                  .addAPIResponse("201", OASFactory.createAPIResponse()
+                                            .description("Temporary log level set successfully"))
+                                  .addAPIResponse("400", OASFactory.createAPIResponse()
+                                            .description("Invalid request: invalid level or duration"))
+                                  .addAPIResponse("404", OASFactory.createAPIResponse()
+                                            .description("Logger not found"))));
     }
 
 }
