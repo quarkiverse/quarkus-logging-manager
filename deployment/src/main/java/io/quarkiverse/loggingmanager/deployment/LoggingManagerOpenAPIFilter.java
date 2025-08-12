@@ -53,7 +53,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
         openAPI.getPaths()
                 .addPathItem(basePath, createLoggersPathItem())
                 .addPathItem(basePath + "/levels", createLevelsPathItem())
-                .addPathItem(basePath + "/duration", createDurationPathItem());
+                .addPathItem(basePath + "/temporary-level", createTemporaryLevelPathItem());
     }
 
 
@@ -143,7 +143,7 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
                                                         .items(OASFactory.createSchema().ref(REF_LOGGER_LEVEL))))))));
     }
 
-    private PathItem createDurationPathItem() {
+    private PathItem createTemporaryLevelPathItem() {
         Map<String, Schema> properties = new LinkedHashMap<>();
         properties.put("loggerName", OASFactory.createSchema().type(List.of(Schema.SchemaType.STRING)));
         properties.put("loggerLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL));
