@@ -108,6 +108,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tqvarnst"><img src="https://avatars.githubusercontent.com/u/1204115?v=4?s=100" width="100px;" alt="Thomas Qvarnström"/><br /><sub><b>Thomas Qvarnström</b></sub></a><br /><a href="#ideas-tqvarnst" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Ladicek"><img src="https://avatars.githubusercontent.com/u/480590?v=4?s=100" width="100px;" alt="Ladislav Thon"/><br /><sub><b>Ladislav Thon</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-logging-manager/commits?author=Ladicek" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/joaomatosdev"><img src="https://avatars.githubusercontent.com/u/199598874?v=4?s=100" width="100px;" alt="João Pedro Matos "/><br /><sub><b>João Pedro Matos </b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-logging-manager/commits?author=joaomatosdev" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
