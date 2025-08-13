@@ -17,12 +17,13 @@
 The **Quarkus Logging Manager** Extension provides you endpoints to visualize and manage the
 log level of your loggers.
 
-| Endpoint                                     | Http Method |                                             Description                                              |
-|----------------------------------------------|:-----------:|:----------------------------------------------------------------------------------------------------:|
-| `/q/logging-manager`                         |    `GET`    |      Returns the list of all loggers, with information about the configured and effective level      |
-| `/q/logging-manager?loggerName={loggerName}` |    `GET`    | Returns the logger specified by this name, with information about the configured and effective level |
-| `/q/logging-manager`                         |   `POST`    |                            Changes the log level of the specified logger                             |
-| `/q/logging-manager/levels`                  |    `GET`    |                                     Get all the available level                                      |
+| Endpoint                                     | Http Method |                                                                               Description                                                                               |
+|----------------------------------------------|:-----------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| `/q/logging-manager`                         |    `GET`    |                                       Returns the list of all loggers, with information about the configured and effective level                                        |
+| `/q/logging-manager?loggerName={loggerName}` |    `GET`    |                                  Returns the logger specified by this name, with information about the configured and effective level                                   |
+| `/q/logging-manager`                         |   `POST`    |                                                              Changes the log level of the specified logger                                                              |
+| `/q/logging-manager?temporary=true`          |   `POST`    |                         Temporarily changes the log level of the specified logger for a given duration, then restores it to the original level                          |
+| `/q/logging-manager/levels`                  |    `GET`    |                                                                             Get all the available level                                                                 |
 
 ## Security
 Security of endpoints is important, and we do not want to allow unknown people to know (or worse, change!) the log levels of

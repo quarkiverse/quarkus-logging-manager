@@ -4,8 +4,8 @@ import static io.vertx.core.http.HttpMethod.GET;
 import static io.vertx.core.http.HttpMethod.POST;
 
 import java.util.Objects;
-
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.jboss.logmanager.LogContext;
 
 import io.vertx.core.Handler;
@@ -22,9 +22,19 @@ public class LoggerHandler implements Handler<RoutingContext> {
     private static final String LOGGER_NAME_PARAM = "loggerName";
     private static final String LOGGER_LEVEL_PARAM = "loggerLevel";
     private static final String LOGGER_DURATION = "duration";
+    private static final String TEMPORARY_ENABLED = "temporary";
 
-    private final ConcurrentHashMap<String, Long> activeTimers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, TemporaryLogState> temporaryStates = new ConcurrentHashMap<>();
 
+    private static class TemporaryLogState {
+        final String originalLevel;
+        long timerId;
+
+        TemporaryLogState(String originalLevel, long timerId) {
+            this.originalLevel = originalLevel;
+            this.timerId = timerId;
+        }
+    }
 
     /**
      * Handles incoming HTTP requests by delegating to appropriate method handlers.
@@ -47,8 +57,8 @@ public class LoggerHandler implements Handler<RoutingContext> {
     }
 
     /**
-     * Handles GET requests to retrieve logger information.
-     * Returns all loggers if no logger name is specified, or details for a specific logger.
+     * Handles GET requests to retrieve logger information. Returns all loggers if no logger name is specified, or
+     * details for a specific logger.
      *
      * @param request The HTTP request
      * @param response The HTTP response
@@ -65,8 +75,8 @@ public class LoggerHandler implements Handler<RoutingContext> {
     }
 
     /**
-     * Handles POST requests to update logger levels.
-     * Updates the specified logger with the provided level or removes the level if none specified.
+     * Handles POST requests to update logger levels. Updates the specified logger with the provided level or removes
+     * the level if none specified.
      *
      * @param request The HTTP request
      * @param response The HTTP response
@@ -80,9 +90,11 @@ public class LoggerHandler implements Handler<RoutingContext> {
 
         String loggerName = request.getFormAttribute(LOGGER_NAME_PARAM);
         String loggerLevel = request.getFormAttribute(LOGGER_LEVEL_PARAM);
-        String loggerDuration = request.getFormAttribute(LOGGER_DURATION);
 
-        if (loggerDuration != null && !loggerDuration.isEmpty()) {
+        String temporaryEnabled = request.getParam(TEMPORARY_ENABLED);
+
+        if ("true".equalsIgnoreCase(temporaryEnabled)) {
+            String loggerDuration = request.getFormAttribute(LOGGER_DURATION);
             handleTemporaryPost(loggerName, loggerLevel, loggerDuration, routingContext, response);
             return;
         }
@@ -96,6 +108,16 @@ public class LoggerHandler implements Handler<RoutingContext> {
         response.setStatusCode(201).end();
     }
 
+    /**
+     * Handles POST requests to update logger levels temporarily. Updates the specified logger to the provided level
+     * for a given duration, then restores the original level automatically.
+     *
+     * @param loggerName The name of the logger to update
+     * @param loggerLevel The new temporary log level
+     * @param loggerDuration Duration in seconds for which the temporary level should apply
+     * @param routingContext The Vert.x routing context
+     * @param response The HTTP response
+     */
     private void handleTemporaryPost(
             String loggerName,
             String loggerLevel,
@@ -104,50 +126,49 @@ public class LoggerHandler implements Handler<RoutingContext> {
             HttpServerResponse response) {
 
         if (loggerLevel == null || !LogController.LEVELS.contains(loggerLevel.toUpperCase())) {
-            response.setStatusCode(400).end("Invalid Logger level");
+            response.setStatusCode(400).end("{\"error\":\"Invalid logger level\"}");
             return;
         }
 
         if (!LogController.doesLoggerExist(loggerName)) {
-            response.setStatusCode(404).end("Logger '" + loggerName + "' not found.");
+            response.setStatusCode(404).end("{\"error\":\"Logger '" + loggerName + "' not found\"}");
             return;
         }
 
         int durationSeconds;
-
         try {
             durationSeconds = Integer.parseInt(loggerDuration);
+            if (durationSeconds <= 0)
+                throw new NumberFormatException();
         } catch (NumberFormatException e) {
-            response.setStatusCode(400).end("Invalid duration");
+            response.setStatusCode(400).end("{\"error\":\"Duration must be a positive integer\"}");
             return;
         }
 
-        if (durationSeconds <= 0) {
-            response.setStatusCode(400).end("Duration must be positive");
+        String currentLevel = LogController.getConfiguredLogLevel(LogContext.getLogContext().getLogger(loggerName));
+        TemporaryLogState previousState = temporaryStates.get(loggerName);
+
+        if (loggerLevel.equalsIgnoreCase(currentLevel) && previousState == null) {
+            response.setStatusCode(200).end("{\"message\":\"Log level already set to " + loggerLevel + "\"}");
             return;
         }
 
-        String oldLevel = LogController.getConfiguredLogLevel(
-                LogContext.getLogContext().getLogger(loggerName));
-
-        if (oldLevel != null && oldLevel.equalsIgnoreCase(loggerLevel)) {
-            response.setStatusCode(200).end("Log level already set to " + loggerLevel);
-            return;
+        if (previousState != null) {
+            routingContext.vertx().cancelTimer(previousState.timerId);
         }
+
+        String originalLevel = previousState != null ? previousState.originalLevel : currentLevel;
 
         LogController.updateLogLevel(loggerName, loggerLevel);
 
-        Long previousTimerId = activeTimers.put(loggerName, null);
-        if (previousTimerId != null) {
-            routingContext.vertx().cancelTimer(previousTimerId);
-        }
-
         long timerId = routingContext.vertx().setTimer(durationSeconds * 1000L, id -> {
-            LogController.updateLogLevel(loggerName, oldLevel);
-            activeTimers.remove(loggerName, id);
+            LogController.updateLogLevel(loggerName, originalLevel);
+            temporaryStates.remove(loggerName);
         });
 
-        activeTimers.put(loggerName, timerId);
-        response.setStatusCode(201).end("Temporary log level set for " + durationSeconds + " seconds");
+        temporaryStates.put(loggerName, new TemporaryLogState(originalLevel, timerId));
+
+        response.setStatusCode(201)
+                .end("{\"message\":\"Temporary log level '" + loggerLevel + "' set for " + durationSeconds + " seconds\"}");
     }
 }
