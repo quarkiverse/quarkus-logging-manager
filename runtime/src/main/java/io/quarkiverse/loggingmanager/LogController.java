@@ -107,6 +107,20 @@ public class LogController {
         return getEffectiveLogLevel(logger.getParent());
     }
 
+    public static boolean doesLoggerExist(String loggerName) {
+        LogContext logContext = LogContext.getLogContext();
+        Enumeration<String> loggerNames = logContext.getLoggerNames();
+
+        while (loggerNames.hasMoreElements()) {
+            String existingLoggerName = loggerNames.nextElement();
+            if (existingLoggerName.equals(loggerName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static final List<String> LEVELS = List.of(
             OFF.getName(),
             SEVERE.getName(),

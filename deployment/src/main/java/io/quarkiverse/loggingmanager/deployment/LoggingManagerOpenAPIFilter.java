@@ -106,10 +106,13 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
         Map<String, Schema> properties = new LinkedHashMap<>();
         properties.put("loggerName", OASFactory.createSchema().type(List.of(Schema.SchemaType.STRING)));
         properties.put("loggerLevel", OASFactory.createSchema().ref(REF_LOGGER_LEVEL));
+        properties.put("duration", OASFactory.createSchema()
+                .type(List.of(Schema.SchemaType.INTEGER))
+                .description("Duration in seconds, used only if temporary=true"));
         return OASFactory.createOperation()
                 .operationId("logging_manager_update")
                 .summary("Update log level")
-                .description("Update a log level for a certain logger")
+                .description("Update a log level for a certain logger. Use query param `temporary=true` for temporary level.")
                 .tags(Collections.singletonList(tag))
                 .requestBody(OASFactory.createRequestBody()
                         .content(OASFactory.createContent().addMediaType(
@@ -118,7 +121,10 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
                                         .type(List.of(Schema.SchemaType.OBJECT))
                                         .properties(properties)))))
                 .responses(OASFactory.createAPIResponses()
-                        .addAPIResponse("201", OASFactory.createAPIResponse().description("Created")));
+                        .addAPIResponse("201", OASFactory.createAPIResponse().description("Created"))
+                        .addAPIResponse("200", OASFactory.createAPIResponse().description("Log level already set"))
+                        .addAPIResponse("400", OASFactory.createAPIResponse().description("Invalid request"))
+                        .addAPIResponse("404", OASFactory.createAPIResponse().description("Logger not found")));
     }
 
     private PathItem createLevelsPathItem() {
