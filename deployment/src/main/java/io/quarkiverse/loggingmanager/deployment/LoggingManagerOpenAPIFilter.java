@@ -114,6 +114,12 @@ public class LoggingManagerOpenAPIFilter implements OASFilter {
                 .summary("Update log level")
                 .description("Update a log level for a certain logger. Use query param `temporary=true` for temporary level.")
                 .tags(Collections.singletonList(tag))
+                .addParameter(OASFactory.createParameter()
+                        .name("temporary")
+                        .in(Parameter.In.QUERY)
+                        .description("Used to set the log level temporarily")
+                        .schema(OASFactory.createSchema().type(List.of(Schema.SchemaType.BOOLEAN)))
+                        .required(false))
                 .requestBody(OASFactory.createRequestBody()
                         .content(OASFactory.createContent().addMediaType(
                                 FORM_CONTENT_TYPE,
