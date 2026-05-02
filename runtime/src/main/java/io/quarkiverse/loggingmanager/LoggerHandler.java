@@ -90,10 +90,10 @@ public class LoggerHandler implements Handler<RoutingContext> {
 
         String loggerName = request.getFormAttribute(LOGGER_NAME_PARAM);
         String loggerLevel = request.getFormAttribute(LOGGER_LEVEL_PARAM);
-
         String temporaryEnabled = request.getParam(TEMPORARY_ENABLED);
 
         if ("true".equalsIgnoreCase(temporaryEnabled)) {
+            Objects.requireNonNull(LogController.getLogger(loggerName)).build();
             String loggerDuration = request.getFormAttribute(LOGGER_DURATION);
             handleTemporaryPost(loggerName, loggerLevel, loggerDuration, routingContext, response);
             return;
