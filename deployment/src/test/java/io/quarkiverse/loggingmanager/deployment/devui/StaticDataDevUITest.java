@@ -4,12 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-
 import io.quarkiverse.loggingmanager.LogController;
 import io.quarkus.devui.tests.DevUIBuildTimeDataTest;
 import io.quarkus.test.QuarkusDevModeTest;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
 
 public class StaticDataDevUITest extends DevUIBuildTimeDataTest {
 
@@ -25,7 +24,7 @@ public class StaticDataDevUITest extends DevUIBuildTimeDataTest {
         JsonNode levelResponse = super.getBuildTimeData("level");
         Assertions.assertAll(
                 () -> Assertions.assertInstanceOf(ArrayNode.class, levelResponse),
-                () -> Assertions.assertEquals(LogController.LEVELS, levelResponse.findValuesAsText("level")));
+                () -> Assertions.assertEquals(LogController.LEVELS, levelResponse.findValuesAsString("level")));
     }
 
 }

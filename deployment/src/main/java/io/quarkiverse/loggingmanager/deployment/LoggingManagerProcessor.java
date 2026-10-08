@@ -13,6 +13,7 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.LaunchModeBuildItem;
 import io.quarkus.runtime.configuration.ConfigurationException;
 import io.quarkus.smallrye.openapi.deployment.spi.AddToOpenAPIDefinitionBuildItem;
+import io.quarkus.smallrye.openapi.deployment.spi.OpenAPISPIConstants;
 import io.quarkus.vertx.http.deployment.BodyHandlerBuildItem;
 import io.quarkus.vertx.http.deployment.NonApplicationRootPathBuildItem;
 import io.quarkus.vertx.http.deployment.RouteBuildItem;
@@ -83,7 +84,7 @@ class LoggingManagerProcessor {
             LoggingManagerOpenAPIFilter filter = new LoggingManagerOpenAPIFilter(
                     nonApplicationRootPathBuildItem.resolvePath(loggingManagerConfig.basePath()),
                     loggingManagerConfig.openapiTag());
-            openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter));
+            openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(filter, OpenAPISPIConstants.DEFAULT_DOCUMENT_NAME));
         }
     }
 
