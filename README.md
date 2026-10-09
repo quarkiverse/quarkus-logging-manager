@@ -60,6 +60,18 @@ To use this in your application, simply add this in your pom.xml:
 
 Note: Replace `${logger-manager.version}` with the latest version
 
+| Logging Manager version | Quarkus version |
+| ----------------------- | --------------- |
+| 2.1.x                   | 2.4.0+          |
+| 3.0.x                   | 3.0.3+          |
+| 3.1.x                   | 3.8.5+          |
+| 3.2.x                   | 3.15.1+         |
+| 3.3.x                   | 3.17.0+         |
+| 3.4.x                   | 3.20.2+         |
+| 4.x                     | 4.0.0.Beta1+    |
+
+4.x targets Quarkus 4 and requires JDK 21. If you are still on Quarkus 3, stay on 3.4.x, which is maintained from the `3.x` branch.
+
 ## OpenAPI
 
 You can include the Logger Manager API in the OpenAPI document (and thus also Swagger UI). This needs to be

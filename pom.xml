@@ -28,10 +28,9 @@
     </scm>
     <properties>
         <compiler-plugin.version>3.16.0</compiler-plugin.version>
-        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <quarkus.version>3.20.2</quarkus.version>
+        <quarkus.version>4.0.0.Beta1</quarkus.version>
     </properties>  
     <dependencyManagement>
         <dependencies>
