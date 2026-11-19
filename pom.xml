@@ -30,7 +30,7 @@
         <compiler-plugin.version>3.16.0</compiler-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <quarkus.version>4.0.0.Beta1</quarkus.version>
+        <quarkus.version>4.0.0</quarkus.version>
     </properties>  
     <dependencyManagement>
         <dependencies>
